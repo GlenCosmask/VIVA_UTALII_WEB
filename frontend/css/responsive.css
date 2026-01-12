@@ -1,0 +1,81 @@
+/* Responsive and Hamburger styles for Viva Utalii */
+/* Designed to be theme-friendly and unobtrusive */
+
+/* Reset some elements to align with existing styles */
+* { box-sizing: border-box; }
+
+/* General responsive spacing */
+.hero { padding: 60px 18px 40px; }
+.card { padding: 28px 18px; max-width: 95%; margin: 28px auto; }
+
+/* Portfolio grid: flexible columns */
+.portfolio-gallery { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; padding: 12px; }
+.portfolio-gallery img { width: 100%; height: auto; max-height: 260px; object-fit: cover; }
+
+/* NAVBAR: beautiful dropdown for small screens */
+.navbar { position: relative; z-index: 20; }
+
+/* Hamburger button (hidden on desktop) */
+.hamburger { display: none; background: transparent; border: none; cursor: pointer; padding: 6px; }
+.hamburger .bar, .hamburger .bar::before, .hamburger .bar::after {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: #3b2714; /* default; some pages override */
+  transition: transform 220ms ease, opacity 220ms ease;
+}
+.hamburger .bar { position: relative; }
+.hamburger .bar::before, .hamburger .bar::after { content: ''; position: absolute; left:0; right:0; }
+.hamburger .bar::before { top: -7px; }
+.hamburger .bar::after { bottom: -7px; }
+
+/* Dropdown menu container (hidden by default) */
+header.navbar nav {
+  transition: max-height 320ms cubic-bezier(.2,.9,.2,1), opacity 220ms ease;
+  overflow: hidden;
+}
+
+/* Small screens: show hamburger and style dropdown */
+@media (max-width: 900px) {
+  .hamburger { display: inline-flex; align-items:center; justify-content:center; width:44px; height:44px; border-radius:10px; }
+
+  /* Floating frosted dropdown panel */
+  header.navbar nav {
+    position: absolute;
+    top: 64px;
+    left: 10px;
+    right: 10px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.92), rgba(250,245,240,0.96));
+    backdrop-filter: blur(6px) saturate(1.05);
+    padding: 14px;
+    border-radius: 14px;
+    box-shadow: 0 12px 30px rgba(30,20,10,0.14);
+    max-height: 0;
+    opacity: 0;
+  }
+
+  header.navbar nav ul, header.navbar .nav-links { display: flex; flex-direction: column; gap: 8px; align-items: stretch; }
+  header.navbar nav a { display: block; padding: 10px 14px; border-radius: 10px; color: #3b2714; text-decoration: none; font-weight: 600; }
+  header.navbar nav a:hover { background: rgba(59,39,20,0.9); color: #fff; transform: translateY(-2px); box-shadow: 0 8px 22px rgba(59,39,20,0.12); }
+
+  /* Open state */
+  header.navbar.nav-open nav { max-height: 520px; opacity: 1; }
+
+  /* Transform hamburger to X */
+  header.navbar.nav-open .hamburger .bar { transform: rotate(45deg); }
+  header.navbar.nav-open .hamburger .bar::before { transform: rotate(-90deg); top: 0; }
+  header.navbar.nav-open .hamburger .bar::after { transform: rotate(-90deg); bottom: 0; opacity: 0; }
+
+  /* Ensure logo and hamburger sit on top */
+  .logo, .logo-section, .hamburger { position: relative; z-index: 22; }
+}
+
+/* Desktop: small enhancements for readability */
+@media (min-width: 901px) {
+  header.navbar nav { position: static !important; max-height: none !important; opacity: 1 !important; background: transparent; padding: 0; box-shadow: none; }
+  header.navbar nav a { padding: 8px 12px; border-radius: 20px; }
+}
+
+/* Accessibility: focus state */
+.hamburger:focus, .hamburger:active { outline: 2px solid rgba(59,39,20,0.12); }
+header.navbar nav a:focus { outline: 3px solid rgba(185,150,108,0.18); }

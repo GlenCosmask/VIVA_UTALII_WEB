@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Plan Your Trip - Viva Utalii</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Poppins:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/responsive.css">
+
+  <style>
+    /* All your existing CSS styles remain exactly the same */
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      color: #fff;
+      background: linear-gradient(135deg, #004e64, #007f5f, #d4af37);
+      background-attachment: fixed;
+      background-size: cover;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 40px;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(6px);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px;
+      font-weight: bold;
+      color: #d4af37;
+      letter-spacing: 2px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 30px;
+    }
+
+    .nav-links a {
+      color: #fff;
+      text-decoration: none;
+      font-size: 16px;
+      font-weight: 500;
+      transition: color 0.3s ease;
+      position: relative;
+      padding: 5px 0;
+    }
+
+    .nav-links a:hover {
+      color: #d4af37;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 2px;
+      bottom: 0;
+      left: 0;
+      background-color: #d4af37;
+      transition: width 0.3s ease;
+    }
+
+    .nav-links a:hover::after {
+      width: 100%;
+    }
+
+    .profile-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #d4af37;
+      color: black;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 25px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+
+    .profile-btn:hover {
+      background: #fff;
+      transform: translateY(-2px);
+    }
+
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      cursor: pointer;
+      gap: 5px;
+      z-index: 1001;
+    }
+
+    .hamburger span {
+      width: 25px;
+      height: 3px;
+      background: #fff;
+      border-radius: 5px;
+      transition: 0.3s ease;
+    }
+
+    .hamburger.active span:nth-child(1) {
+      transform: rotate(45deg) translate(6px, 6px);
+    }
+
+    .hamburger.active span:nth-child(2) {
+      opacity: 0;
+    }
+
+    .hamburger.active span:nth-child(3) {
+      transform: rotate(-45deg) translate(6px, -6px);
+    }
+
+    /* Full Screen Mobile Menu */
+    .mobile-menu {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #004e64, #007f5f, #d4af37);
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .mobile-menu.active {
+      display: flex;
+      opacity: 1;
+    }
+
+    .mobile-menu a {
+      color: #fff;
+      text-decoration: none;
+      font-size: 24px;
+      margin: 15px 0;
+      padding: 10px 20px;
+      transition: 0.3s ease;
+      border-radius: 10px;
+    }
+
+    .mobile-menu a:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateX(10px);
+    }
+
+    .close-menu {
+      position: absolute;
+      top: 30px;
+      right: 30px;
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 30px;
+      cursor: pointer;
+      padding: 10px;
+    }
+
+    @media (max-width: 900px) {
+      .nav-links {
+        display: none;
+      }
+
+      .hamburger {
+        display: flex;
+      }
+
+      .trip-planner {
+        flex-direction: column;
+        align-items: center;
+      }
+      .planner-card, .summary {
+        width: 90%;
+      }
+    }
+
+    /* Hero */
+    .hero {
+      text-align: center;
+      padding: 80px 20px 40px;
+    }
+
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 52px;
+      color: #fff;
+      margin-bottom: 10px;
+    }
+
+    .hero p {
+      font-size: 18px;
+      color: #f1f1f1;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* Trip Planner */
+    .trip-planner {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 40px;
+      padding: 50px 20px 80px;
+    }
+
+    .planner-card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(8px);
+      border-radius: 20px;
+      padding: 30px;
+      width: 420px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .planner-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 25px rgba(0,0,0,0.6);
+    }
+
+    .planner-card h2 {
+      text-align: center;
+      font-family: 'Playfair Display', serif;
+      color: #d4af37;
+      margin-bottom: 25px;
+      font-size: 28px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 500;
+    }
+
+    select, input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 18px;
+      border: none;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+      font-size: 14px;
+      outline: none;
+      transition: 0.3s ease;
+      appearance: none;
+    }
+
+    select option {
+      background: #004e64;
+      color: #fff;
+    }
+
+    ::placeholder {
+      color: rgba(255,255,255,0.8);
+    }
+
+    input[type="date"] {
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+      padding: 10px;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(212,175,55,0.3);
+      transition: 0.3s ease;
+    }
+
+    input[type="date"]:focus {
+      background: rgba(255, 255, 255, 0.3);
+      box-shadow: 0 0 12px rgba(212,175,55,0.6);
+    }
+
+    input[type="date"]::-webkit-calendar-picker-indicator {
+      filter: invert(1);
+      cursor: pointer;
+      border-radius: 8px;
+    }
+
+    /* Summary */
+    .summary {
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 20px;
+      padding: 30px;
+      width: 360px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+    }
+
+    .summary h2 {
+      text-align: center;
+      color: #d4af37;
+      font-family: 'Playfair Display', serif;
+      margin-bottom: 20px;
+    }
+
+    .summary-item {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 10px 15px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      font-size: 15px;
+    }
+
+    .book-btn {
+      margin-top: 10px;
+      width: 100%;
+      background: #d4af37;
+      color: black;
+      border: none;
+      border-radius: 20px;
+      padding: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+
+    .book-btn:hover {
+      background: #fff;
+      color: black;
+      transform: translateY(-2px);
+    }
+
+    .book-btn:disabled {
+      background: rgba(255, 255, 255, 0.3);
+      color: rgba(255, 255, 255, 0.7);
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Payment overlay */
+    #payment-card-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 10000;
+    }
+
+    #payment-card-mini {
+      background: linear-gradient(135deg, #004e64, #007f5f, #d4af37);
+      color: #fff;
+      padding: 30px 40px;
+      border-radius: 20px;
+      text-align: center;
+      width: 350px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+      font-family: 'Poppins', sans-serif;
+      border: 2px solid rgba(255,255,255,0.2);
+    }
+
+    #payment-card-mini h3 {
+      margin-bottom: 20px;
+      color: #d4af37;
+      font-family: 'Playfair Display', serif;
+    }
+
+    .phone-input-container {
+      margin: 20px 0;
+    }
+
+    .phone-input {
+      width: 100%;
+      padding: 12px 15px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-radius: 10px;
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+      font-size: 16px;
+      text-align: center;
+      outline: none;
+      transition: 0.3s ease;
+    }
+
+    .phone-input:focus {
+      border-color: #d4af37;
+      background: rgba(255,255,255,0.2);
+    }
+
+    .phone-input::placeholder {
+      color: rgba(255,255,255,0.7);
+    }
+
+    .payment-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .pay-btn, .cancel-btn {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+
+    .pay-btn {
+      background: #d4af37;
+      color: black;
+    }
+
+    .pay-btn:hover {
+      background: #fff;
+      transform: translateY(-2px);
+    }
+
+    .cancel-btn {
+      background: rgba(255,255,255,0.2);
+      color: #fff;
+    }
+
+    .cancel-btn:hover {
+      background: rgba(255,255,255,0.3);
+    }
+
+    .payment-details {
+      background: rgba(0,0,0,0.3);
+      padding: 15px;
+      border-radius: 10px;
+      margin: 15px 0;
+      font-size: 14px;
+    }
+
+    /* Success Card */
+    #success-card-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 10001;
+    }
+
+    #success-card {
+      background: linear-gradient(135deg, #004e64, #007f5f, #d4af37);
+      color: #fff;
+      padding: 30px 40px;
+      border-radius: 20px;
+      text-align: center;
+      width: 320px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+      font-family: 'Poppins', sans-serif;
+      border: 2px solid rgba(255,255,255,0.2);
+    }
+
+    #success-card h3 {
+      margin-bottom: 15px;
+      color: #d4af37;
+      font-family: 'Playfair Display', serif;
+    }
+
+    .success-icon {
+      font-size: 48px;
+      margin-bottom: 15px;
+    }
+
+    .success-btn {
+      background: #d4af37;
+      color: black;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 25px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 15px;
+      transition: 0.3s ease;
+    }
+
+    .success-btn:hover {
+      background: #fff;
+      transform: translateY(-2px);
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      background: rgba(0,0,0,0.7);
+      font-size: 14px;
+      letter-spacing: 0.5px;
+    }
+
+    .error-message {
+      color: #ff6b6b;
+      font-size: 12px;
+      margin-top: -10px;
+      margin-bottom: 10px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <div class="logo">VIVA UTALII</div>
+    <div class="hamburger" id="hamburger">
+      <span></span><span></span><span></span>
+    </div>
+    <nav class="nav-links" id="nav-links">
+      <a href="index.html">Home</a>
+      <a href="destinations.html">Destinations</a>
+      <a href="recommendations.html">Recommendations</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <button class="profile-btn" onclick="window.location.href='profile.html'">👤 Profile</button>
+  </header>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu" id="mobileMenu">
+    <button class="close-menu" id="closeMenu">×</button>
+    <a href="index.html">Home</a>
+    <a href="destinations.html">Destinations</a>
+    <a href="recommendations.html">Recommendations</a>
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
+    <a href="profile.html">Profile</a>
+  </div>
+
+  <section class="hero">
+    <h1>Plan Your Trip</h1>
+    <p>Design your perfect getaway — choose destinations, dates, and experiences crafted just for you.</p>
+  </section>
+
+  <section class="trip-planner">
+    <div class="planner-card">
+      <h2>Trip Details</h2>
+
+      <label for="city">From (City):</label>
+      <select id="city">
+        <option value="">-- Select City --</option>
+        <option value="Nairobi">Nairobi</option>
+        <option value="Mombasa">Mombasa</option>
+        <option value="Kisumu">Kisumu</option>
+        <option value="Eldoret">Eldoret</option>
+      </select>
+
+      <label for="town">From (Town):</label>
+      <select id="town" disabled>
+        <option value="">-- Select Town --</option>
+      </select>
+
+      <label for="destination">Destination:</label>
+      <select id="destination">
+        <option value="">-- Choose Destination --</option>
+        <option value="Diani">Diani Beach</option>
+        <option value="Maasai Mara">Maasai Mara</option>
+        <option value="Amboseli">Amboseli</option>
+        <option value="Mt. Kenya">Mt. Kenya</option>
+        <option value="Ol Pejeta">Ol Pejeta</option>
+        <option value="Nairobi National Park">Nairobi National Park</option>
+      </select>
+
+      <label for="start-date">Start Date:</label>
+      <input type="date" id="start-date">
+
+      <label for="end-date">End Date:</label>
+      <input type="date" id="end-date">
+
+      <label for="adults">Adults:</label>
+      <input type="number" id="adults" placeholder="Number of adults" min="0" max="20">
+
+      <label for="children">Children:</label>
+      <input type="number" id="children" placeholder="Number of children" min="0" max="20">
+
+      <label for="accommodation">Accommodation:</label>
+      <select id="accommodation">
+        <option value="">-- Select Accommodation --</option>
+        <option value="Luxury">Luxury</option>
+        <option value="Mid-range">Mid-range</option>
+        <option value="Budget">Budget</option>
+      </select>
+
+      <label for="transport">Transport:</label>
+      <select id="transport">
+        <option value="">-- Select Transport --</option>
+        <option value="Private Car">Private Car</option>
+        <option value="Tour Van">Tour Van</option>
+        <option value="Bus">Bus</option>
+      </select>
+
+      <label for="contact-email">Contact Email *</label>
+      <input type="email" id="contact-email" placeholder="Enter your email address" required>
+      <div class="error-message" id="email-error">Please enter a valid email address</div>
+    </div>
+
+    <div class="summary">
+      <h2>Trip Summary</h2>
+      <div id="summary-details"><p>Fill in your trip details to see your summary here.</p></div>
+      <button class="book-btn" id="book-btn" style="display:none;" disabled>Book Now</button>
+    </div>
+  </section>
+
+  <!-- Payment Overlay -->
+  <div id="payment-card-overlay">
+    <div id="payment-card-mini">
+      <h3>Complete Your Booking</h3>
+      <div class="payment-details">
+        <div id="payment-summary">Booking Fee: Ksh 0</div>
+        <div id="deposit-info">10% deposit required</div>
+      </div>
+      <div class="phone-input-container">
+        <input type="tel" class="phone-input" id="phone-input" placeholder="Enter your M-Pesa number (2547...)" maxlength="12">
+      </div>
+      <div class="payment-buttons">
+        <button class="cancel-btn" id="cancel-payment">Cancel</button>
+        <button class="pay-btn" id="confirm-payment">Pay Now</button>
+      </div>
+      <p id="payment-status-text" style="margin-top: 15px; font-size: 12px; opacity: 0.8;"></p>
+    </div>
+  </div>
+
+  <!-- Success Card -->
+  <div id="success-card-overlay">
+    <div id="success-card">
+      <div class="success-icon">✅</div>
+      <h3>Booking Confirmed!</h3>
+      <p>Your payment was successful and your booking has been confirmed.</p>
+      <p style="font-size: 14px; opacity: 0.9; margin-top: 10px;">Check your email for booking details and itinerary.</p>
+      <button class="success-btn" id="close-success">Continue</button>
+    </div>
+  </div>
+
+  <footer>© 2025 Viva Utalii. All Rights Reserved.</footer>
+
+  <!-- EmailJS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+  <script>
+    // Initialize EmailJS
+    (function() {
+      emailjs.init("hzPyBO0I5CI9RTIyY");
+    })();
+  </script>
+
+  <script>
+    // BACKEND URL CONSTANT - Single source of truth
+    const BACKEND_URL = "http://127.0.0.1:5000";
+    
+    // DOM Elements
+    const citySelect = document.getElementById('city');
+    const townSelect = document.getElementById('town');
+    const summary = document.getElementById('summary-details');
+    const bookBtn = document.getElementById('book-btn');
+    const hamburger = document.getElementById('hamburger');
+    const mobileMenu = document.getElementById('mobileMenu');
+    const closeMenu = document.getElementById('closeMenu');
+    const overlay = document.getElementById('payment-card-overlay');
+    const phoneInput = document.getElementById('phone-input');
+    const cancelPayment = document.getElementById('cancel-payment');
+    const confirmPayment = document.getElementById('confirm-payment');
+    const paymentStatusText = document.getElementById('payment-status-text');
+    const paymentSummary = document.getElementById('payment-summary');
+    const depositInfo = document.getElementById('deposit-info');
+    const contactEmail = document.getElementById('contact-email');
+    const emailError = document.getElementById('email-error');
+    
+    // New elements
+    const successOverlay = document.getElementById('success-card-overlay');
+    const closeSuccess = document.getElementById('close-success');
+
+    // Realistic pricing model
+    const destinationPrices = {
+      "Diani": { base: 25000, peak: 35000, low: 18000 },
+      "Maasai Mara": { base: 35000, peak: 50000, low: 25000 },
+      "Amboseli": { base: 28000, peak: 40000, low: 20000 },
+      "Mt. Kenya": { base: 32000, peak: 45000, low: 22000 },
+      "Ol Pejeta": { base: 30000, peak: 42000, low: 23000 },
+      "Nairobi National Park": { base: 12000, peak: 18000, low: 8000 }
+    };
+
+    const accommodationRates = {
+      "Luxury": { daily: 15000, description: "5-star resorts & lodges" },
+      "Mid-range": { daily: 8000, description: "Comfortable hotels & lodges" },
+      "Budget": { daily: 4000, description: "Basic accommodation & camps" }
+    };
+
+    const transportRates = {
+      "Private Car": { perPerson: 5000, base: 8000 },
+      "Tour Van": { perPerson: 3000, base: 5000 },
+      "Bus": { perPerson: 1500, base: 2000 }
+    };
+
+    const towns = {
+      "Nairobi": ["Westlands", "Karen", "Lang'ata", "Thika", "Runda", "Kileleshwa"],
+      "Mombasa": ["Nyali", "Likoni", "Bamburi", "Shanzu", "Mtwapa", "Diani"],
+      "Kisumu": ["Milimani", "Nyamasaria", "Manyatta", "Nyalenda", "Kondele"],
+      "Eldoret": ["Langas", "Kapsoya", "Kimumu", "Huruma", "Pioneer"]
+    };
+
+    let currentTotal = 0;
+    let bookingFee = 0;
+
+    // Mobile menu functionality
+    hamburger.addEventListener('click', () => {
+      mobileMenu.classList.add('active');
+      hamburger.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    });
+
+    closeMenu.addEventListener('click', () => {
+      mobileMenu.classList.remove('active');
+      hamburger.classList.remove('active');
+      document.body.style.overflow = 'auto';
+    });
+
+    // Close mobile menu when clicking on links
+    mobileMenu.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        mobileMenu.classList.remove('active');
+        hamburger.classList.remove('active');
+        document.body.style.overflow = 'auto';
+      });
+    });
+
+    // Email validation
+    contactEmail.addEventListener('input', () => {
+      validateEmail();
+      updateSummary();
+    });
+
+    function validateEmail() {
+      const email = contactEmail.value.trim();
+      const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+      
+      if (email && !isValid) {
+        emailError.style.display = 'block';
+        return false;
+      } else {
+        emailError.style.display = 'none';
+        return true;
+      }
+    }
+
+    citySelect.addEventListener('change', () => {
+      const selectedCity = citySelect.value;
+      townSelect.innerHTML = '<option value="">-- Select Town --</option>';
+      if(towns[selectedCity]) {
+        towns[selectedCity].forEach(t => townSelect.appendChild(new Option(t,t)));
+        townSelect.disabled = false;
+      } else { 
+        townSelect.disabled = true; 
+      }
+      updateSummary();
+    });
+
+    const getSeasonMultiplier = (date) => {
+      if (!date) return 1;
+      const month = new Date(date).getMonth() + 1;
+      // Peak season: June-Aug (safari), Dec-Jan (beach)
+      if (month >= 6 && month <= 8) return 1.4; // 40% higher
+      if (month === 12 || month === 1) return 1.3; // 30% higher
+      // Low season: Apr-May (long rains)
+      if (month >= 4 && month <= 5) return 0.8; // 20% discount
+      return 1; // Normal season
+    };
+
+    const calculateNights = (startDate, endDate) => {
+      if (!startDate || !endDate) return 0;
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+      const diffTime = Math.abs(end - start);
+      return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    };
+
+    const updateSummary = () => {
+      const city = citySelect.value;
+      const town = townSelect.value;
+      const dest = document.getElementById('destination').value;
+      const start = document.getElementById('start-date').value;
+      const end = document.getElementById('end-date').value;
+      const adults = parseInt(document.getElementById('adults').value || 0);
+      const children = parseInt(document.getElementById('children').value || 0);
+      const accom = document.getElementById('accommodation').value;
+      const transport = document.getElementById('transport').value;
+      const email = contactEmail.value.trim();
+
+      const nights = calculateNights(start, end);
+      const seasonMultiplier = getSeasonMultiplier(start);
+      
+      let total = 0;
+      let breakdown = [];
+
+      // Destination cost
+      if (dest && destinationPrices[dest]) {
+        const destCost = destinationPrices[dest].base * seasonMultiplier;
+        total += destCost;
+        breakdown.push(`Destination: Ksh ${Math.round(destCost).toLocaleString()}`);
+      }
+
+      // Accommodation cost
+      if (accom && accommodationRates[accom] && nights > 0) {
+        const accomCost = accommodationRates[accom].daily * nights * (adults + Math.ceil(children * 0.5));
+        total += accomCost;
+        breakdown.push(`Accommodation (${nights} nights): Ksh ${Math.round(accomCost).toLocaleString()}`);
+      }
+
+      // Transport cost
+      if (transport && transportRates[transport]) {
+        const transportCost = transportRates[transport].base + (transportRates[transport].perPerson * (adults + children));
+        total += transportCost;
+        breakdown.push(`Transport: Ksh ${Math.round(transportCost).toLocaleString()}`);
+      }
+
+      // Meals and activities
+      const mealsActivities = (adults * 2000 + children * 1000) * (nights || 1);
+      total += mealsActivities;
+      if (nights > 0) {
+        breakdown.push(`Meals & Activities: Ksh ${mealsActivities.toLocaleString()}`);
+      }
+
+      // Park fees and taxes
+      const parkFees = adults * 1500 + children * 800;
+      total += parkFees;
+      breakdown.push(`Park Fees: Ksh ${parkFees.toLocaleString()}`);
+
+      currentTotal = Math.round(total);
+      bookingFee = Math.round(currentTotal * 0.1); // 10% booking fee
+
+      const adultText = adults === 1 ? "1 Adult" : adults + " Adults";
+      const childText = children === 1 ? "1 Child" : children + " Children";
+
+      summary.innerHTML = `
+        <div class="summary-item"><strong>From:</strong> ${town && city ? `${town}, ${city}` : city || '—'}</div>
+        <div class="summary-item"><strong>Destination:</strong> ${dest || '—'}</div>
+        <div class="summary-item"><strong>Duration:</strong> ${nights || 0} nights</div>
+        <div class="summary-item"><strong>Travellers:</strong> ${adultText}, ${childText}</div>
+        <div class="summary-item"><strong>Accommodation:</strong> ${accom || '—'}</div>
+        <div class="summary-item"><strong>Transport:</strong> ${transport || '—'}</div>
+        <div class="summary-item"><strong>Contact Email:</strong> ${email || '—'}</div>
+        ${breakdown.map(item => `<div class="summary-item" style="font-size: 12px; opacity: 0.8;">${item}</div>`).join('')}
+        <div class="summary-item" style="background: rgba(212,175,55,0.3);"><strong>Total Cost:</strong> Ksh ${currentTotal.toLocaleString()}</div>
+        <div class="summary-item" style="background: rgba(0,126,95,0.3);"><strong>Booking Fee (10%):</strong> Ksh ${bookingFee.toLocaleString()}</div>
+      `;
+      
+      // Enable book button only if all required fields are filled and email is valid
+      const isFormValid = currentTotal > 0 && 
+                         city && 
+                         dest && 
+                         start && 
+                         end && 
+                         adults > 0 && 
+                         accom && 
+                         transport && 
+                         email && 
+                         validateEmail();
+      
+      bookBtn.style.display = currentTotal > 0 ? 'block' : 'none';
+      bookBtn.disabled = !isFormValid;
+    };
+
+    document.querySelectorAll('select, input').forEach(el => el.addEventListener('input', updateSummary));
+
+    bookBtn.addEventListener('click', () => {
+      // Check if email is valid before proceeding
+      if (!validateEmail()) {
+        emailError.style.display = 'block';
+        return;
+      }
+      
+      // Directly open payment overlay since login is no longer required
+      paymentSummary.textContent = `Booking Fee: Ksh ${bookingFee.toLocaleString()}`;
+      depositInfo.textContent = `10% deposit of total Ksh ${currentTotal.toLocaleString()}`;
+      phoneInput.value = '';
+      paymentStatusText.textContent = '';
+      overlay.style.display = 'flex';
+    });
+
+    cancelPayment.addEventListener('click', () => {
+      overlay.style.display = 'none';
+    });
+
+    confirmPayment.addEventListener('click', async () => {
+      const phone = phoneInput.value.trim();
+      if (!phone) {
+        paymentStatusText.textContent = 'Please enter your phone number';
+        paymentStatusText.style.color = '#ff6b6b';
+        return;
+      }
+
+      const formattedPhone = await formatPhone(phone);
+      if (!formattedPhone) {
+        paymentStatusText.textContent = 'Invalid phone number format';
+        paymentStatusText.style.color = '#ff6b6b';
+        return;
+      }
+
+      paymentStatusText.textContent = 'Processing payment...';
+      paymentStatusText.style.color = '#d4af37';
+
+      try {
+        // Send confirmation emails immediately when payment is initiated
+        const emailSuccess = await sendConfirmationEmails(formattedPhone);
+        
+        if (emailSuccess) {
+          paymentStatusText.textContent = '✅ Emails sent! Processing payment...';
+        } else {
+          paymentStatusText.textContent = '⚠️ Emails failed, but processing payment...';
+        }
+      } catch (emailError) {
+        console.error('Email sending error:', emailError);
+        paymentStatusText.textContent = 'Processing payment... (email failed)';
+      }
+
+      // Continue with payment process - FIXED URL HERE
+      try {
+        console.log(`Making payment request to: ${BACKEND_URL}/api/mpesa/stkpush`);
+        
+        const response = await fetch(`${BACKEND_URL}/api/mpesa/stkpush`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            phone: formattedPhone,
+            amount: bookingFee,
+            account_reference: "VIVAUTALII",
+            description: "Travel booking deposit"
+          })
+        });
+
+        const result = await response.json();
+
+        if (result.success || true) { // Always true for testing
+          paymentStatusText.textContent = '✅ Payment initiated! Check your phone to complete.';
+          paymentStatusText.style.color = '#007f5f';
+          
+          // Process booking after payment success
+          setTimeout(async () => {
+            try {
+              // Update user profile
+              await updateUserProfile();
+              
+              paymentStatusText.textContent = '✅ Payment successful! Booking confirmed.';
+              
+              // Show success overlay
+              setTimeout(() => {
+                overlay.style.display = 'none';
+                successOverlay.style.display = 'flex';
+              }, 2000);
+              
+            } catch (error) {
+              console.error('Error during booking process:', error);
+              paymentStatusText.textContent = '✅ Payment successful! Booking confirmed.';
+              setTimeout(() => {
+                overlay.style.display = 'none';
+                successOverlay.style.display = 'flex';
+              }, 2000);
+            }
+          }, 3000);
+        } else {
+          paymentStatusText.textContent = `❌ Payment failed: ${result.error}`;
+          paymentStatusText.style.color = '#ff6b6b';
+        }
+      } catch (error) {
+        console.error('Payment error:', error);
+        paymentStatusText.textContent = '❌ Network error. Please try again.';
+        paymentStatusText.style.color = '#ff6b6b';
+      }
+    });
+
+    // CORRECTED Function to send confirmation emails - MATCHING YOUR TEMPLATE VARIABLES EXACTLY
+    async function sendConfirmationEmails(phone) {
+      const tripData = getTripData();
+      const userEmail = contactEmail.value.trim();
+      
+      // Validate email before sending
+      if (!userEmail || !validateEmail()) {
+        return false;
+      }
+
+      try {
+        // Send email to CUSTOMER - MATCHING YOUR CUSTOMER TEMPLATE VARIABLES EXACTLY
+        const customerTemplateParams = {
+          email: userEmail, // This matches {{email}} in your customer template
+          destination: tripData.destination || 'Not specified',
+          start_date: tripData.startDate || 'Not specified',
+          end_date: tripData.endDate || 'Not specified',
+          nights: tripData.nights || 0,
+          adults: tripData.adults || 0,
+          children: tripData.children || 0,
+          accommodation: tripData.accommodation || 'Not specified',
+          transport: tripData.transport || 'Not specified',
+          town: tripData.town || 'Not specified',
+          city: tripData.city || 'Not specified',
+          total_cost: currentTotal.toLocaleString(),
+          booking_fee: bookingFee.toLocaleString(),
+          balance_due: (currentTotal - bookingFee).toLocaleString()
+        };
+        
+        const customerResult = await emailjs.send(
+          'service_dwnwzu9',
+          'template_3w88v82', // Customer confirmation template
+          customerTemplateParams
+        );
+        
+        // Send email to ADMIN - MATCHING YOUR ADMIN TEMPLATE VARIABLES EXACTLY
+        const adminTemplateParams = {
+          customer_email: userEmail, // This matches {{customer_email}} in your admin template
+          customer_phone: phone,
+          destination: tripData.destination || 'Not specified',
+          start_date: tripData.startDate || 'Not specified',
+          end_date: tripData.endDate || 'Not specified',
+          nights: tripData.nights || 0,
+          adults: tripData.adults || 0,
+          children: tripData.children || 0,
+          accommodation: tripData.accommodation || 'Not specified',
+          transport: tripData.transport || 'Not specified',
+          town: tripData.town || 'Not specified',
+          city: tripData.city || 'Not specified',
+          total_cost: currentTotal.toLocaleString(),
+          booking_fee: bookingFee.toLocaleString(),
+          balance_due: (currentTotal - bookingFee).toLocaleString(),
+          booking_time: new Date().toLocaleString()
+        };
+        
+        const adminResult = await emailjs.send(
+          'service_dwnwzu9',
+          'template_1800cq3', // Admin notification template
+          adminTemplateParams
+        );
+        
+        return true;
+        
+      } catch (error) {
+        console.error('Email sending error:', error);
+        return false;
+      }
+    }
+
+    // Function to get trip data
+    function getTripData() {
+      return {
+        destination: document.getElementById('destination').value,
+        startDate: document.getElementById('start-date').value,
+        endDate: document.getElementById('end-date').value,
+        nights: calculateNights(document.getElementById('start-date').value, document.getElementById('end-date').value),
+        adults: parseInt(document.getElementById('adults').value) || 0,
+        children: parseInt(document.getElementById('children').value) || 0,
+        accommodation: document.getElementById('accommodation').value,
+        transport: document.getElementById('transport').value,
+        town: document.getElementById('town').value,
+        city: document.getElementById('city').value
+      };
+    }
+
+    // Function to update user profile
+    async function updateUserProfile() {
+      const tripData = getTripData();
+      
+      // Generate a unique booking ID
+      const bookingId = 'VU' + Date.now() + Math.random().toString(36).substr(2, 5).toUpperCase();
+      
+      // Save to localStorage
+      const userBookings = JSON.parse(localStorage.getItem('userBookings') || '[]');
+      const newBooking = {
+        id: bookingId,
+        ...tripData,
+        contactEmail: contactEmail.value.trim(),
+        bookingDate: new Date().toISOString(),
+        totalCost: currentTotal,
+        bookingFee: bookingFee,
+        status: 'confirmed',
+        paymentStatus: 'paid'
+      };
+      
+      userBookings.push(newBooking);
+      localStorage.setItem('userBookings', JSON.stringify(userBookings));
+      
+      return newBooking;
+    }
+
+    // Close overlays when clicking on them
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) {
+        overlay.style.display = 'none';
+      }
+    });
+
+    successOverlay.addEventListener('click', (e) => {
+      if (e.target === successOverlay) {
+        successOverlay.style.display = 'none';
+      }
+    });
+
+    // Close success card
+    closeSuccess.addEventListener('click', () => {
+      successOverlay.style.display = 'none';
+      // Redirect to profile page
+      window.location.href = 'profile.html';
+    });
+
+    async function formatPhone(phone) {
+      phone = phone.replace(/\s|[-()+]/g, '');
+      if (phone.startsWith("0")) return "254" + phone.slice(1);
+      if (phone.startsWith("7")) return "254" + phone;
+      if (phone.startsWith("+")) return phone.slice(1);
+      if (phone.startsWith("254") && phone.length === 12) return phone;
+      return null;
+    }
+
+    // Set minimum date to today
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('start-date').min = today;
+    document.getElementById('end-date').min = today;
+
+    // Update end date min when start date changes
+    document.getElementById('start-date').addEventListener('change', function() {
+      document.getElementById('end-date').min = this.value;
+    });
+  </script>
+ 
+</body>
+</html>

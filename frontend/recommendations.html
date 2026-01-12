@@ -1,0 +1,1409 @@
+<!DOCTYPE html>  
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Recommendations — Viva Utalii</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --accent-1:#004e64;
+      --accent-2:#007f5f;
+      --accent-3:#d4af37;
+      --glass: rgba(255,255,255,0.06);
+      --card-radius:18px;
+      --text:#fff;
+      --ksh-symbol: "KSh";
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:"Poppins",sans-serif;
+      color:var(--text);
+      background: linear-gradient(135deg,var(--accent-1),var(--accent-2),var(--accent-3));
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      overflow-x:hidden;
+      -webkit-font-smoothing:antialiased;
+    }
+    a{color:inherit;text-decoration:none}
+
+    /* Header */
+    header.navbar{
+      position:sticky;
+      top:0;
+      z-index:60;
+      display:flex;
+      align-items:center;
+      gap:18px;
+      padding:12px 18px;
+      backdrop-filter: blur(8px);
+      background: rgba(0,0,0,0.22);
+      border-bottom: 1px solid rgba(0,0,0,0.12);
+    }
+    .logo { font-family:"Playfair Display",serif; font-size:20px; font-weight:700; color:var(--accent-3); margin-left:8px; }
+    nav.nav { margin:0 auto; }
+    nav.nav ul{ display:flex; gap:22px; list-style:none; margin:0; padding:0; align-items:center; }
+    nav.nav a{ font-weight:600; color:var(--text); font-family:"Playfair Display",serif; padding:8px 2px; position:relative; letter-spacing:0.2px; }
+    /* animated underline */
+    nav.nav a::after{
+      content:"";
+      position:absolute;
+      left:0;
+      bottom:-8px;
+      width:0%;
+      height:3px;
+      border-radius:3px;
+      background: linear-gradient(90deg,var(--accent-3),#fff);
+      transition:width 200ms cubic-bezier(.2,.9,.2,1);
+      opacity:0.95;
+    }
+    nav.nav a:hover::after{ width:100%; }
+    nav.nav a.active::after{ width:100%; }
+
+    .auth-wrap{ margin-left:auto; display:flex; gap:12px; align-items:center; }
+    .auth-btn{ background:linear-gradient(45deg,var(--accent-3),#f8e473); color:#08121a; border:none; padding:8px 14px; border-radius:999px; font-weight:700; cursor:pointer; box-shadow: 0 6px 18px rgba(0,0,0,0.18); transition:transform 140ms ease,box-shadow 140ms ease; }
+    .auth-btn:hover{ transform:translateY(-3px); box-shadow:0 10px 28px rgba(0,0,0,0.25); }
+
+    /* Login Required Card */
+    .login-required-card {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: linear-gradient(135deg, var(--accent-1), var(--accent-2), var(--accent-3));
+      border-radius: var(--card-radius);
+      padding: 30px;
+      box-shadow: 0 22px 64px rgba(0,0,0,0.7);
+      color: var(--text);
+      border: 1px solid rgba(255,255,255,0.1);
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
+      z-index: 200;
+      display: none;
+    }
+    
+    .login-required-card h3 {
+      font-family: "Playfair Display", serif;
+      color: var(--accent-3);
+      margin-top: 0;
+      margin-bottom: 15px;
+    }
+    
+    .login-required-card p {
+      margin-bottom: 20px;
+      opacity: 0.9;
+    }
+    
+    .login-required-card .actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+    }
+    
+    .login-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.55);
+      z-index: 199;
+      display: none;
+    }
+
+    /* hamburger */
+    .hamburger{ display:none; background:transparent; border:2px solid rgba(255,255,255,0.06); padding:8px; border-radius:10px; cursor:pointer; }
+    .hamburger .bar{ display:block; width:22px; height:2px; background:var(--text); margin:4px 0; transition:transform 200ms,opacity 200ms; }
+
+    .container{ max-width:1100px; margin:26px auto; padding:0 18px 80px; }
+
+    .hero{ text-align:center; padding:28px 8px 8px; margin-top:6px; }
+    .hero h1{ font-family:"Playfair Display",serif; font-size:30px; margin-bottom:6px; color:#fff; }
+    .hero p{ max-width:900px; margin:0 auto 8px; opacity:0.95; }
+
+    /* Survey grid */
+    .survey-grid{
+      display:grid;
+      grid-template-columns: repeat(2,1fr);
+      gap:18px;
+      margin-top:18px;
+    }
+
+    .survey-card{
+      background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+      border-radius: var(--card-radius);
+      padding:14px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.22);
+      transition: transform 220ms cubic-bezier(.2,.9,.2,1), box-shadow 220ms;
+      border: 1px solid rgba(255,255,255,0.04);
+      text-align: center;
+    }
+    .survey-card:hover{ transform: translateY(-6px); box-shadow: 0 20px 44px rgba(0,0,0,0.28); }
+    .survey-card h3{ font-family:"Playfair Display",serif; margin:0 0 8px; color:var(--accent-3); font-size:18px; }
+    .survey-card p{ margin:0 0 10px; opacity:0.95; }
+
+    .options{ display:flex; gap:8px; flex-wrap:wrap; justify-content: center; }
+    .option{
+      background: rgba(0,0,0,0.22);
+      padding:10px 12px;
+      border-radius:12px;
+      cursor:pointer;
+      user-select:none;
+      transition:transform 140ms, background 140ms, box-shadow 140ms;
+      border:1px solid rgba(255,255,255,0.03);
+      font-weight:600;
+    }
+    .option.selected{
+      background: linear-gradient(90deg,var(--accent-2),var(--accent-1));
+      box-shadow: 0 10px 20px rgba(0,0,0,0.25);
+      transform:translateY(-4px) scale(1.02);
+      color:#fff;
+    }
+
+    .select, input[type="date"], input[type="number"]{
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      padding:9px 12px;
+      color:var(--text);
+      border-radius:10px;
+      width:100%;
+    }
+
+    .control-row{ display:flex; gap:12px; align-items:center; margin-top:8px; justify-content: center; }
+
+    .actions{ display:flex; gap:10px; margin-top:12px; justify-content:center; }
+    .btn-primary{ background:linear-gradient(90deg,var(--accent-3),#fff); color:#08121a; border:none; padding:10px 16px; border-radius:12px; font-weight:700; cursor:pointer; }
+    .btn-ghost{ background:transparent; border:1px solid rgba(255,255,255,0.12); padding:10px 14px; border-radius:12px; color:var(--text); cursor:pointer; }
+
+    /* Month grid (visible card) */
+    .month-grid{ display:grid; grid-template-columns: repeat(4,1fr); gap:8px; margin-top:8px; }
+    .month-item{ padding:8px 10px; border-radius:10px; background: rgba(0,0,0,0.18); text-align:center; cursor:pointer; font-weight:600; border:1px solid rgba(255,255,255,0.03); }
+    .month-item.sel{ background: linear-gradient(90deg,var(--accent-2),var(--accent-1)); color:#fff; transform:translateY(-3px); box-shadow:0 10px 18px rgba(0,0,0,0.25); }
+
+    /* results */
+    .results{ margin-top:20px; display:grid; grid-template-columns: repeat(3,1fr); gap:14px; }
+    .result-card{
+      background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+      border-radius:12px;
+      overflow:hidden;
+      box-shadow:0 10px 26px rgba(0,0,0,0.25);
+      display:flex; flex-direction:column;
+    }
+    .result-card img{ width:100%; height:150px; object-fit:cover; display:block; }
+    .result-body{ padding:12px; flex:1; display:flex; flex-direction:column; gap:8px; }
+    .result-title{ font-family:"Playfair Display",serif; font-size:18px; color:var(--accent-3); text-align: center; }
+    .result-desc{ font-size:13px; opacity:0.95; flex:1; }
+    .result-meta{ font-size:13px; color:#e9e9e9; text-align: center; }
+
+    .result-actions{ display:flex; gap:8px; justify-content:center; margin-top:8px; }
+    .plan-btn{ background: linear-gradient(90deg,var(--accent-2),var(--accent-1)); border:none; padding:8px 12px; border-radius:10px; color:#fff; cursor:pointer; font-weight:700; }
+    .save-btn{ background:transparent; border:1px solid rgba(255,255,255,0.12); color:var(--text); padding:8px 12px;border-radius:10px; cursor:pointer; }
+
+    /* modal wizard - CHANGED TO SOLID GRADIENT */
+    .modal-backdrop{ position:fixed; inset:0; background: rgba(0,0,0,0.55); display:none; align-items:center; justify-content:center; z-index:120; padding:18px; }
+    .modal{ 
+      width:100%; 
+      max-width:720px; 
+      background: linear-gradient(135deg, #004e64, #007f5f, #d4af37); /* SOLID GRADIENT */
+      border-radius:20px; 
+      padding:18px; 
+      box-shadow: 0 22px 64px rgba(0,0,0,0.7); 
+      color:var(--text); 
+      border:1px solid rgba(255,255,255,0.1);
+    }
+    .modal h2{ margin:0 0 8px; font-family:"Playfair Display",serif; color:var(--accent-3); }
+    .summary{ margin-top:12px; padding:12px; background: rgba(0,0,0,0.2); border-radius:10px; border:1px solid rgba(255,255,255,0.03); }
+    .close-x{ background:transparent; border:none; color:var(--text); font-size:20px; cursor:pointer; float:right; }
+
+    /* bookings viewer */
+    .bookings-panel{ background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01)); border-radius:12px; padding:12px; margin-top:12px; box-shadow:0 8px 24px rgba(0,0,0,0.2); }
+
+    /* Phone number input styling - FIXED TO ALLOW FULL NUMBERS */
+    .phone-input-container {
+      display: flex;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-top: 8px;
+      transition: all 0.3s ease;
+    }
+    
+    .phone-input-container:focus-within {
+      border-color: var(--accent-3);
+      box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.2);
+    }
+    
+    .country-code {
+      background: rgba(0,0,0,0.22);
+      padding: 12px 15px;
+      border-right: 1px solid rgba(255,255,255,0.06);
+      color: var(--text);
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+    }
+    
+    .phone-input {
+      border: none;
+      padding: 12px 15px;
+      font-size: 16px;
+      width: 100%;
+      outline: none;
+      background: rgba(255,255,255,0.03);
+      color: var(--text);
+    }
+    
+    .phone-input::placeholder {
+      color: rgba(255,255,255,0.5);
+    }
+    
+    .phone-hint {
+      font-size: 13px;
+      color: rgba(255,255,255,0.7);
+      margin-top: 6px;
+    }
+    
+    /* Email input styling */
+    .email-input-container {
+      margin-top: 15px;
+    }
+    
+    .email-input {
+      width: 100%;
+      padding: 12px 15px;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 10px;
+      background: rgba(255,255,255,0.03);
+      color: var(--text);
+      font-size: 16px;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+    
+    .email-input:focus {
+      border-color: var(--accent-3);
+      box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.2);
+    }
+    
+    .email-input::placeholder {
+      color: rgba(255,255,255,0.5);
+    }
+    
+    .email-validation {
+      font-size: 13px;
+      margin-top: 6px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    .email-valid {
+      color: #4ade80;
+    }
+    
+    .email-invalid {
+      color: #f87171;
+    }
+    
+    .payment-modal {
+      max-width: 500px;
+      background: linear-gradient(135deg, #004e64, #007f5f, #d4af37); /* SOLID GRADIENT */
+    }
+    
+    .payment-status {
+      background: rgba(0,0,0,0.2);
+      border-radius: 10px;
+      padding: 15px;
+      margin-top: 15px;
+      text-align: center;
+      display: none;
+    }
+    
+    .payment-success {
+      background: rgba(0, 128, 0, 0.2);
+      border: 1px solid rgba(0, 255, 0, 0.3);
+    }
+    
+    .payment-error {
+      background: rgba(255, 0, 0, 0.2);
+      border: 1px solid rgba(255, 0, 0, 0.3);
+    }
+    
+    .payment-processing {
+      background: rgba(255, 165, 0, 0.2);
+      border: 1px solid rgba(255, 165, 0, 0.3);
+    }
+
+    /* responsive */
+    @media (max-width:1000px){ .survey-grid{ grid-template-columns:1fr; } .results{ grid-template-columns: 1fr 1fr } .month-grid{ grid-template-columns: repeat(3,1fr);} }
+    @media (max-width:700px){ nav.nav{ display:none } .hamburger{ display:block } .results{ grid-template-columns:1fr } .month-grid{ grid-template-columns: repeat(2,1fr);} }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <header class="navbar">
+    <div class="logo">VIVA UTALII</div>
+
+    <nav class="nav" aria-label="Main navigation">
+      <ul>
+        <li><a href="index.html" class="nav-link">Home</a></li>
+        <li><a href="destinations.html" class="nav-link">Destinations</a></li>
+        <li><a href="recommendations.html" class="nav-link active">Recommendations</a></li>
+        <li><a href="about.html" class="nav-link">About</a></li>
+        <li><a href="contact.html" class="nav-link">Contact</a></li>
+      </ul>
+    </nav>
+
+    <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+      <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+    </button>
+
+    <div class="auth-wrap">
+      <button class="auth-btn" id="viewBookingsBtn">View Bookings</button>
+      <button class="auth-btn" id="startExplore">Start Exploring</button>
+    </div>
+  </header>
+
+  <!-- Login Required Card -->
+  <div class="login-overlay" id="loginOverlay"></div>
+  <div class="login-required-card" id="loginRequiredCard">
+    <h3>Login Required</h3>
+    <p>To access this feature, you need to be logged in. Please sign in or create an account to continue.</p>
+    <div class="actions">
+      <button class="btn-ghost" id="closeLoginCard">Maybe Later</button>
+      <button class="btn-primary" id="goToLogin">Sign In</button>
+    </div>
+  </div>
+
+  <!-- mobile menu container -->
+  <div id="mobileMenu" style="display:none; position:sticky; top:64px; z-index:50;"></div>
+
+  <main class="container">
+    <section class="hero">
+      <h1>Find a travel plan that fits you</h1>
+      <p>Answer a few quick preferences and we'll recommend destinations and a ready-to-book plan. Use "Plan My Trip" to build a mini itinerary — paying the 10% deposit requires signing in.</p>
+    </section>
+
+    <!-- SURVEY -->
+    <section class="survey-grid" aria-label="survey">
+      <!-- Trip type -->
+      <div class="survey-card">
+        <h3>Trip type</h3>
+        <p>Pick the style of trip you want</p>
+        <div class="options" data-name="tripType">
+          <div class="option" data-value="beach">Beach</div>
+          <div class="option" data-value="safari">Safari</div>
+          <div class="option" data-value="city">City & Culture</div>
+          <div class="option" data-value="adventure">Adventure</div>
+        </div>
+      </div>
+
+      <!-- Interests -->
+      <div class="survey-card">
+        <h3>Interests</h3>
+        <p>What would you like to do?</p>
+        <div class="options" data-name="interest">
+          <div class="option" data-value="wildlife">Wildlife</div>
+          <div class="option" data-value="relax">Relaxation</div>
+          <div class="option" data-value="culture">Culture</div>
+          <div class="option" data-value="water">Water Sports</div>
+          <div class="option" data-value="hiking">Hiking</div>
+          <div class="option" data-value="photography">Photography</div>
+        </div>
+      </div>
+
+      <!-- Budget -->
+      <div class="survey-card">
+        <h3>Budget (per person)</h3>
+        <p>Estimated budget per person in <strong>KSh</strong></p>
+        <div style="display:flex; gap:10px; align-items:center; justify-content: center;">
+          <input id="budgetInput" class="select" type="number" min="1000" value="20000" />
+        </div>
+      </div>
+
+      <!-- Days -->
+      <div class="survey-card">
+        <h3>Duration</h3>
+        <p>How many days?</p>
+        <div class="control-row">
+          <input id="daysInput" type="range" min="1" max="14" value="4" />
+          <div style="min-width:58px; text-align:center;"><strong id="daysVal">4d</strong></div>
+        </div>
+      </div>
+
+      <!-- Travel pace -->
+      <div class="survey-card">
+        <h3>Travel pace</h3>
+        <p>How relaxed or packed should it be?</p>
+        <div class="options" data-name="pace">
+          <div class="option" data-value="relaxed">Relaxed</div>
+          <div class="option" data-value="balanced">Balanced</div>
+          <div class="option" data-value="fast">Fast-paced</div>
+        </div>
+      </div>
+
+      <!-- Group type -->
+      <div class="survey-card">
+        <h3>Group type</h3>
+        <p>Who are you traveling with?</p>
+        <div class="options" data-name="group">
+          <div class="option" data-value="solo">Solo</div>
+          <div class="option" data-value="couple">Couple</div>
+          <div class="option" data-value="family">Family</div>
+          <div class="option" data-value="friends">Friends</div>
+        </div>
+      </div>
+
+      <!-- Accommodation -->
+      <div class="survey-card">
+        <h3>Accommodation</h3>
+        <p>Preferred level</p>
+        <div class="options" data-name="accPref">
+          <div class="option" data-value="budget">Budget</div>
+          <div class="option selected" data-value="standard">Standard</div>
+          <div class="option" data-value="luxury">Luxury</div>
+        </div>
+      </div>
+
+      <!-- Accessibility or special needs -->
+      <div class="survey-card">
+        <h3>Accessibility / Notes</h3>
+        <p>Any special requirement? (optional)</p>
+        <input id="notes" class="select" type="text" placeholder="e.g. wheelchair access, dietary needs" />
+      </div>
+
+      <!-- Preferred month (visible month card) -->
+      <div class="survey-card">
+        <h3>Preferred month</h3>
+        <p>Pick a month (optional)</p>
+        <div class="month-grid" id="monthGrid">
+          <div class="month-item" data-val="any">Anytime</div>
+          <div class="month-item" data-val="jan">Jan</div>
+          <div class="month-item" data-val="feb">Feb</div>
+          <div class="month-item" data-val="mar">Mar</div>
+          <div class="month-item" data-val="apr">Apr</div>
+          <div class="month-item" data-val="may">May</div>
+          <div class="month-item" data-val="jun">Jun</div>
+          <div class="month-item" data-val="jul">Jul</div>
+          <div class="month-item" data-val="aug">Aug</div>
+          <div class="month-item" data-val="sep">Sep</div>
+          <div class="month-item" data-val="oct">Oct</div>
+          <div class="month-item" data-val="nov">Nov</div>
+          <div class="month-item" data-val="dec">Dec</div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="survey-card" style="display:flex;flex-direction:column;justify-content:center;align-items:center;">
+        <h3>Get Recommendations</h3>
+        <p>Click to see tailored suggestions</p>
+        <div class="actions" style="justify-content:center;width:100%">
+          <button class="btn-ghost" id="resetBtn">Reset</button>
+          <button class="btn-primary" id="recommendBtn">Recommend</button>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- RESULTS -->
+    <section id="resultsSection" style="display:none">
+      <h2 style="margin-top:18px; font-family:'Playfair Display',serif; color:var(--accent-3); text-align: center;">Recommended for you</h2>
+      <div class="results" id="resultsGrid"></div>
+
+      <!-- bookings quick viewer -->
+      <div id="bookingsPanel" class="bookings-panel" style="display:none; margin-top:16px;">
+        <h3 style="margin:0 0 8px; text-align: center;">Your saved bookings</h3>
+        <div id="bookingsList"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal (Plan My Trip wizard) -->
+  <div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true">
+    <div class="modal" role="document" id="wizardModal">
+      <button class="close-x" id="closeModal" title="Close">&times;</button>
+      <h2 id="modalDest">Plan Trip</h2>
+
+      <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:10px">
+        <div style="flex:1; min-width:160px">
+          <label>Arrival date</label>
+          <input id="arriveDate" type="date" class="select" />
+        </div>
+        <div style="flex:1; min-width:160px">
+          <label>Departure date</label>
+          <input id="departDate" type="date" class="select" />
+        </div>
+        <div style="flex:1; min-width:120px">
+          <label>Travelers</label>
+          <input id="travellers" type="number" min="1" value="2" />
+        </div>
+        <div style="flex:1; min-width:160px">
+          <label>Accommodation</label>
+          <select id="accTier" class="select">
+            <option value="budget">Budget</option>
+            <option value="standard" selected>Standard</option>
+            <option value="luxury">Luxury</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="summary" id="costSummary">
+        <strong>Summary (values in KSh)</strong>
+        <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:8px; align-items:center">
+          <div style="min-width:220px">Destination: <span id="sDest">—</span></div>
+          <div>Days: <span id="sDays">0</span></div>
+          <div>Per person (base): KSh <span id="sBase">0</span></div>
+          <div>Accommodation multiplier: <span id="sAccMult">1.0</span>x</div>
+          <div>Total cost: KSh <span id="sTotal">0</span></div>
+          <div>Deposit (10%): KSh <span id="sDeposit">0</span></div>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:12px; margin-top:12px; justify-content:flex-end;">
+        <button class="btn-ghost" id="savePlanBtn">Save Plan</button>
+        <button class="btn-primary" id="payDepositBtn">Pay 10% Deposit</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payment Modal with Phone Input -->
+  <div class="modal-backdrop" id="paymentModalBackdrop" role="dialog" aria-modal="true" style="display:none;">
+    <div class="modal payment-modal" role="document">
+      <button class="close-x" id="closePaymentModal" title="Close">&times;</button>
+      <h2>Complete Payment</h2>
+      
+      <div class="summary">
+        <strong>Payment Details</strong>
+        <div style="margin-top:10px;">
+          <div>Destination: <span id="paymentDest">—</span></div>
+          <div>Deposit Amount: KSh <span id="paymentAmount">0</span></div>
+        </div>
+      </div>
+      
+      <div style="margin-top:15px;">
+        <label for="customerEmail">Email Address *</label>
+        <input type="email" id="customerEmail" class="email-input" placeholder="your.email@example.com" required>
+        <div class="email-validation" id="emailValidation">
+          <span id="emailStatusIcon">⏺</span>
+          <span id="emailStatusText">Enter a valid email address</span>
+        </div>
+      </div>
+      
+      <div style="margin-top:15px;">
+        <label for="phoneNumber">Enter your M-Pesa phone number</label>
+        <div class="phone-input-container">
+          <div class="country-code">+254</div>
+          <input type="tel" id="phoneNumber" class="phone-input" placeholder="7XX XXX XXX" maxlength="12" required>
+        </div>
+        <p class="phone-hint">Enter your 9-digit Safaricom number without the country code</p>
+      </div>
+      
+      <div class="payment-status" id="paymentStatus">
+        <div id="paymentMessage">Processing your payment...</div>
+      </div>
+      
+      <div style="display:flex; gap:12px; margin-top:20px; justify-content:flex-end;">
+        <button class="btn-ghost" id="cancelPaymentBtn">Cancel</button>
+        <button class="btn-primary" id="confirmPaymentBtn" disabled>Confirm Payment</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- EmailJS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+  <script>
+    // Initialize EmailJS
+    (function() {
+      emailjs.init("hzPyBO0I5CI9RTIyY");
+    })();
+  </script>
+
+  <script>
+    /**************************************************************************/
+    /* Backend URL Configuration - FIXED                                     */
+    /**************************************************************************/
+    const BACKEND_URL = 'http://127.0.0.1:5000';
+    console.log(`🔗 Backend URL: ${BACKEND_URL}`);
+
+    /**************************************************************************/
+    /* Data & algorithm (logical scoring)                                      */
+    /**************************************************************************/
+    const DESTINATIONS = [
+      // base = estimated per person per day in KSh
+      { id:'diani', name:'Diani Beach', tags:['beach','relax','water'], base:12000, img:'images/diani1.avif', desc: 'White sand beaches and water sports.' , bestMonths:['dec','jan','feb','mar']},
+      { id:'maasai', name:'Maasai Mara', tags:['safari','wildlife','adventure'], base:18000, img:'images/mm3.avif', desc:'Great Migration & wildlife safaris.' , bestMonths:['jul','aug','sep','oct']},
+      { id:'amboseli', name:'Amboseli', tags:['safari','wildlife','culture'], base:15000, img:'images/amboseli1.avif', desc:'Elephants and Kilimanjaro views.' , bestMonths:['jun','jul','aug','sep']},
+      { id:'nairobi', name:'Nairobi City', tags:['city','culture'], base:9000, img:'images/nnp2.avif', desc:'Museums, food and city life.' , bestMonths:['any']},
+      { id:'mountkenya', name:'Mount Kenya', tags:['adventure','nature','hiking'], base:13000, img:'images/mk1.jpg', desc:'Hiking and mountain scenery.' , bestMonths:['jun','jul','aug','sep'] }
+    ];
+
+    /**************************************************************************/
+    /* Improved Login Detection System                                        */
+    /**************************************************************************/
+    async function checkLogin(){
+      console.log("Checking login status...");
+      
+      // Method 1: Check localStorage for login status
+      const localStorageLogin = localStorage.getItem('vua_logged_in');
+      const localStorageUser = localStorage.getItem('vua_client_user');
+      
+      if (localStorageLogin === 'true' || localStorageUser) {
+        console.log("User logged in via localStorage");
+        return true;
+      }
+      
+      // Method 2: Check sessionStorage
+      const sessionStorageLogin = sessionStorage.getItem('vua_logged_in');
+      if (sessionStorageLogin === 'true') {
+        console.log("User logged in via sessionStorage");
+        return true;
+      }
+      
+      // Method 3: Check backend API
+      try {
+        console.log("Trying backend login check...");
+        const res = await fetch(`${BACKEND_URL}/check_login`, { 
+          credentials: 'include', 
+          cache: 'no-cache',
+          headers: {
+            'Accept': 'application/json',
+          }
+        });
+        
+        if (res.ok) {
+          const data = await res.json();
+          console.log("Backend login response:", data);
+          
+          if (data.logged_in) {
+            localStorage.setItem('vua_logged_in', 'true');
+            if (data.user) {
+              localStorage.setItem('vua_client_user', JSON.stringify(data.user));
+            }
+          }
+          
+          return !!data.logged_in;
+        } else {
+          console.warn("Backend login check failed with status:", res.status);
+        }
+      } catch (error) {
+        console.warn("Backend login check failed:", error.message);
+      }
+      
+      console.log("User not logged in");
+      return false;
+    }
+
+    // Update header based on login status
+    async function updateHeaderForLoginStatus() {
+      const isLoggedIn = await checkLogin();
+      const startExploreBtn = document.getElementById('startExplore');
+      const viewBookingsBtn = document.getElementById('viewBookingsBtn');
+      
+      if (isLoggedIn) {
+        startExploreBtn.textContent = "Start Exploring";
+        viewBookingsBtn.style.display = 'block';
+        console.log("Header updated: User is logged in");
+      } else {
+        startExploreBtn.textContent = "Start Exploring";
+        viewBookingsBtn.style.display = 'block';
+        console.log("Header updated: User is not logged in");
+      }
+    }
+
+    /**************************************************************************/
+    /* Survey controls UI                                                      */
+    /**************************************************************************/
+    document.querySelectorAll('.options').forEach(optWrap=>{
+      optWrap.querySelectorAll('.option').forEach(el=>{
+        el.addEventListener('click', ()=> {
+          el.closest('.options').querySelectorAll('.option').forEach(o=>o.classList.remove('selected'));
+          el.classList.add('selected');
+        });
+      });
+    });
+
+    const daysInput = document.getElementById('daysInput');
+    const daysVal = document.getElementById('daysVal');
+    daysInput.addEventListener('input', ()=> daysVal.textContent = daysInput.value + 'd');
+
+    // month grid behavior
+    const monthGrid = document.getElementById('monthGrid');
+    monthGrid.querySelectorAll('.month-item').forEach(mi=>{
+      mi.addEventListener('click', ()=> {
+        monthGrid.querySelectorAll('.month-item').forEach(x=>x.classList.remove('sel'));
+        mi.classList.add('sel');
+      });
+    });
+    monthGrid.querySelector('[data-val="any"]').classList.add('sel');
+
+    document.getElementById('resetBtn').addEventListener('click', ()=>{
+      document.querySelectorAll('.options .option').forEach(o=>o.classList.remove('selected'));
+      document.getElementById('budgetInput').value = 20000;
+      daysInput.value = 4; daysVal.textContent = '4d';
+      monthGrid.querySelectorAll('.month-item').forEach(x=>x.classList.remove('sel'));
+      monthGrid.querySelector('[data-val="any"]').classList.add('sel');
+      document.getElementById('notes').value = '';
+      document.querySelector('[data-name="accPref"] .option[data-value="standard"]').classList.add('selected');
+    });
+
+    /**************************************************************************/
+    /* Recommend button logic                                                  */
+    /**************************************************************************/
+    document.getElementById('recommendBtn').addEventListener('click', ()=>{
+      const tripTypeEl = document.querySelector('[data-name="tripType"] .option.selected');
+      const interestEl = document.querySelector('[data-name="interest"] .option.selected');
+      const paceEl = document.querySelector('[data-name="pace"] .option.selected');
+      const groupEl = document.querySelector('[data-name="group"] .option.selected');
+      const accEl = document.querySelector('[data-name="accPref"] .option.selected');
+
+      const inputs = {
+        tripType: tripTypeEl ? tripTypeEl.dataset.value : 'beach',
+        interest: interestEl ? interestEl.dataset.value : 'relax',
+        budget: Number(document.getElementById('budgetInput').value) || 20000,
+        days: Number(daysInput.value) || 4,
+        pace: paceEl ? paceEl.dataset.value : 'balanced',
+        group: groupEl ? groupEl.dataset.value : 'couple',
+        accPref: accEl ? accEl.dataset.value : 'standard',
+        month: (monthGrid.querySelector('.month-item.sel') || {}).dataset?.val || 'any',
+        notes: document.getElementById('notes').value || '',
+        ppl: Number(document.getElementById('travellers')?.value) || 2
+      };
+
+      const recs = pickRecommendations(inputs);
+      renderResults(recs, inputs);
+      document.getElementById('resultsSection').style.display = recs.length ? 'block' : 'none';
+      setTimeout(()=> document.getElementById('resultsGrid').scrollIntoView({behavior:'smooth'}), 150);
+    });
+
+    function pickRecommendations(inputs){
+      const scored = DESTINATIONS.map(dest=>{
+        let score = 0;
+        if(dest.tags.includes(inputs.tripType)) score += 40;
+        if(dest.tags.includes(inputs.interest)) score += 30;
+        if(inputs.accPref === 'luxury') score += 5;
+        
+        const accMult = inputs.accPref === 'budget' ? 0.9 : (inputs.accPref==='luxury' ? 1.6 : 1.0);
+        const ppl = Math.max(1, inputs.ppl || 1);
+        const estTotal = dest.base * ppl * Math.max(1, inputs.days) * accMult;
+        const userBudgetTotal = inputs.budget * ppl;
+        const perPersonRequired = dest.base * Math.max(1, inputs.days) * accMult;
+        const ratio = (inputs.budget) / perPersonRequired;
+        
+        if(ratio >= 1) score += Math.min(25, 25 * Math.sqrt(ratio));
+        else if(ratio >= 0.6) score += Math.max(0, 25 * ratio);
+        else score -= 18;
+
+        if(inputs.month && inputs.month !== 'any'){
+          if(dest.bestMonths.includes(inputs.month)) score += 10;
+          else score -= 4;
+        }
+
+        if(inputs.pace === 'relaxed' && dest.tags.includes('relax')) score += 5;
+        if(inputs.pace === 'fast' && dest.tags.includes('adventure')) score += 5;
+        if(inputs.group === 'family' && dest.tags.includes('culture')) score += 3;
+
+        score = Math.round(Math.max(-50, Math.min(200, score)));
+        return {dest, score, perPersonRequired, estTotal};
+      });
+
+      const filtered = scored.filter(s => s.score > -5);
+      filtered.sort((a,b)=>b.score - a.score);
+      return filtered.slice(0,4).map(f=>f.dest);
+    }
+
+    /**************************************************************************/
+    /* Render results                                                          */
+    /**************************************************************************/
+    function renderResults(list, inputs){
+      const grid = document.getElementById('resultsGrid');
+      grid.innerHTML = '';
+      if(list.length === 0){
+        grid.innerHTML = '<p style="grid-column:1/-1; text-align:center; opacity:0.95;">No suitable destinations found — try adjusting budget, days or preferences.</p>';
+        return;
+      }
+      list.forEach(dest=>{
+        const el = document.createElement('article');
+        el.className = 'result-card';
+        el.innerHTML = `
+          <img src="${dest.img}" alt="${dest.name}">
+          <div class="result-body">
+            <div class="result-title">${dest.name}</div>
+            <div class="result-desc">${dest.desc}</div>
+            <div class="result-meta">Typical base: KSh ${numberWithCommas(dest.base)} / person / day</div>
+            <div class="result-actions">
+              <button class="plan-btn" data-id="${dest.id}">Plan My Trip</button>
+              <button class="save-btn" data-id="${dest.id}">Save</button>
+            </div>
+          </div>
+        `;
+        grid.appendChild(el);
+      });
+
+      grid.querySelectorAll('.save-btn').forEach(b=>{
+        b.addEventListener('click', ()=> {
+          const id = b.dataset.id;
+          const dest = DESTINATIONS.find(d=>d.id===id);
+          saveDestination(dest);
+          b.textContent = 'Saved';
+          setTimeout(()=> b.textContent = 'Save', 1200);
+        });
+      });
+
+      grid.querySelectorAll('.plan-btn').forEach(b=>{
+        b.addEventListener('click', ()=> {
+          const id = b.dataset.id;
+          const dest = DESTINATIONS.find(d=>d.id===id);
+          openWizard(dest);
+        });
+      });
+    }
+
+    function numberWithCommas(x){ return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
+
+    function saveDestination(dest){
+      const list = JSON.parse(localStorage.getItem('vua_wishlist')||'[]');
+      if(!list.find(x=>x.id===dest.id)) list.push(dest);
+      localStorage.setItem('vua_wishlist', JSON.stringify(list));
+      
+      checkLogin().then(loggedIn => {
+        if (loggedIn) {
+          console.log('User is logged in - would save to profile:', dest);
+        }
+      });
+    }
+
+    /**************************************************************************/
+    /* Modal / wizard logic                                                    */
+    /**************************************************************************/
+    const modalBackdrop = document.getElementById('modalBackdrop');
+    const modalDest = document.getElementById('modalDest');
+    const sDest = document.getElementById('sDest');
+    const sDays = document.getElementById('sDays');
+    const sBase = document.getElementById('sBase');
+    const sTotal = document.getElementById('sTotal');
+    const sDeposit = document.getElementById('sDeposit');
+    const sAccMult = document.getElementById('sAccMult');
+
+    const arriveDate = document.getElementById('arriveDate');
+    const departDate = document.getElementById('departDate');
+    const travellers = document.getElementById('travellers');
+    const accTier = document.getElementById('accTier');
+
+    let currentDest = null;
+
+    async function openWizard(dest){
+      currentDest = dest;
+      modalDest.textContent = `Plan Trip — ${dest.name}`;
+      sDest.textContent = dest.name;
+      sBase.textContent = numberWithCommas(dest.base);
+      const today = new Date();
+      const a = new Date(today.getTime() + 3*24*60*60*1000);
+      const d = new Date(today.getTime() + (3+4)*24*60*60*1000);
+      arriveDate.value = a.toISOString().slice(0,10);
+      departDate.value = d.toISOString().slice(0,10);
+      travellers.value = 2;
+      accTier.value = 'standard';
+      modalBackdrop.style.display = 'flex';
+      computeCosts();
+    }
+
+    document.getElementById('closeModal').addEventListener('click', ()=> modalBackdrop.style.display='none');
+
+    function computeCosts(){
+      if(!currentDest) return;
+      const base = Number(currentDest.base);
+      const a = arriveDate.value ? new Date(arriveDate.value) : null;
+      const d = departDate.value ? new Date(departDate.value) : null;
+      let days = 1;
+      if(a && d && d > a) days = Math.round((d - a)/(24*60*60*1000));
+      days = Math.max(1, days);
+      sDays.textContent = days;
+      const mult = accTier.value === 'budget' ? 0.9 : (accTier.value==='luxury' ? 1.6 : 1.0);
+      sAccMult.textContent = mult.toFixed(2);
+      const ppl = Number(travellers.value) || 1;
+      const total = Math.round(base * ppl * days * mult);
+      const deposit = Math.round(total * 0.10);
+      sBase.textContent = numberWithCommas(base);
+      sTotal.textContent = numberWithCommas(total);
+      sDeposit.textContent = numberWithCommas(deposit);
+    }
+
+    [arriveDate, departDate, travellers, accTier].forEach(el=> el.addEventListener('change', computeCosts));
+
+    document.getElementById('savePlanBtn').addEventListener('click', ()=>{
+      if(!currentDest) return alert('Select a destination first.');
+      computeCosts();
+      const entry = {
+        id: currentDest.id,
+        name: currentDest.name,
+        arrive: arriveDate.value,
+        depart: departDate.value,
+        travelers: Number(travellers.value),
+        accTier: accTier.value,
+        total: Number(sTotal.textContent.replace(/,/g,'')),
+        deposit: Number(sDeposit.textContent.replace(/,/g,'')),
+        paidDeposit: false,
+        createdAt: new Date().toISOString()
+      };
+      const plans = JSON.parse(localStorage.getItem('vua_plans') || '[]');
+      plans.push(entry);
+      localStorage.setItem('vua_plans', JSON.stringify(plans));
+      alert('Plan saved locally (Saved Plans). You can pay the deposit later after logging in.');
+    });
+
+    document.getElementById('payDepositBtn').addEventListener('click', async ()=>{
+      if(!currentDest) return alert('Select a destination first.');
+      computeCosts();
+      const logged = await checkLogin();
+      if(!logged){
+        alert('You must be logged in to pay. Redirecting to login.');
+        window.location.href = '../backend/login.html?form=login';
+        return;
+      }
+      openPaymentModal();
+    });
+
+    /**************************************************************************/
+    /* Payment Modal with Phone Input                                          */
+    /**************************************************************************/
+    const paymentModalBackdrop = document.getElementById('paymentModalBackdrop');
+    const paymentDest = document.getElementById('paymentDest');
+    const paymentAmount = document.getElementById('paymentAmount');
+    const customerEmail = document.getElementById('customerEmail');
+    const emailValidation = document.getElementById('emailValidation');
+    const emailStatusIcon = document.getElementById('emailStatusIcon');
+    const emailStatusText = document.getElementById('emailStatusText');
+    const phoneNumber = document.getElementById('phoneNumber');
+    const paymentStatus = document.getElementById('paymentStatus');
+    const paymentMessage = document.getElementById('paymentMessage');
+    const confirmPaymentBtn = document.getElementById('confirmPaymentBtn');
+    const cancelPaymentBtn = document.getElementById('cancelPaymentBtn');
+    const closePaymentModal = document.getElementById('closePaymentModal');
+
+    function validateEmail(email) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(email);
+    }
+
+    customerEmail.addEventListener('input', function() {
+      const email = customerEmail.value.trim();
+      const isValid = validateEmail(email);
+      
+      if (email === '') {
+        emailStatusIcon.textContent = '⏺';
+        emailStatusText.textContent = 'Enter a valid email address';
+        emailValidation.className = 'email-validation';
+        confirmPaymentBtn.disabled = true;
+      } else if (isValid) {
+        emailStatusIcon.textContent = '✅';
+        emailStatusText.textContent = 'Valid email address';
+        emailValidation.className = 'email-validation email-valid';
+        confirmPaymentBtn.disabled = false;
+      } else {
+        emailStatusIcon.textContent = '❌';
+        emailStatusText.textContent = 'Invalid email format';
+        emailValidation.className = 'email-validation email-invalid';
+        confirmPaymentBtn.disabled = true;
+      }
+    });
+
+    function openPaymentModal() {
+      paymentDest.textContent = currentDest.name;
+      paymentAmount.textContent = sDeposit.textContent;
+      customerEmail.value = '';
+      phoneNumber.value = '';
+      paymentStatus.style.display = 'none';
+      emailStatusIcon.textContent = '⏺';
+      emailStatusText.textContent = 'Enter a valid email address';
+      emailValidation.className = 'email-validation';
+      confirmPaymentBtn.disabled = true;
+      paymentModalBackdrop.style.display = 'flex';
+    }
+
+    function closePaymentModalFunc() {
+      paymentModalBackdrop.style.display = 'none';
+    }
+
+    closePaymentModal.addEventListener('click', closePaymentModalFunc);
+    cancelPaymentBtn.addEventListener('click', closePaymentModalFunc);
+
+    phoneNumber.addEventListener('input', function(e) {
+      let value = e.target.value.replace(/\D/g, '');
+      if (value.length > 9) {
+        value = value.substring(0, 9);
+      }
+      let displayValue = value;
+      if (displayValue.length > 6) {
+        displayValue = `${displayValue.substring(0,3)} ${displayValue.substring(3,6)} ${displayValue.substring(6)}`;
+      } else if (displayValue.length > 3) {
+        displayValue = `${displayValue.substring(0,3)} ${displayValue.substring(3)}`;
+      }
+      e.target.value = displayValue;
+    });
+
+    function getActualPhoneDigits() {
+      return phoneNumber.value.replace(/\D/g, '');
+    }
+
+    confirmPaymentBtn.addEventListener('click', async function() {
+      const email = customerEmail.value.trim();
+      const rawPhone = getActualPhoneDigits();
+      
+      if (!validateEmail(email)) {
+        alert('Please enter a valid email address');
+        customerEmail.focus();
+        return;
+      }
+      
+      if (rawPhone.length !== 9) {
+        alert('Please enter a valid 9-digit Safaricom number');
+        phoneNumber.focus();
+        return;
+      }
+
+      const fullPhoneNumber = `254${rawPhone}`;
+      const depositAmount = Number(sDeposit.textContent.replace(/,/g,''));
+      
+      confirmPaymentBtn.disabled = true;
+      cancelPaymentBtn.disabled = true;
+      
+      paymentStatus.className = 'payment-status payment-processing';
+      paymentMessage.textContent = 'Processing your payment and sending confirmation emails...';
+      paymentStatus.style.display = 'block';
+
+      try {
+        console.log('🔄 Payment prompt sent - triggering confirmation emails...');
+        const emailSuccess = await sendConfirmationEmails(email, fullPhoneNumber);
+        
+        if (emailSuccess) {
+          paymentMessage.textContent = '✅ Emails sent! Processing payment...';
+          console.log('✅ Both confirmation emails sent successfully!');
+        } else {
+          paymentMessage.textContent = '⚠️ Emails failed, but processing payment...';
+          console.log('⚠️ Email sending failed but continuing with payment');
+        }
+
+        const response = await initiateMpesaPayment(fullPhoneNumber, depositAmount, currentDest.name);
+        
+        if (response.success) {
+          paymentStatus.className = 'payment-status payment-success';
+          paymentMessage.textContent = 'Payment initiated successfully! Please check your phone to complete the transaction.';
+          
+          const booking = {
+            id: currentDest.id,
+            destName: currentDest.name,
+            arrive: arriveDate.value,
+            depart: departDate.value,
+            travelers: Number(travellers.value),
+            accTier: accTier.value,
+            total: Number(sTotal.textContent.replace(/,/g,'')),
+            deposit: depositAmount,
+            paidDeposit: true,
+            email: email,
+            phone: fullPhoneNumber,
+            time: new Date().toISOString(),
+            mpesaReference: response.checkout_request_id || 'Pending',
+            status: 'confirmed'
+          };
+          
+          const bookings = JSON.parse(localStorage.getItem('vua_bookings')||'[]');
+          bookings.push(booking);
+          localStorage.setItem('vua_bookings', JSON.stringify(bookings));
+          
+          setTimeout(() => {
+            closePaymentModalFunc();
+            modalBackdrop.style.display = 'none';
+            renderBookings();
+          }, 3000);
+        } else {
+          paymentStatus.className = 'payment-status payment-error';
+          paymentMessage.textContent = `Payment failed: ${response.error || 'Unknown error'}`;
+          confirmPaymentBtn.disabled = false;
+          cancelPaymentBtn.disabled = false;
+        }
+      } catch (error) {
+        console.error('Payment error:', error);
+        paymentStatus.className = 'payment-status payment-error';
+        paymentMessage.textContent = 'Payment failed: Network error. Please try again.';
+        confirmPaymentBtn.disabled = false;
+        cancelPaymentBtn.disabled = false;
+      }
+    });
+
+    /**************************************************************************/
+    /* EmailJS Integration for Confirmation Emails                           */
+    /**************************************************************************/
+    async function sendConfirmationEmails(email, phone) {
+      const tripData = getTripData();
+      
+      console.log('📧 Preparing to send emails to: ' + email);
+      
+      if (!email || !validateEmail(email)) {
+        console.log('❌ Invalid email address: ' + email);
+        return false;
+      }
+
+      try {
+        console.log('🔄 Starting email sending process...');
+        
+        const customerTemplateParams = {
+          email: email,
+          destination: tripData.destination || 'Not specified',
+          start_date: tripData.startDate || 'Not specified',
+          end_date: tripData.endDate || 'Not specified',
+          nights: tripData.nights || 0,
+          adults: tripData.adults || 0,
+          children: tripData.children || 0,
+          accommodation: tripData.accommodation || 'Not specified',
+          transport: tripData.transport || 'Not specified',
+          town: tripData.town || 'Not specified',
+          city: tripData.city || 'Not specified',
+          total_cost: tripData.totalCost.toLocaleString(),
+          booking_fee: tripData.bookingFee.toLocaleString(),
+          balance_due: (tripData.totalCost - tripData.bookingFee).toLocaleString()
+        };
+
+        console.log('📤 Sending CUSTOMER email with template: template_3w88v82');
+        
+        const customerResult = await emailjs.send(
+          'service_dwnwzu9',
+          'template_3w88v82',
+          customerTemplateParams
+        );
+        
+        console.log('✅ CUSTOMER email sent successfully. Status: ' + customerResult.status);
+        
+        const adminTemplateParams = {
+          customer_email: email,
+          customer_phone: phone,
+          destination: tripData.destination || 'Not specified',
+          start_date: tripData.startDate || 'Not specified',
+          end_date: tripData.endDate || 'Not specified',
+          nights: tripData.nights || 0,
+          adults: tripData.adults || 0,
+          children: tripData.children || 0,
+          accommodation: tripData.accommodation || 'Not specified',
+          transport: tripData.transport || 'Not specified',
+          town: tripData.town || 'Not specified',
+          city: tripData.city || 'Not specified',
+          total_cost: tripData.totalCost.toLocaleString(),
+          booking_fee: tripData.bookingFee.toLocaleString(),
+          balance_due: (tripData.totalCost - tripData.bookingFee).toLocaleString(),
+          booking_time: new Date().toLocaleString()
+        };
+
+        console.log('📤 Sending ADMIN email with template: template_1800cq3');
+        
+        const adminResult = await emailjs.send(
+          'service_dwnwzu9',
+          'template_1800cq3',
+          adminTemplateParams
+        );
+        
+        console.log('✅ ADMIN email sent successfully. Status: ' + adminResult.status);
+        
+        return true;
+        
+      } catch (error) {
+        console.log('❌ FAILED to send emails');
+        console.log('Error status: ' + error.status);
+        console.log('Error text: ' + error.text);
+        return false;
+      }
+    }
+
+    function getTripData() {
+      const base = Number(currentDest.base);
+      const a = arriveDate.value ? new Date(arriveDate.value) : null;
+      const d = departDate.value ? new Date(departDate.value) : null;
+      let days = 1;
+      if(a && d && d > a) days = Math.round((d - a)/(24*60*60*1000));
+      days = Math.max(1, days);
+      const mult = accTier.value === 'budget' ? 0.9 : (accTier.value==='luxury' ? 1.6 : 1.0);
+      const ppl = Number(travellers.value) || 1;
+      const total = Math.round(base * ppl * days * mult);
+      const deposit = Math.round(total * 0.10);
+
+      return {
+        destination: currentDest.name,
+        startDate: arriveDate.value,
+        endDate: departDate.value,
+        nights: days,
+        adults: ppl,
+        children: 0,
+        accommodation: accTier.value,
+        transport: 'Not specified',
+        town: 'Not specified',
+        city: 'Not specified',
+        totalCost: total,
+        bookingFee: deposit
+      };
+    }
+
+    /**************************************************************************/
+    /* M-Pesa STK Push Integration - FIXED VERSION                           */
+    /**************************************************************************/
+    async function initiateMpesaPayment(phoneNumber, amount, description) {
+      try {
+        console.log(`📞 Initiating M-Pesa payment for ${phoneNumber}, amount: ${amount}`);
+        console.log(`🔗 Making request to: ${BACKEND_URL}/api/mpesa/stkpush`);
+        
+        const response = await fetch(`${BACKEND_URL}/api/mpesa/stkpush`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            phone: phoneNumber,
+            amount: amount,
+            description: `Deposit for ${description}`,
+            account_reference: 'VIVAUTALII',
+            transaction_desc: `Travel deposit - ${description}`
+          }),
+          mode: 'cors',
+          credentials: 'include'
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('HTTP error details:', errorText);
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log('M-Pesa API response:', data);
+        return data;
+      } catch (error) {
+        console.error('Error initiating M-Pesa payment:', error);
+        throw error;
+      }
+    }
+
+    /**************************************************************************/
+    /* Login Required Card Functions                                          */
+    /**************************************************************************/
+    function showLoginRequiredCard() {
+      document.getElementById('loginRequiredCard').style.display = 'block';
+      document.getElementById('loginOverlay').style.display = 'block';
+    }
+
+    function hideLoginRequiredCard() {
+      document.getElementById('loginRequiredCard').style.display = 'none';
+      document.getElementById('loginOverlay').style.display = 'none';
+    }
+
+    document.getElementById('startExplore').addEventListener('click', async ()=>{
+      console.log("Start Exploring clicked, checking login...");
+      const ok = await checkLogin();
+      console.log("Login check result:", ok);
+      
+      if(!ok){
+        console.log("User not logged in, showing login card");
+        showLoginRequiredCard();
+        return;
+      }
+      console.log("User logged in, redirecting to plan.html");
+      window.location.href = 'plan.html';
+    });
+
+    document.getElementById('closeLoginCard').addEventListener('click', hideLoginRequiredCard);
+    document.getElementById('goToLogin').addEventListener('click', ()=>{
+      window.location.href = '../backend/login.html?form=login';
+    });
+
+    document.getElementById('loginOverlay').addEventListener('click', hideLoginRequiredCard);
+
+    /**************************************************************************/
+    /* Mobile menu behavior                                                     */
+    /**************************************************************************/
+    const hamburger = document.getElementById('hamburger');
+    const mobileMenu = document.getElementById('mobileMenu');
+    hamburger.addEventListener('click', ()=>{
+      if(mobileMenu.style.display === 'none' || mobileMenu.style.display === ''){
+        mobileMenu.style.display = 'block';
+        mobileMenu.innerHTML = `
+          <div style="background:rgba(0,0,0,0.6); border-radius:12px; padding:12px; margin:6px 12px;">
+            <a style="display:block;padding:10px 6px;border-radius:8px;color:var(--text);" href="index.html">Home</a>
+            <a style="display:block;padding:10px 6px;border-radius:8px;color:var(--text);" href="destinations.html">Destinations</a>
+            <a style="display:block;padding:10px 6px;border-radius:8px;color:var(--text);" href="recommendations.html">Recommendations</a>
+            <a style="display:block;padding:10px 6px;border-radius:8px;color:var(--text);" href="about.html">About</a>
+            <a style="display:block;padding:10px 6px;border-radius:8px;color:var(--text);" href="contact.html">Contact</a>
+            <div style="height:8px"></div>
+            <button class="auth-btn" style="width:100%; display:block" onclick="window.location.href='../backend/login.html?form=login'">Sign In</button>
+          </div>`;
+      } else {
+        mobileMenu.style.display = 'none';
+      }
+    });
+
+    /**************************************************************************/
+    /* Bookings viewer (local storage)                                         */
+    /**************************************************************************/
+    document.getElementById('viewBookingsBtn').addEventListener('click', async ()=>{
+      const loggedIn = await checkLogin();
+      if (!loggedIn) {
+        showLoginRequiredCard();
+        return;
+      }
+      
+      const panel = document.getElementById('bookingsPanel');
+      if(panel.style.display === 'block'){
+        panel.style.display = 'none';
+        return;
+      }
+      renderBookings();
+      panel.style.display = 'block';
+      panel.scrollIntoView({behavior:'smooth'});
+    });
+
+    function renderBookings(){
+      const listWrap = document.getElementById('bookingsList');
+      const bookings = JSON.parse(localStorage.getItem('vua_bookings')||'[]');
+      if(!bookings.length){
+        listWrap.innerHTML = '<p style="opacity:0.9; text-align: center;">No bookings found. Bookings appear here after successful payment.</p>';
+        return;
+      }
+      listWrap.innerHTML = bookings.map(b=>{
+        return `
+          <div style="padding:8px;border-radius:8px;background:rgba(255,255,255,0.02);margin-bottom:8px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <div>
+                <strong>${b.destName}</strong><div style="opacity:0.9">Arrive: ${b.arrive} — Depart: ${b.depart}</div>
+              </div>
+              <div style="text-align:right">
+                <div>KSh ${numberWithCommas(b.total)}</div>
+                <div style="font-size:12px;opacity:0.85">${b.paidDeposit ? 'Deposit paid' : 'Deposit pending'}</div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    /**************************************************************************/
+    /* Initialize the page                                                    */
+    /**************************************************************************/
+    (function initDefaults(){
+      const defaultTrip = document.querySelector('[data-name="tripType"] .option[data-value="beach"]');
+      if(defaultTrip) defaultTrip.classList.add('selected');
+      const defaultAcc = document.querySelector('[data-name="accPref"] .option[data-value="standard"]');
+      if(defaultAcc) defaultAcc.classList.add('selected');
+      updateHeaderForLoginStatus();
+    })();
+
+    modalBackdrop.addEventListener('click', (e)=>{ if(e.target === modalBackdrop) modalBackdrop.style.display = 'none'; });
+    paymentModalBackdrop.addEventListener('click', (e)=>{ if(e.target === paymentModalBackdrop) closePaymentModalFunc(); });
+
+    window.addEventListener('load', ()=> {
+      console.log("Page loaded, checking login status...");
+      updateHeaderForLoginStatus();
+    });
+  </script>
+</body>
+</html>

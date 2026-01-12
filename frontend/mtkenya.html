@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mt. Kenya National Park - Viva Utalii</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --gold: #d4af37;
+      --dark-0: rgba(0,0,0,0.5);
+      --yellow-menu: #ffd400; /* visible bright yellow for mobile menu/hamburger */
+    }
+
+    /* Page background */
+    html,body{
+      height:100%;
+      margin:0;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      color: #fff;
+      background: linear-gradient(135deg, #004e64, #007f5f, #d4af37);
+      background-attachment: fixed;
+      background-size: cover;
+      line-height: 1.6;
+    }
+
+    /* Header layout: three areas (left hamburger+logo, centered nav, right controls) */
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 1200;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 28px;
+      background: rgba(0,0,0,0.45);
+      backdrop-filter: blur(6px);
+      gap: 16px;
+    }
+
+    .header-left {
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+
+    .hamburger {
+      display: none; /* shown on small screens below */
+      width:44px;
+      height:44px;
+      border-radius:10px;
+      border:none;
+      background: var(--yellow-menu);
+      cursor:pointer;
+      align-items:center;
+      justify-content:center;
+      font-weight:700;
+      color:black;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+    }
+
+    .logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 26px;
+      font-weight: bold;
+      color: var(--gold);
+      letter-spacing: 2px;
+      user-select:none;
+    }
+
+    /* centered nav - absolute centering so logo and right controls don't affect it */
+    .nav-center {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      pointer-events: none; /* allow clicks only on links themselves */
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 30px;
+      pointer-events: auto;
+    }
+
+    .nav-links a {
+      color: #fff;
+      text-decoration: none;
+      font-size: 16px;
+      font-weight: 600;
+      padding: 6px 4px;
+      position: relative;
+      transition: color 0.22s ease;
+    }
+
+    /* underline effect on hover */
+    .nav-links a::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -6px;
+      height: 2px;
+      background: var(--gold);
+      transform: scaleX(0);
+      transform-origin: left center;
+      transition: transform 180ms ease;
+      border-radius:2px;
+      opacity:0.95;
+    }
+
+    .nav-links a:hover {
+      color: var(--gold);
+    }
+
+    .nav-links a:hover::after {
+      transform: scaleX(1);
+    }
+
+    /* header-right */
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .trip-btn, .cta-btn {
+      background: var(--gold);
+      color: black;
+      padding: 10px 18px;
+      border: none;
+      border-radius: 28px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform .18s ease, background .18s ease;
+    }
+
+    .trip-btn:hover, .cta-btn:hover {
+      transform: translateY(-3px);
+      background: #fff;
+    }
+
+    /* Remove the search box per request - so not included */
+
+    /* HERO */
+    .hero {
+      text-align: center;
+      padding: 100px 20px 60px;
+    }
+
+    .hero h1 {
+      font-size: 48px;
+      font-family: 'Playfair Display', serif;
+      color: #fff;
+      margin-bottom: 12px;
+    }
+
+    .hero p {
+      font-size: 18px;
+      color: #f1f1f1;
+      max-width: 750px;
+      margin: auto;
+    }
+
+    /* Section title common */
+    .section-title {
+      font-size: 34px;
+      margin-bottom: 26px;
+      font-family: 'Playfair Display', serif;
+      color: var(--gold);
+      text-align: center;
+    }
+
+    /* Experiences grid 4x2 (8 cards) */
+    .experiences {
+      padding: 40px 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .experiences-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      align-items: stretch;
+    }
+
+    .exp-card {
+      background: rgba(255,255,255,0.06);
+      border-radius: 18px;
+      overflow: hidden;
+      display:flex;
+      flex-direction:column;
+      transition: transform .25s ease, box-shadow .25s ease, background .25s ease;
+      backdrop-filter: blur(4px);
+      min-height: 260px;
+    }
+
+    .exp-card img {
+      width:100%;
+      height: 160px;
+      object-fit: cover;
+      display:block;
+    }
+
+    .exp-card .card-body {
+      padding: 16px;
+      flex:1;
+    }
+
+    .exp-card h3 {
+      margin: 8px 0 6px;
+      font-family: 'Playfair Display', serif;
+      color: var(--gold);
+      font-size: 20px;
+    }
+
+    .exp-card p {
+      margin:0;
+      color: #eef1f1;
+      font-size: 14px;
+    }
+
+    .exp-card:hover {
+      transform: translateY(-6px) scale(1.02);
+      background: rgba(255,255,255,0.12);
+      box-shadow: 0 14px 30px rgba(0,0,0,0.45);
+    }
+
+    /* Gallery 4x2 images (reuse) */
+    .gallery {
+      padding: 40px 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+      text-align:center;
+    }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+      justify-content: center;
+    }
+
+    .gallery-grid img {
+      width:100%;
+      border-radius: 14px;
+      height: 200px;
+      object-fit: cover;
+      transition: transform .22s ease, box-shadow .22s ease;
+      display:block;
+    }
+
+    .gallery-grid img:hover {
+      transform: scale(1.04);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.45);
+    }
+
+    /* 4x1 grids (single row with 4 columns) for accommodation/restaurants/transport */
+    .four-row {
+      padding: 40px 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .four-grid {
+      display:grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap:18px;
+    }
+
+    .four-card {
+      background: rgba(255,255,255,0.06);
+      border-radius: 16px;
+      overflow:hidden;
+      transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+      min-height: 160px;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .four-card img {
+      width:100%;
+      height:120px;
+      object-fit: cover;
+      display:block;
+    }
+
+    .four-card .four-body {
+      padding:12px;
+      flex:1;
+    }
+
+    .four-card h4 {
+      margin:4px 0;
+      color: var(--gold);
+      font-family: 'Playfair Display', serif;
+      font-size: 18px;
+    }
+
+    .four-card p {
+      margin:0;
+      font-size: 13px;
+      color:#eef1f1;
+    }
+
+    .four-card:hover {
+      transform: translateY(-6px);
+      background: rgba(255,255,255,0.12);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.45);
+    }
+
+    /* Map small container */
+    .map {
+      padding: 36px 20px 80px;
+      text-align:center;
+    }
+
+    .map-container {
+      border-radius: 12px;
+      overflow: hidden;
+      max-width: 900px;
+      margin: auto;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.45);
+    }
+
+    /* CTA section */
+    .cta {
+      text-align: center;
+      padding: 48px 20px;
+      background: rgba(0,0,0,0.45);
+    }
+
+    .cta h2 {
+      margin-bottom: 16px;
+      font-size: 28px;
+      color: var(--gold);
+    }
+
+    /* Floating reviews button */
+    .floating-reviews {
+      position: fixed;
+      right: 22px;
+      bottom: 26px;
+      z-index: 1400;
+      background: rgba(255,255,255,0.95);
+      color: black;
+      border-radius: 999px;
+      padding: 12px 18px;
+      font-weight:700;
+      text-decoration: none;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      box-shadow: 0 10px 26px rgba(0,0,0,0.35);
+      transition: transform .12s ease;
+    }
+
+    .floating-reviews:hover {
+      transform: translateY(-4px);
+    }
+
+    .floating-reviews span {
+      text-decoration: none; /* ensure no underline */
+    }
+
+    /* Footer */
+    .footer {
+      text-align:center;
+      padding:20px;
+      background: rgba(0,0,0,0.6);
+      font-size:14px;
+      letter-spacing:0.5px;
+    }
+
+    /* Login Required Card Styles */
+    #login-required-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+    }
+
+    #login-required-card {
+      background: linear-gradient(135deg, #004e64, #007f5f, #d4af37);
+      color: #fff;
+      padding: 30px 35px;
+      border-radius: 20px;
+      text-align: center;
+      width: 340px;
+      max-width: 90vw;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+      font-family: 'Poppins', sans-serif;
+      border: 2px solid rgba(255,255,255,0.2);
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    #login-required-card h3 {
+      margin-bottom: 15px;
+      color: var(--gold);
+      font-family: 'Playfair Display', serif;
+      font-size: 24px;
+    }
+
+    .warning-icon {
+      font-size: 48px;
+      margin-bottom: 15px;
+      color: var(--gold);
+    }
+
+    .login-card-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .login-card-btn {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+
+    .login-now-btn {
+      background: var(--gold);
+      color: #000;
+    }
+
+    .login-now-btn:hover {
+      background: #fff;
+      transform: translateY(-2px);
+    }
+
+    .close-login-card {
+      background: rgba(255,255,255,0.2);
+      color: #fff;
+    }
+
+    .close-login-card:hover {
+      background: rgba(255,255,255,0.3);
+    }
+
+    /* Mobile responsive: show yellow hamburger on left; hide center nav; open overlay menu */
+    @media (max-width: 900px){
+      .nav-center { display:none; }
+      .hamburger { display:flex; }
+      .header { padding: 10px 14px; }
+      .logo { font-size:20px; }
+      .header-right { display:none; } /* plan button moved to menu */
+      .login-card-buttons {
+        flex-direction: column;
+      }
+    }
+
+    /* Responsive grids */
+    @media (max-width: 1024px){
+      .experiences-grid { grid-template-columns: repeat(2, 1fr); }
+      .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+      .four-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 600px){
+      .experiences-grid { grid-template-columns: 1fr; }
+      .gallery-grid { grid-template-columns: 1fr; }
+      .four-grid { grid-template-columns: 1fr; }
+      .floating-reviews { right: 12px; bottom: 12px; padding: 10px 14px; }
+    }
+
+    /* Full-screen blurred menu overlay (mobile) */
+    .mobile-menu-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 2000;
+      display: none;
+      align-items:center;
+      justify-content:center;
+      backdrop-filter: blur(8px);
+      background: rgba(0,0,0,0.45);
+    }
+
+    .mobile-menu {
+      width:100%;
+      height:100%;
+      display:flex;
+      flex-direction:column;
+      gap:18px;
+      align-items:center;
+      justify-content:center;
+      color: var(--yellow-menu);
+      font-size: 26px;
+      text-align:center;
+      background: linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.55));
+      padding: 40px 20px;
+    }
+
+    .mobile-menu a {
+      color: var(--yellow-menu);
+      text-decoration: none;
+      font-weight:800;
+      letter-spacing: 1px;
+    }
+
+    .mobile-menu .close-menu {
+      position:absolute;
+      top:18px;
+      right:18px;
+      background: transparent;
+      border:2px solid var(--yellow-menu);
+      color: var(--yellow-menu);
+      padding:8px 12px;
+      border-radius:10px;
+      font-weight:700;
+      cursor:pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <div class="header-left">
+      <button class="hamburger" id="hamburger" aria-label="Open menu">☰</button>
+      <div class="logo">VIVA UTALII</div>
+    </div>
+
+    <!-- centered nav -->
+    <div class="nav-center" aria-hidden="false">
+      <nav class="nav-links" role="navigation" aria-label="Main navigation">
+        <a href="index.html">Home</a>
+        <a href="destinations.html">Destinations</a>
+        <a href="recommendations.html">Recommendations</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </div>
+
+    <div class="header-right">
+      <!-- The "Plan Your Trip" button - will redirect to plan.html only when user logged in,
+           otherwise to ../backend/login.html. Logic at bottom uses auth.js to detect login -->
+      <button class="trip-btn" id="planBtn">Plan Your Trip</button>
+    </div>
+  </header>
+
+  <!-- Mobile full-screen blurred overlay menu (hidden by default) -->
+  <div class="mobile-menu-overlay" id="mobileMenuOverlay" aria-hidden="true">
+    <div class="mobile-menu" role="menu" aria-label="Mobile full screen menu">
+      <button class="close-menu" id="closeMenu">Close</button>
+      <a href="index.html" role="menuitem">Home</a>
+      <a href="destinations.html" role="menuitem">Destinations</a>
+      <a href="recommendations.html" role="menuitem">Recommendations</a>
+      <a href="about.html" role="menuitem">About</a>
+      <a href="contact.html" role="menuitem">Contact</a>
+      <a href="#" id="mobilePlanBtn" role="menuitem">Plan Your Trip</a>
+    </div>
+  </div>
+
+  <!-- Login Required Card Overlay -->
+  <div id="login-required-overlay">
+    <div id="login-required-card">
+      <div class="warning-icon">🔒</div>
+      <h3>Login Required</h3>
+      <p>To access this feature, you need to be logged in.</p>
+      <p style="font-size: 14px; opacity: 0.9; margin-top: 10px;">Please log in or create an account to plan your trip.</p>
+      <div class="login-card-buttons">
+        <button class="login-card-btn close-login-card" id="closeLoginCard">Close</button>
+        <button class="login-card-btn login-now-btn" id="goToLoginFromCard">Login Now</button>
+      </div>
+    </div>
+  </div>
+
+  <main>
+    <section class="hero">
+      <div class="hero-content">
+        <h1>Welcome to Mt. Kenya National Park</h1>
+        <p>Explore Kenya's majestic mountain peaks, breathtaking trails, and pristine wilderness.</p>
+      </div>
+    </section>
+
+    <!-- Top experiences - 8 cards in a 4x2 grid -->
+    <section class="experiences" id="top-experiences">
+      <h2 class="section-title">Top Experiences at Mt. Kenya</h2>
+      <div class="experiences-grid">
+        <div class="exp-card">
+          <img src="images/mk1.jpg" alt="Mountain Climbing">
+          <div class="card-body">
+            <h3>Mountain Climbing</h3>
+            <p>Conquer Africa's second-highest peak and witness stunning views from above the clouds.</p>
+          </div>
+        </div>
+
+        <div class="exp-card">
+          <img src="images/mk2.jpg" alt="Hiking Trails">
+          <div class="card-body">
+            <h3>Scenic Hiking Trails</h3>
+            <p>Traverse lush forests and alpine meadows filled with unique flora and fauna.</p>
+          </div>
+        </div>
+
+        <div class="exp-card">
+          <img src="images/mk3.jpg" alt="Wildlife">
+          <div class="card-body">
+            <h3>Wildlife Encounters</h3>
+            <p>Spot elephants, buffalo, and rare mountain antelopes in their natural habitat.</p>
+          </div>
+        </div>
+
+        <div class="exp-card">
+          <img src="images/mk4.jpg" alt="Camping">
+          <div class="card-body">
+            <h3>Mountain Camping</h3>
+            <p>Experience crisp alpine nights under a dazzling canopy of stars.</p>
+          </div>
+        </div>
+
+        <div class="exp-card">
+          <img src="images/mk2.jpg" alt="Photography">
+          <div class="card-body">
+            <h3>Nature Photography</h3>
+            <p>Capture spectacular sunrise views and the mountain's iconic jagged peaks.</p>
+          </div>
+        </div>
+
+        <div class="exp-card">
+          <img src="images/mk3.jpg" alt="Bird Watching">
+          <div class="card-body">
+            <h3>Bird Watching</h3>
+            <p>Observe over 130 bird species, including rare endemic species.</p>
+          </div>
+        </div>
+
+        <div class="exp-card">
+          <img src="images/mk1.jpg" alt="Guided Tours">
+          <div class="card-body">
+            <h3>Guided Tours</h3>
+            <p>Local guides share stories, tracks, and safe routes across the park.</p>
+          </div>
+        </div>
+
+        <div class="exp-card">
+          <img src="images/mk4.jpg" alt="Stargazing">
+          <div class="card-body">
+            <h3>Stargazing</h3>
+            <p>Low light pollution makes for exceptional night-sky viewing.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Gallery: 4 by 2 grid (re-using images is fine) -->
+    <section class="gallery" id="gallery">
+      <h2 class="section-title">Mt. Kenya in Pictures</h2>
+      <div class="gallery-grid">
+        <img src="images/mk1.jpg" alt="Mt. Kenya Peak">
+        <img src="images/mk2.jpg" alt="Forest Trail">
+        <img src="images/mk3.jpg" alt="Wildlife">
+        <img src="images/mk4.jpg" alt="Camp Site">
+        <img src="images/mk1.jpg" alt="Snowy Summit">
+        <img src="images/mk2.jpg" alt="Mountain Path">
+        <img src="images/mk3.jpg" alt="Alpine Flora">
+        <img src="images/mk4.jpg" alt="Morning Light">
+      </div>
+    </section>
+
+    <!-- Accommodation options: 4 by 1 grid with hover effect -->
+    <section class="four-row" id="accommodation">
+      <h2 class="section-title">Accommodation Options</h2>
+      <div class="four-grid">
+        <div class="four-card">
+          <img src="images/mk4.jpg" alt="Mountain Cabins">
+          <div class="four-body">
+            <h4>Mountain Cabins</h4>
+            <p>Cozy wooden cabins offering warmth and serenity near forest trails.</p>
+          </div>
+        </div>
+
+        <div class="four-card">
+          <img src="images/mk1.jpg" alt="Eco Lodges">
+          <div class="four-body">
+            <h4>Eco Lodges</h4>
+            <p>Stay sustainably in eco-lodges blending luxury with conservation.</p>
+          </div>
+        </div>
+
+        <div class="four-card">
+          <img src="images/mk2.jpg" alt="Budget Camps">
+          <div class="four-body">
+            <h4>Budget Camps</h4>
+            <p>Affordable options for hikers and backpackers seeking adventure.</p>
+          </div>
+        </div>
+
+        <div class="four-card">
+          <img src="images/mk3.jpg" alt="Luxury Lodges">
+          <div class="four-body">
+            <h4>Luxury Lodges</h4>
+            <p>Upscale stays with excellent service and fireplace lounges.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Restaurants: 4 by 1 grid with hover effects -->
+    <section class="four-row" id="restaurants">
+      <h2 class="section-title">Restaurants</h2>
+      <div class="four-grid">
+        <div class="four-card">
+          <img src="images/mk2.jpg" alt="Forest Bistro">
+          <div class="four-body">
+            <h4>Forest Bistro</h4>
+            <p>Locally-sourced menu and sweeping views over the valleys.</p>
+          </div>
+        </div>
+
+        <div class="four-card">
+          <img src="images/mk3.jpg" alt="Summit Grill">
+          <div class="four-body">
+            <h4>Summit Grill</h4>
+            <p>Grilled specialties after a long day on the trails.</p>
+          </div>
+        </div>
+
+        <div class="four-card">
+          <img src="images/mk1.jpg" alt="Highland Café">
+          <div class="four-body">
+            <h4>Highland Café</h4>
+            <p>Coffee, pastries and light meals in a cosy setting.</p>
+          </div>
+        </div>
+
+        <div class="four-card">
+          <img src="images/mk4.jpg" alt="Lodge Dining">
+          <div class="four-body">
+            <h4>Lodge Dining</h4>
+            <p>Fine dining options at selected lodges nearby the park.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Transport options: 4 by 1 grid -->
+    <section class="four-row" id="transport">
+      <h2 class="section-title">Transport Options</h2>
+      <div class="four-grid">
+        <div class="four-card">
+          <img src="images/mk1.jpg" alt="Shuttle Service">
+          <div class="four-body">
+            <h4>Shuttle Service</h4>
+            <p>Regular shuttles from nearby towns to park gates.</p>
+          </div>
+        </div>
+
+        <div class="four-card">
+          <img src="images/mk2.jpg" alt="4x4 Rentals">
+          <div class="four-body">
+            <h4>4x4 Rentals</h4>
+            <p>Suitable for rugged routes and off-road exploration.</p>
+          </div>
+        </div>
+
+        <div class="four-card">
+          <img src="images/mk3.jpg" alt="Guided Transfers">
+          <div class="four-body">
+            <h4>Guided Transfers</h4>
+            <p>Secure transfers with experienced drivers and guides.</p>
+          </div>
+        </div>
+
+        <div class="four-card">
+          <img src="images/mk4.jpg" alt="Helicopter Transfers">
+          <div class="four-body">
+            <h4>Heli Transfers</h4>
+            <p>Available on request for premium, scenic arrivals.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Map -->
+    <section class="map" id="find-us">
+      <h2 class="section-title">Find Us</h2>
+      <div class="map-container">
+        <!-- small mini-map as requested -->
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15955.819283913457!2d37.2965!3d-0.152!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1828c56a3a21f7d5%3A0x22f9a1b08f8ec08!2sMount%20Kenya%20National%20Park!5e0!3m2!1sen!2ske!4v1700000000002!5m2!1sen!2ske"
+          width="100%" height="300" style="border:0;" allowfullscreen loading="lazy"></iframe>
+      </div>
+    </section>
+
+    <!-- CTA with start planning button which obeys login check -->
+    <section class="cta">
+      <h2>Plan Your Mountain Adventure</h2>
+      <button class="cta-btn" id="startPlanBtn">Start Planning</button>
+    </section>
+
+    <footer class="footer">
+      <p>© 2025 Viva Utalii. All Rights Reserved.</p>
+    </footer>
+  </main>
+
+  <!-- Floating reviews button (not underlined) -->
+  <a class="floating-reviews" href="mtkenyarev.html" id="reviewsBtn" aria-label="Reviews">
+    <span>Reviews</span>
+  </a>
+
+  <!-- Auth script (external) and page script -->
+  <script src="auth.js"></script>
+  <script>
+    // Initialize when page loads
+    document.addEventListener("DOMContentLoaded", function(){
+      console.log('=== AUTHENTICATION DEBUG ===');
+      
+      // Login required card elements
+      const loginRequiredOverlay = document.getElementById("login-required-overlay");
+      const closeLoginCard = document.getElementById("closeLoginCard");
+      const goToLoginFromCard = document.getElementById("goToLoginFromCard");
+
+      // Login required card functionality
+      if (closeLoginCard) {
+        closeLoginCard.addEventListener("click", function(){
+          loginRequiredOverlay.style.display = "none";
+        });
+      }
+
+      if (goToLoginFromCard) {
+        goToLoginFromCard.addEventListener("click", function(){
+          window.location.href = "../backend/login.html";
+        });
+      }
+
+      // Close login card when clicking outside
+      if (loginRequiredOverlay) {
+        loginRequiredOverlay.addEventListener("click", function(e){
+          if (e.target === loginRequiredOverlay) {
+            loginRequiredOverlay.style.display = "none";
+          }
+        });
+      }
+
+      // Enhanced user login detection
+      function userIsLoggedIn() {
+        // Check multiple possible localStorage keys
+        const possibleUserKeys = ['vivaUtalii_user', 'user_data', 'auth_user', 'currentUser', 'userLoggedIn'];
+        const possibleTokenKeys = ['vivaUtalii_token', 'auth_token', 'token', 'access_token', 'userToken'];
+        
+        let userData = null;
+        let token = null;
+        
+        // Find user data in localStorage
+        for (const key of possibleUserKeys) {
+          const data = localStorage.getItem(key);
+          if (data) {
+            userData = data;
+            console.log(`✓ Found user data in localStorage: ${key}`);
+            break;
+          }
+        }
+        
+        // Find token in localStorage
+        for (const key of possibleTokenKeys) {
+          const data = localStorage.getItem(key);
+          if (data) {
+            token = data;
+            console.log(`✓ Found token in localStorage: ${key}`);
+            break;
+          }
+        }
+        
+        // Also check sessionStorage as fallback
+        if (!userData) {
+          for (const key of possibleUserKeys) {
+            const data = sessionStorage.getItem(key);
+            if (data) {
+              userData = data;
+              console.log(`✓ Found user data in sessionStorage: ${key}`);
+              break;
+            }
+          }
+        }
+        
+        if (!token) {
+          for (const key of possibleTokenKeys) {
+            const data = sessionStorage.getItem(key);
+            if (data) {
+              token = data;
+              console.log(`✓ Found token in sessionStorage: ${key}`);
+              break;
+            }
+          }
+        }
+        
+        // Special case: check if userLoggedIn is a string "true"
+        if (userData === "true" || token === "true") {
+          console.log('✓ Found boolean true value for login status');
+          return true;
+        }
+        
+        // Parse JSON data if possible
+        try {
+          if (userData && typeof userData === 'string') {
+            const parsed = JSON.parse(userData);
+            if (parsed && typeof parsed === 'object') {
+              userData = parsed;
+              console.log('✓ Successfully parsed user data JSON');
+            }
+          }
+        } catch (e) {
+          console.log('User data is not JSON, using as-is');
+        }
+        
+        const isLoggedIn = !!(userData && token);
+        console.log('Final login status:', isLoggedIn ? 'LOGGED IN' : 'NOT LOGGED IN');
+        console.log('All localStorage keys:', Object.keys(localStorage));
+        console.log('================================');
+        
+        return isLoggedIn;
+      }
+
+      // Function to handle plan trip button clicks
+      function handlePlanTripClick(evt) {
+        evt && evt.preventDefault();
+        console.log('Plan Trip button clicked - checking authentication...');
+        const isLoggedIn = userIsLoggedIn();
+        
+        if (isLoggedIn) {
+          console.log('✓ User is logged in, redirecting to plan.html');
+          window.location.href = "plan.html";
+        } else {
+          console.log('✗ User is not logged in, showing login card');
+          if (loginRequiredOverlay) {
+            loginRequiredOverlay.style.display = "flex";
+          } else {
+            console.error('Login overlay element not found!');
+            // Fallback: redirect to login page
+            window.location.href = "../backend/login.html";
+          }
+        }
+      }
+
+      // Attach handlers to header Plan button and CTA "Start Planning"
+      const planBtn = document.getElementById("planBtn");
+      const startPlanBtn = document.getElementById("startPlanBtn");
+      const mobilePlanBtn = document.getElementById("mobilePlanBtn");
+
+      if (planBtn) planBtn.addEventListener("click", handlePlanTripClick);
+      if (startPlanBtn) startPlanBtn.addEventListener("click", handlePlanTripClick);
+      if (mobilePlanBtn) mobilePlanBtn.addEventListener("click", function(e){
+        // mobile button in overlay should also close menu and redirect accordingly
+        const overlay = document.getElementById("mobileMenuOverlay");
+        if (overlay) overlay.style.display = "none";
+        handlePlanTripClick(e);
+      });
+
+      // Mobile menu toggle
+      const hamburger = document.getElementById("hamburger");
+      const overlay = document.getElementById("mobileMenuOverlay");
+      const closeMenu = document.getElementById("closeMenu");
+
+      if (hamburger && overlay) {
+        hamburger.addEventListener("click", function(){
+          overlay.style.display = "flex";
+          overlay.setAttribute("aria-hidden","false");
+        });
+      }
+      if (closeMenu && overlay) {
+        closeMenu.addEventListener("click", function(){
+          overlay.style.display = "none";
+          overlay.setAttribute("aria-hidden","true");
+        });
+      }
+
+      // Also clicking outside the centered menu area should close overlay (for convenience)
+      if (overlay) {
+        overlay.addEventListener("click", function(e){
+          if (e.target === overlay) {
+            overlay.style.display = "none";
+            overlay.setAttribute("aria-hidden","true");
+          }
+        });
+      }
+
+      // Initial authentication check
+      userIsLoggedIn();
+    });
+  </script>
+</body>
+</html>

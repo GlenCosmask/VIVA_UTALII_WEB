@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Viva Utalii | Login & Sign Up</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<style>
+/* Your existing CSS styles remain exactly the same */
+body {
+  font-family: "Playfair Display", serif;
+  background: linear-gradient(135deg, #004e64, #007f5f, #d4af37);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  color: #fff;
+}
+
+/* main container */
+.container {
+  background-color: #d4af37;
+  border-radius: 20px;
+  box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+  position: relative;
+  overflow: hidden;
+  width: 850px;
+  max-width: 95%;
+  min-height: 480px;
+  transition: all 0.6s ease-in-out;
+}
+
+/* FORM CONTAINERS (desktop sliding layout) */
+.form-container {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.6s ease-in-out;
+}
+
+.sign-in-container {
+  left: 0;
+  width: 50%;
+  z-index: 2;
+}
+
+.container.right-panel-active .sign-in-container {
+  transform: translateX(100%);
+}
+
+.sign-up-container {
+  left: 0;
+  width: 50%;
+  opacity: 0;
+  z-index: 1;
+}
+
+.container.right-panel-active .sign-up-container {
+  transform: translateX(100%);
+  opacity: 1;
+  z-index: 5;
+  animation: show 0.6s;
+}
+
+@keyframes show {
+  0%,49.99% {opacity:0; z-index:1;}
+  50%,100% {opacity:1; z-index:5;}
+}
+
+/* FORMS */
+form {
+  background-color: #e8d47a; /* Softer yellow/gold blend */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 35px 45px;
+  width: 100%;
+  max-width: 350px;
+  text-align: center;
+  border-radius: 20px;
+}
+
+form h1 {
+  font-weight: bold;
+  margin: 0 0 20px;
+  color: #0a1f44;
+}
+
+/* Unified input spacing */
+input {
+  background-color: #fff;
+  color: #0a1f44;
+  border: none;
+  padding: 12px 15px;
+  margin: 10px 0;  /* Equal spacing */
+  width: 100%;
+  border-radius: 8px;
+  box-sizing: border-box;
+  font-size: 16px;
+}
+
+/* Password wrapper with equal spacing */
+.password-wrapper {
+  position: relative;
+  width: 100%;
+  margin: 10px 0; /* Same as inputs */
+}
+
+.toggle-password {
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #333;
+  font-size: 16px;
+}
+
+/* BUTTONS */
+button {
+  border-radius: 20px;
+  border: 1px solid #fff;
+  background-color: #0a1f44;
+  color: #ffd966;
+  font-size: 14px;
+  font-weight: bold;
+  padding: 12px 45px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  margin-top: 15px;
+  transition: transform 80ms ease-in;
+}
+button:hover {
+  background-color: #fff;
+  color: #0a1f44;
+}
+button:active {
+  transform: scale(0.95);
+}
+
+/* LINKS */
+a {
+  color: #0a1f44;
+  font-size: 14px;
+  text-decoration: none;
+  margin: 6px 0;
+  cursor: pointer;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+/* OVERLAY */
+.overlay-container {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 50%;
+  height: 100%;
+  overflow: hidden;
+  transition: transform 0.6s ease-in-out;
+  z-index: 100;
+}
+.container.right-panel-active .overlay-container {
+  transform: translateX(-100%);
+}
+
+.overlay {
+  background: linear-gradient(135deg, #004e64, #007f5f);
+  color: #ffffff;
+  position: relative;
+  left: -100%;
+  height: 100%;
+  width: 200%;
+  transform: translateX(0);
+  transition: transform 0.6s ease-in-out;
+}
+.container.right-panel-active .overlay {
+  transform: translateX(50%);
+}
+
+.overlay-panel {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 0 40px;
+  text-align: center;
+  top: 0;
+  height: 100%;
+  width: 50%;
+  transition: transform 0.6s ease-in-out;
+}
+.overlay-left {
+  transform: translateX(-20%);
+}
+.container.right-panel-active .overlay-left {
+  transform: translateX(0);
+}
+.overlay-right {
+  right: 0;
+}
+.container.right-panel-active .overlay-right {
+  transform: translateX(20%);
+}
+
+.ghost {
+  background: transparent;
+  border: 1px solid #fff;
+  padding: 10px 40px;
+  cursor: pointer;
+  color: #fff;
+  border-radius: 20px;
+  transition: 0.3s;
+}
+.ghost:hover {
+  background: #fff;
+  color: #0a1f44;
+}
+
+/* ----- MOBILE: Disable sliding & show only active form ----- */
+@media (max-width: 768px) {
+  .container { width: 95%; min-height: auto; padding: 20px; }
+  .overlay-container { display: none; } /* hide overlay entirely on mobile */
+
+  /* Make form containers stack and not positioned absolutely */
+  .form-container {
+    position: relative !important;
+    top: auto;
+    left: 0 !important;
+    width: 100% !important;
+    transform: none !important;
+    opacity: 1 !important;
+    display: none; /* hide by default; JS will show the active one */
+    padding: 10px 0;
+  }
+
+  /* when mobile, the container will show .mobile-active sections */
+  .form-container.mobile-active {
+    display: flex;
+  }
+
+  form { max-width: 100%; padding: 30px 20px; }
+}
+
+/* ----- BEAUTIFUL CUSTOM NOTIFICATION STYLES ----- */
+.notification-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 350px;
+}
+
+.notification {
+  background: linear-gradient(135deg, #004e64, #007f5f);
+  color: white;
+  padding: 18px 20px;
+  border-radius: 16px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  transform: translateX(400px);
+  opacity: 0;
+  transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  border-left: 4px solid #d4af37;
+  position: relative;
+  overflow: hidden;
+}
+
+.notification::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
+  pointer-events: none;
+}
+
+.notification.show {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.notification.hide {
+  transform: translateX(400px);
+  opacity: 0;
+}
+
+.notification.success {
+  border-left-color: #4CAF50;
+  background: linear-gradient(135deg, #007f5f, #004e64);
+}
+
+.notification.error {
+  border-left-color: #f44336;
+  background: linear-gradient(135deg, #d32f2f, #b71c1c);
+}
+
+.notification.warning {
+  border-left-color: #ff9800;
+  background: linear-gradient(135deg, #f57c00, #e65100);
+}
+
+.notification-icon {
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.notification.success .notification-icon {
+  color: #4CAF50;
+}
+
+.notification.error .notification-icon {
+  color: #f44336;
+}
+
+.notification.warning .notification-icon {
+  color: #ff9800;
+}
+
+.notification-content {
+  flex: 1;
+  text-align: left;
+}
+
+.notification-title {
+  font-weight: bold;
+  margin-bottom: 4px;
+  font-size: 16px;
+  font-family: 'Playfair Display', serif;
+}
+
+.notification-message {
+  font-size: 14px;
+  opacity: 0.9;
+  line-height: 1.4;
+}
+
+.notification-close {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.7);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.notification-close:hover {
+  background: rgba(255,255,255,0.1);
+  color: white;
+}
+
+.notification-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background: #d4af37;
+  width: 100%;
+  transform: scaleX(1);
+  transform-origin: left;
+  transition: transform 4s linear;
+}
+
+.notification.success .notification-progress {
+  background: #4CAF50;
+}
+
+.notification.error .notification-progress {
+  background: #f44336;
+}
+
+.notification.warning .notification-progress {
+  background: #ff9800;
+}
+</style>
+</head>
+<body>
+
+<!-- Notification Container -->
+<div class="notification-container" id="notificationContainer"></div>
+
+<div class="container" id="container">
+
+  <!-- SIGN UP -->
+  <div class="form-container sign-up-container" id="signupSection">
+    <form id="signupForm">
+      <h1>Create Account</h1>
+
+      <input id="signupName" type="text" placeholder="Name" required />
+      <input id="signupEmail" type="email" placeholder="Email" required />
+
+      <div class="password-wrapper">
+        <input id="signupPassword" type="password" placeholder="Password" required />
+        <i class="fas fa-eye toggle-password" toggle="#signupPassword" title="Show / Hide"></i>
+      </div>
+
+      <div class="password-wrapper">
+        <input id="signupConfirm" type="password" placeholder="Confirm Password" required />
+        <i class="fas fa-eye toggle-password" toggle="#signupConfirm" title="Show / Hide"></i>
+      </div>
+
+      <a id="gotoSignIn">Already have an account? Sign In</a>
+
+      <button type="submit">Sign Up</button>
+    </form>
+  </div>
+
+  <!-- SIGN IN -->
+  <div class="form-container sign-in-container" id="signinSection">
+    <form id="signinForm">
+      <h1>Sign in</h1>
+
+      <input id="signinEmail" type="email" placeholder="Email" required />
+
+      <div class="password-wrapper">
+        <input id="signinPassword" type="password" placeholder="Password" required />
+        <i class="fas fa-eye toggle-password" toggle="#signinPassword" title="Show / Hide"></i>
+      </div>
+
+      <a id="gotoSignUp">Don't have an account? Sign Up</a>
+      <a href="forgpass.html">Forgot your password?</a>
+
+      <button type="submit">Sign In</button>
+    </form>
+  </div>
+
+  <!-- OVERLAY -->
+  <div class="overlay-container">
+    <div class="overlay">
+      <div class="overlay-panel overlay-left">
+        <h1>Welcome Back!</h1>
+        <p>Let's stay connected, enter your details</p>
+        <button class="ghost" id="signIn">Sign In</button>
+      </div>
+
+      <div class="overlay-panel overlay-right">
+        <h1>Hello, Mtalii!</h1>
+        <p>Start your journey with us</p>
+        <button class="ghost" id="signUp">Sign Up</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// BACKEND URL - This will work with any port
+const BACKEND_URL = 'http://127.0.0.1:5000';
+
+// Elements (use getElementById for reliability)
+const containerEl = document.getElementById('container');
+const signUpBtn = document.getElementById('signUp');   // overlay button
+const signInBtn = document.getElementById('signIn');   // overlay button
+const gotoSignUp = document.getElementById('gotoSignUp'); // text link in sign-in form
+const gotoSignIn = document.getElementById('gotoSignIn'); // text link in sign-up form
+const signupSection = document.getElementById('signupSection');
+const signinSection = document.getElementById('signinSection');
+
+// ----- BEAUTIFUL NOTIFICATION SYSTEM -----
+function showNotification(type, title, message, duration = 5000) {
+  const container = document.getElementById('notificationContainer');
+  const notification = document.createElement('div');
+  notification.className = `notification ${type}`;
+  
+  // Set icon based on type
+  let icon = 'fas fa-info-circle';
+  if (type === 'success') icon = 'fas fa-check-circle';
+  if (type === 'error') icon = 'fas fa-exclamation-circle';
+  if (type === 'warning') icon = 'fas fa-exclamation-triangle';
+  
+  notification.innerHTML = `
+    <i class="${icon} notification-icon"></i>
+    <div class="notification-content">
+      <div class="notification-title">${title}</div>
+      <div class="notification-message">${message}</div>
+    </div>
+    <button class="notification-close">
+      <i class="fas fa-times"></i>
+    </button>
+    <div class="notification-progress"></div>
+  `;
+  
+  container.appendChild(notification);
+  
+  // Animate in
+  setTimeout(() => {
+    notification.classList.add('show');
+    
+    // Start progress bar
+    const progressBar = notification.querySelector('.notification-progress');
+    setTimeout(() => {
+      progressBar.style.transform = 'scaleX(0)';
+    }, 10);
+  }, 10);
+  
+  // Close button functionality
+  const closeBtn = notification.querySelector('.notification-close');
+  closeBtn.addEventListener('click', () => {
+    closeNotification(notification);
+  });
+  
+  // Auto-close after duration
+  if (duration > 0) {
+    setTimeout(() => {
+      if (notification.parentNode) {
+        closeNotification(notification);
+      }
+    }, duration);
+  }
+  
+  return notification;
+}
+
+function closeNotification(notification) {
+  notification.classList.remove('show');
+  notification.classList.add('hide');
+  
+  setTimeout(() => {
+    if (notification.parentNode) {
+      notification.parentNode.removeChild(notification);
+    }
+  }, 400);
+}
+
+// Helper to detect mobile width
+function isMobile() {
+  return window.innerWidth <= 768;
+}
+
+// Desktop behavior: overlay sliding (preserve original)
+if (signUpBtn) signUpBtn.addEventListener('click', () => containerEl.classList.add('right-panel-active'));
+if (signInBtn) signInBtn.addEventListener('click', () => containerEl.classList.remove('right-panel-active'));
+
+// Mobile behavior: show/hide appropriate form containers (no sliding)
+function showMobileForm(which) {
+  // which = 'signin' or 'signup'
+  signinSection.classList.remove('mobile-active');
+  signupSection.classList.remove('mobile-active');
+
+  if (which === 'signin') signinSection.classList.add('mobile-active');
+  else signupSection.classList.add('mobile-active');
+}
+
+// Attach links that switch view; respect desktop vs mobile
+if (gotoSignUp) gotoSignUp.addEventListener('click', (e) => {
+  e.preventDefault();
+  if (isMobile()) {
+    showMobileForm('signup');
+  } else {
+    containerEl.classList.add('right-panel-active');
+  }
+});
+
+if (gotoSignIn) gotoSignIn.addEventListener('click', (e) => {
+  e.preventDefault();
+  if (isMobile()) {
+    showMobileForm('signin');
+  } else {
+    containerEl.classList.remove('right-panel-active');
+  }
+});
+
+// On load: set appropriate initial view for mobile and desktop
+function setupInitialView() {
+  if (isMobile()) {
+    // On mobile show sign-in by default
+    showMobileForm('signin');
+    // ensure overlay is hidden visually (CSS already hides it)
+  } else {
+    // Desktop: ensure both form containers are present (overlay handles visibility)
+    // Remove any mobile-only classes if present
+    signinSection.classList.remove('mobile-active');
+    signupSection.classList.remove('mobile-active');
+  }
+}
+window.addEventListener('load', setupInitialView);
+window.addEventListener('resize', () => {
+  // Keep UI consistent after resize
+  setupInitialView();
+});
+
+// Toggle password visibility
+document.querySelectorAll('.toggle-password').forEach(icon => {
+  icon.addEventListener('click', () => {
+    const selector = icon.getAttribute('toggle');
+    const input = document.querySelector(selector);
+    if (!input) return;
+    input.type = input.type === 'password' ? 'text' : 'password';
+    icon.classList.toggle('fa-eye-slash');
+  });
+});
+
+// Function to test index.html path
+function testIndexPath() {
+  const testPaths = [
+    '../frontend/index.html',
+    '/frontend/index.html',
+    './frontend/index.html',
+    'frontend/index.html',
+    '../../frontend/index.html',
+    '/index.html',
+    './index.html',
+    'index.html'
+  ];
+  
+  console.log('Current URL:', window.location.href);
+  console.log('Testing index.html paths:');
+  
+  testPaths.forEach(path => {
+    console.log(`Testing: ${path} -> ${new URL(path, window.location.href).href}`);
+  });
+}
+
+// Call this to debug path issues
+testIndexPath();
+
+// Function to redirect to index.html with fallback options
+async function redirectToIndex() {
+  const baseUrl = window.location.origin;
+  const indexPaths = [
+    '../frontend/index.html',
+    '/frontend/index.html',
+    baseUrl + '/frontend/index.html',
+    './frontend/index.html',
+    'frontend/index.html',
+    '../index.html',
+    '/index.html',
+    baseUrl + '/index.html'
+  ];
+  
+  // Test each path until one works
+  for (let path of indexPaths) {
+    try {
+      const testUrl = new URL(path, baseUrl).href;
+      console.log('Testing redirect to:', testUrl);
+      
+      // Create a test request to see if the file exists
+      const testResponse = await fetch(testUrl, { method: 'HEAD' });
+      if (testResponse.ok) {
+        console.log('Found index.html at:', testUrl);
+        window.location.href = path;
+        return true;
+      }
+    } catch (err) {
+      console.log('Path not accessible:', path, err);
+    }
+  }
+  
+  // If no paths work, show error
+  console.error('Could not find index.html. Available paths tested:', indexPaths);
+  showNotification('error', 'Navigation Error', 'Home page not found. Please contact administrator.');
+  return false;
+}
+
+/* --- FORM HANDLERS --- */
+const signupForm = document.getElementById('signupForm');
+const signinForm = document.getElementById('signinForm');
+
+signupForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const name = document.getElementById("signupName").value.trim();
+  const email = document.getElementById("signupEmail").value.trim();
+  const password = document.getElementById("signupPassword").value.trim();
+  const confirm = document.getElementById("signupConfirm").value.trim();
+
+  if (password !== confirm) {
+    showNotification('error', 'Password Mismatch', 'Passwords do not match!');
+    return;
+  }
+
+  try {
+    const response = await fetch(`${BACKEND_URL}/signup`, {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ name, email, password })
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Signup failed');
+    }
+    
+    const result = await response.json();
+    
+    // Store token and user data in localStorage
+    if (result.token && result.user) {
+      localStorage.setItem('auth_token', result.token);
+      localStorage.setItem('user_data', JSON.stringify(result.user));
+      console.log('Token and user data stored successfully');
+    }
+    
+    showNotification('success', 'Account Created!', result.message || 'Your account has been created successfully!');
+    
+    // Redirect to index.html after a short delay
+    setTimeout(() => {
+      redirectToIndex();
+    }, 2000);
+    
+  } catch (err) {
+    console.error('Signup error:', err);
+    showNotification('error', 'Signup Failed', err.message || 'Network error during signup.');
+  }
+});
+
+signinForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const email = document.getElementById("signinEmail").value.trim();
+  const password = document.getElementById("signinPassword").value.trim();
+
+  try {
+    const response = await fetch(`${BACKEND_URL}/login`, {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ email, password })
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Login failed');
+    }
+    
+    const result = await response.json();
+    
+    // Store token and user data in localStorage
+    if (result.token && result.user) {
+      localStorage.setItem('auth_token', result.token);
+      localStorage.setItem('user_data', JSON.stringify(result.user));
+      console.log('Token and user data stored successfully');
+    }
+    
+    showNotification('success', 'Welcome Back!', result.message || 'You have successfully logged in!');
+    
+    // Redirect to index.html after a short delay
+    setTimeout(() => {
+      redirectToIndex();
+    }, 2000);
+    
+  } catch (err) {
+    console.error('Login error:', err);
+    showNotification('error', 'Login Failed', err.message || 'Network error during login.');
+  }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact Us - Viva Utalii</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+  /* Global Styles */
+  body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #004e64, #007f5f, #d4af37);
+    color: #fff;
+  }
+  a { text-decoration: none; color: inherit; }
+  h2, h3 { margin: 0 0 10px; }
+  .container { width: 90%; max-width: 1200px; margin: auto; }
+
+  /* Navbar */
+  nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    background: rgba(0,0,0,0.25);
+    margin: 0;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(0px);
+  }
+  
+  /* Navbar blur effect when scrolled */
+  nav.scrolled {
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(10px);
+  }
+  
+  .nav-left {
+    flex: 1; display: flex; justify-content: center; font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 700;
+  }
+  .nav-center {
+    flex: 2; display: flex; justify-content: center; gap: 25px;
+  }
+  .nav-right {
+    flex: 1; display: flex; justify-content: flex-end; gap: 10px;
+  }
+  .nav-center a, .nav-right a {
+    padding: 8px 15px; border-radius: 8px; transition: 0.3s;
+    position: relative;
+  }
+  
+  /* Removed background hover effect, keeping only underline */
+  /* Underline effect */
+  .nav-center a::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: 0;
+    left: 50%;
+    background-color: #ffd700;
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
+  }
+  .nav-center a:hover::after {
+    width: 80%;
+  }
+
+  /* Hero Section */
+  .hero {
+    text-align: center; padding: 120px 20px 40px;
+  }
+  .hero h1 { font-family: 'Playfair Display', serif; font-size: 36px; margin-bottom: 10px; }
+
+  /* Cards */
+  .card {
+    background: rgba(255,255,255,0.1); 
+    border-radius: 15px; 
+    padding: 20px; 
+    margin: 20px auto; 
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    max-width: 600px; /* center and reduce horizontal size */
+  }
+  .card h3 { color: #ffd700; }
+
+  /* Form */
+  form { display: flex; flex-direction: column; gap: 15px; }
+  input, textarea, select {
+    padding: 10px; border-radius: 10px; border: none; outline: none;
+  }
+  button {
+    padding: 12px; border: none; border-radius: 10px;
+    background: #ffd700; color: #004e64; font-weight: 600; cursor: pointer;
+    transition: 0.3s;
+  }
+  button:hover { background: #fff; }
+
+  /* Social Icons */
+  .social-icons { display: flex; gap: 15px; margin-top: 10px; justify-content: center; }
+  .social-icons a { font-size: 24px; transition: 0.3s; }
+  .social-icons a:hover { color: #ffd700; }
+
+  /* FAQ */
+  .faq-item { margin-bottom: 10px; cursor: pointer; }
+  .faq-item h4 { margin-bottom: 5px; }
+  .faq-answer { display: none; margin-left: 15px; }
+
+  /* CTA Buttons */
+  .cta-buttons { display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; }
+  .cta-buttons a { flex: 1; text-align: center; padding: 12px; border-radius: 10px; background: #ffd700; color: #004e64; font-weight: 600; transition: 0.3s; max-width: 180px; }
+  .cta-buttons a:hover { background: #fff; }
+
+  /* Map */
+  .map-container iframe { width: 100%; height: 250px; border-radius: 15px; border: none; max-width: 600px; }
+
+  /* Footer / Brand message */
+  .brand-message { text-align: center; padding: 20px 0; font-size: 18px; font-weight: 500; }
+
+  /* Popup Modal */
+  .modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+  }
+  .modal-content {
+    background: linear-gradient(135deg, #004e64, #007f5f);
+    padding: 30px;
+    border-radius: 15px;
+    text-align: center;
+    max-width: 400px;
+    width: 80%;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  }
+  .modal h3 {
+    color: #ffd700;
+    margin-bottom: 15px;
+  }
+  .modal p {
+    margin-bottom: 20px;
+  }
+  .modal button {
+    background: #ffd700;
+    color: #004e64;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+
+  /* Responsive */
+  @media(max-width: 768px){
+    .nav-center { display: none; }
+    .nav-right { gap: 5px; }
+    .hero {
+      padding-top: 100px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav>
+  <div class="nav-left">VIVA UTALII</div>
+  <div class="nav-center">
+    <a href="index.html">Home</a>
+    <a href="destinations.html">Destinations</a>
+    <a href="about.html">About</a>
+    <a href="recommendations.html">Recommendations</a>
+    <a href="contact.html">Contact</a>
+  </div>
+  <div class="nav-right">
+    <a href="destinations.html" style="background: #ffd700; color: #004e64;">Get Started</a>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero container">
+  <h1>Contact Viva Utalii</h1>
+  <p>We're here to make your travel dreams come true.</p>
+</section>
+
+<!-- Send us a message card -->
+<section class="container card">
+  <h3>Send Us a Message</h3>
+  <form id="contactForm">
+    <input type="text" id="name" name="name" placeholder="Your Name" required>
+    <input type="email" id="email" name="email" placeholder="Your Email" required>
+    <input type="text" id="subject" name="subject" placeholder="Subject" required>
+    <textarea id="message" name="message" rows="5" placeholder="Your Message" required></textarea>
+    <button type="submit">Send Message</button>
+  </form>
+</section>
+
+<!-- Contact Info -->
+<section class="container card">
+  <h3>Contact Information</h3>
+  <p>Phone: +254707461479</p>
+  <p>Email: vivautalii@gmail.com</p>
+  <p>Address: Muimara Estate, Imara Daima, Nairobi</p>
+  <div class="social-icons">
+    <a href="#"><i class="fab fa-facebook"></i></a>
+    <a href="#"><i class="fab fa-instagram"></i></a>
+    <a href="#"><i class="fab fa-x-twitter"></i></a>
+    <a href="#"><i class="fab fa-tiktok"></i></a>
+  </div>
+</section>
+
+<!-- FAQ Section -->
+<section class="container card">
+  <h3>Frequently Asked Questions</h3>
+  <div class="faq-item">
+    <h4>How do I book a trip?</h4>
+    <p class="faq-answer">You can book a trip directly through our website's booking section or contact us via email/phone.</p>
+  </div>
+  <div class="faq-item">
+    <h4>What payment methods do you accept?</h4>
+    <p class="faq-answer">We accept all major credit cards, mobile payments, and bank transfers.</p>
+  </div>
+  <div class="faq-item">
+    <h4>Can I customize my travel package?</h4>
+    <p class="faq-answer">Yes! Contact us with your preferences and we'll create a personalized package.</p>
+  </div>
+</section>
+
+<!-- Quick CTA Buttons -->
+<section class="container card">
+  <h3>Quick Actions</h3>
+  <div class="cta-buttons">
+    <a href="tel:+254707461479">Call Now</a>
+    <a href="https://wa.me/254707461479" target="_blank">Chat on WhatsApp</a>
+    <a href="mailto:vivautalii@gmail.com">Send Email</a>
+  </div>
+</section>
+
+<!-- Business Hours -->
+<section class="container card">
+  <h3>Business Hours</h3>
+  <p>Monday - Saturday: 8:00 AM - 6:00 PM</p>
+  <p>Sunday: Closed</p>
+</section>
+
+<!-- Map -->
+<section class="container card map-container">
+  <h3>Our Headquarters</h3>
+  <iframe src="https://www.google.com/maps?q=Muimara+Estate+Imara+Daima+Nairobi&output=embed"></iframe>
+</section>
+
+<!-- Brand Message -->
+<section class="container brand-message">
+  <p>Viva Utalii - Turning travel dreams into unforgettable memories.</p>
+</section>
+
+<!-- Thank You Modal -->
+<div id="thankYouModal" class="modal">
+  <div class="modal-content">
+    <h3>Thank You!</h3>
+    <p>We appreciate your feedback and we'll be in touch soon.</p>
+    <button id="closeModal">Close</button>
+  </div>
+</div>
+
+<!-- EmailJS SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<script>
+  // Initialize EmailJS with your public key
+  (function() {
+    emailjs.init("PVuh_QoJ_cr04G6nd");
+  })();
+
+  // Navbar scroll effect
+  window.addEventListener('scroll', function() {
+    const nav = document.querySelector('nav');
+    if (window.scrollY > 50) {
+      nav.classList.add('scrolled');
+    } else {
+      nav.classList.remove('scrolled');
+    }
+  });
+
+  // FAQ Toggle
+  const faqItems = document.querySelectorAll('.faq-item');
+  faqItems.forEach(item => {
+    item.addEventListener('click', () => {
+      const answer = item.querySelector('.faq-answer');
+      answer.style.display = answer.style.display === 'block' ? 'none' : 'block';
+    });
+  });
+
+  // Contact Form Submission
+  document.getElementById('contactForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    // Get form data
+    const name = document.getElementById('name').value;
+    const email = document.getElementById('email').value;
+    const subject = document.getElementById('subject').value;
+    const message = document.getElementById('message').value;
+    
+    // Send email using EmailJS
+    emailjs.send("service_atd4lt4", "template_0n59bqa", {
+      from_name: name,
+      from_email: email,
+      subject: subject,
+      message: message,
+      to_email: "vivautalii@gmail.com"
+    })
+    .then(function(response) {
+      console.log('SUCCESS!', response.status, response.text);
+      // Show thank you modal
+      document.getElementById('thankYouModal').style.display = 'flex';
+      // Clear form
+      document.getElementById('contactForm').reset();
+    }, function(error) {
+      console.log('FAILED...', error);
+      alert('Sorry, there was an error sending your message. Please try again later.');
+    });
+  });
+
+  // Close modal
+  document.getElementById('closeModal').addEventListener('click', function() {
+    document.getElementById('thankYouModal').style.display = 'none';
+  });
+</script>
+
+</body>
+</html>

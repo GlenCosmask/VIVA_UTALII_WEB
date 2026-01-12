@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Diani Beach - Viva Utalii</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --accent: #d4af37;
+      --glass-bg: rgba(255,255,255,0.06);
+      --glass-blur: 8px;
+      --card-radius: 18px;
+      --text: #ffffff;
+    }
+
+    /* Page */
+    html,body { height:100%; }
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      color: var(--text);
+      background: linear-gradient(135deg, #004e64, #007f5f, #d4af37);
+      background-attachment: fixed;
+      background-size: cover;
+      line-height: 1.6;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 12px 26px;
+      position: sticky;
+      top: 0;
+      z-index: 1200;
+      background: rgba(0,0,0,0.35);
+      backdrop-filter: blur(var(--glass-blur));
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+
+    .left-hamburger {
+      display: none; /* shown on small screens */
+      align-items:center;
+    }
+
+    .hamburger-btn {
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    .logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: 2px;
+    }
+
+    /* Center nav container so links are centered */
+    .nav-wrap {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 30px;
+      align-items: center;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .nav-links a {
+      color: #fff;
+      text-decoration: none;
+      font-size: 16px;
+      font-weight: 600;
+      padding: 6px 2px;
+      position: relative;
+      transition: color 0.25s ease;
+    }
+
+    /* underline effect on hover */
+    .nav-links a::after{
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -6px;
+      height: 2px;
+      background: var(--accent);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.25s ease;
+      opacity: 0.95;
+      border-radius: 2px;
+    }
+    .nav-links a:hover::after{
+      transform: scaleX(1);
+    }
+    .nav-links a:hover{ color: var(--accent); }
+
+    /* Header right */
+    .header-right {
+      display:flex;
+      align-items:center;
+      gap:14px;
+    }
+
+    .trip-btn {
+      background: var(--accent);
+      color: black;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 25px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform .18s ease, background .18s ease;
+      white-space: nowrap;
+    }
+    .trip-btn:hover { transform: translateY(-3px); background:#fff; }
+
+    /* Mobile dropdown (Option A) - hidden on desktop */
+    .mobile-dropdown {
+      display: none;
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 100%;
+      background: rgba(255,255,255,0.04);
+      backdrop-filter: blur(10px);
+      padding: 14px 12px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.45);
+      z-index: 1250;
+      border-bottom-left-radius: 12px;
+      border-bottom-right-radius: 12px;
+    }
+    .mobile-dropdown nav {
+      display:flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .mobile-dropdown a {
+      color: #fff;
+      text-decoration: none;
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-weight:600;
+    }
+    .mobile-dropdown a:hover { background: rgba(255,255,255,0.03); color: var(--accent); }
+
+    /* Hero */
+    .hero {
+      text-align: center;
+      padding: 90px 20px 60px;
+    }
+    .hero h1 {
+      font-size: 48px;
+      font-family: 'Playfair Display', serif;
+      color: #fff;
+      margin-bottom: 12px;
+    }
+    .hero p { font-size:18px; color: #f3f3f3; max-width:700px; margin:0 auto; }
+
+    /* Section headings */
+    section h2 {
+      font-size: 34px;
+      margin: 14px 0 28px;
+      font-family: 'Playfair Display', serif;
+      color: var(--accent);
+      text-align: center;
+    }
+
+    /* Generic container */
+    .container {
+      max-width: 1220px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    /* --- Cards style: ensure images fill card edge with rounded corners --- */
+    .grid {
+      display: grid;
+      gap: 18px;
+    }
+
+    /* Top experiences: 4x2 */
+    .experiences-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .card {
+      background: var(--glass-bg);
+      border-radius: var(--card-radius);
+      overflow: hidden; /* ensure image flush to card edge */
+      box-shadow: 0 8px 18px rgba(0,0,0,0.35);
+      transition: transform .28s ease, box-shadow .28s ease;
+      display:flex;
+      flex-direction:column;
+      min-height: 100%;
+      /* removed faint border so image looks flush with edges */
+      /* border: 1px solid rgba(255,255,255,0.03); */
+      backdrop-filter: blur(6px);
+    }
+
+    .card:hover { transform: translateY(-6px) scale(1.02); box-shadow: 0 18px 40px rgba(0,0,0,0.48); }
+
+    /* Card image wrapper — no gap between image and card edge */
+    .card-image {
+      width:100%;
+      height: 180px;
+      display:block;
+      overflow:hidden;
+      border-top-left-radius: inherit;
+      border-top-right-radius: inherit;
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+      margin: 0;
+      background: transparent;
+    }
+    .card-image img {
+      display:block;
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      border-top-left-radius: inherit;
+      border-top-right-radius: inherit;
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+      margin: 0;
+      padding: 0;
+      line-height: 0;
+      /* ensure no gap / no border */
+      border: none;
+    }
+
+    .card-body {
+      padding: 16px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      flex:1;
+    }
+
+    .card h3 {
+      margin: 0;
+      font-family: 'Playfair Display', serif;
+      color: var(--accent);
+      font-size: 20px;
+    }
+    .card p { margin:0; color: #f1f1f1; font-size: 14px; }
+
+    /* Gallery: 4x2 */
+    .gallery-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+    .gallery-grid .gallery-item {
+      overflow:hidden;
+      border-radius: var(--card-radius);
+      height: 160px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+    }
+    .gallery-grid img {
+      display:block;
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      border-radius: inherit;
+      margin:0;
+      padding:0;
+      border:none;
+    }
+    .gallery-grid img:hover { transform: scale(1.04); transition: transform .28s ease; }
+
+    /* Accommodation / restaurants / transport: each 4 columns */
+    .four-grid {
+      grid-template-columns: repeat(4, 1fr);
+      align-items: stretch;
+    }
+    .four-grid .card {
+      height: 220px;
+    }
+
+    /* Hover effect variants */
+    .accom .card:hover { transform: translateY(-8px) rotate(-0.5deg) scale(1.02); }
+    .restaurants .card:hover { transform: translateY(-8px) scale(1.02); }
+    .transport .card:hover { transform: translateY(-6px) scale(1.01); }
+
+    /* Reviews floating CTA */
+    .reviews-cta {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 1500;
+      background: var(--accent);
+      color: #000;
+      padding: 14px 18px;
+      border-radius: 999px;
+      font-weight: 700;
+      box-shadow: 0 12px 28px rgba(0,0,0,0.45);
+      border: none;
+      cursor: pointer;
+      transition: transform .15s ease;
+    }
+    .reviews-cta:hover { transform: translateY(-4px); }
+
+    /* Map container */
+    .map-container {
+      border-radius: 14px;
+      overflow: hidden;
+      max-width: 920px;
+      margin: 0 auto;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.45);
+    }
+
+    /* CTA section bottom */
+    .cta {
+      text-align: center;
+      padding: 48px 20px;
+      background: rgba(0,0,0,0.35);
+    }
+    .cta-btn {
+      background: var(--accent);
+      color: black;
+      padding: 14px 34px;
+      border: none;
+      border-radius: 30px;
+      font-size: 18px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+    .cta-btn:hover { transform: translateY(-3px); background:#fff; }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      padding: 20px;
+      background: rgba(0,0,0,0.5);
+      font-size: 14px;
+      letter-spacing: 0.4px;
+    }
+
+    /* Login Required Card Styles */
+    #login-required-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+    }
+
+    #login-required-card {
+      background: linear-gradient(135deg, #004e64, #007f5f, #d4af37);
+      color: var(--text);
+      padding: 30px 35px;
+      border-radius: 20px;
+      text-align: center;
+      width: 340px;
+      max-width: 90vw;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+      font-family: 'Poppins', sans-serif;
+      border: 2px solid rgba(255,255,255,0.2);
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    #login-required-card h3 {
+      margin-bottom: 15px;
+      color: var(--accent);
+      font-family: 'Playfair Display', serif;
+      font-size: 24px;
+    }
+
+    .warning-icon {
+      font-size: 48px;
+      margin-bottom: 15px;
+      color: var(--accent);
+    }
+
+    .login-card-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .login-card-btn {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+
+    .login-now-btn {
+      background: var(--accent);
+      color: #000;
+    }
+
+    .login-now-btn:hover {
+      background: #fff;
+      transform: translateY(-2px);
+    }
+
+    .close-login-card {
+      background: rgba(255,255,255,0.2);
+      color: var(--text);
+    }
+
+    .close-login-card:hover {
+      background: rgba(255,255,255,0.3);
+    }
+
+    /* Responsive rules */
+    @media (max-width: 1100px) {
+      .experiences-grid, .gallery-grid, .four-grid { grid-template-columns: repeat(2,1fr); }
+    }
+    @media (max-width: 780px) {
+      .left-hamburger { display:flex; }
+      .nav-wrap { display:none; } /* hide centered nav on small screens */
+      .header { padding: 12px 14px; }
+      .hero { padding: 64px 12px; }
+      .card-image { height: 150px; }
+      .gallery-grid .gallery-item { height: 140px; }
+
+      /* mobile dropdown hidden by default; JS toggles .open */
+      .mobile-dropdown { display: none; }
+      .mobile-dropdown.open { display: block; }
+      
+      .login-card-buttons {
+        flex-direction: column;
+      }
+    }
+    @media (max-width: 480px) {
+      .experiences-grid, .gallery-grid, .four-grid { grid-template-columns: 1fr; }
+      .card-image { height: 210px; }
+      .header-right { gap:8px; }
+      .trip-btn { padding: 8px 12px; font-size:14px; }
+      .mobile-dropdown { left: 0; right: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header" role="banner">
+    <div class="left-hamburger">
+      <button class="hamburger-btn" id="hamburgerToggle" aria-label="Open menu">☰</button>
+    </div>
+
+    <div class="logo">VIVA UTALII</div>
+
+    <!-- centered nav -->
+    <div class="nav-wrap" aria-hidden="false">
+      <ul class="nav-links" role="navigation" aria-label="Main navigation">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="destinations.html">Destinations</a></li>
+        <li><a href="recommendations.html">Recommendations</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </div>
+
+    <div class="header-right">
+      <!-- removed search box as requested -->
+      <button id="topPlanBtn" class="trip-btn" aria-label="Plan your trip">Plan Your Trip</button>
+    </div>
+
+    <!-- Mobile dropdown (collapsible below header, only on small screens) -->
+    <div id="mobileDropdown" class="mobile-dropdown" aria-hidden="true">
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="destinations.html">Destinations</a>
+        <a href="recommendations.html">Recommendations</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+        <a id="mobilePlan" href="#">Plan Your Trip</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-content">
+        <h1>Welcome to Diani Beach</h1>
+        <p>Discover pristine white sands, turquoise waters, and vibrant marine life at Kenya's premier coastal paradise.</p>
+      </div>
+    </section>
+
+    <section class="highlights container" aria-labelledby="expHeading">
+      <h2 id="expHeading">Top Experiences in Diani Beach</h2>
+      <div class="grid experiences-grid">
+        <!-- 8 cards (4 x 2) - using diani1.avif to diani4.avif -->
+        <article class="card" role="article">
+          <div class="card-image"><img src="images/diani1.avif" alt="Beach Relaxation"></div>
+          <div class="card-body"><h3>Beach Relaxation</h3><p>Unwind on the pristine white sands and enjoy the warm Indian Ocean breeze.</p></div>
+        </article>
+
+        <article class="card">
+          <div class="card-image"><img src="images/diani2.avif" alt="Snorkeling"></div>
+          <div class="card-body"><h3>Snorkeling Adventures</h3><p>Explore vibrant coral reefs teeming with tropical fish and marine life.</p></div>
+        </article>
+
+        <article class="card">
+          <div class="card-image"><img src="images/diani3.avif" alt="Water Sports"></div>
+          <div class="card-body"><h3>Water Sports</h3><p>Try kite surfing, jet skiing, and other exciting water activities.</p></div>
+        </article>
+
+        <article class="card">
+          <div class="card-image"><img src="images/diani4.avif" alt="Dolphin Watching"></div>
+          <div class="card-body"><h3>Dolphin Watching</h3><p>Take a boat trip to spot playful dolphins in their natural habitat.</p></div>
+        </article>
+
+        <article class="card">
+          <div class="card-image"><img src="images/diani1.avif" alt="Beach Dining"></div>
+          <div class="card-body"><h3>Beach Dining</h3><p>Enjoy fresh seafood and local cuisine at beachfront restaurants.</p></div>
+        </article>
+
+        <article class="card">
+          <div class="card-image"><img src="images/diani2.avif" alt="Sunset Views"></div>
+          <div class="card-body"><h3>Sunset Views</h3><p>Witness breathtaking sunsets over the Indian Ocean horizon.</p></div>
+        </article>
+
+        <article class="card">
+          <div class="card-image"><img src="images/diani3.avif" alt="Colobus Conservation"></div>
+          <div class="card-body"><h3>Colobus Conservation</h3><p>Visit the Colobus Conservation center and learn about local wildlife.</p></div>
+        </article>
+
+        <article class="card">
+          <div class="card-image"><img src="images/diani4.avif" alt="Shimba Hills"></div>
+          <div class="card-body"><h3>Shimba Hills Excursion</h3><p>Explore the nearby Shimba Hills National Reserve for forest walks and waterfalls.</p></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="gallery container" aria-labelledby="galleryHeading">
+      <h2 id="galleryHeading">Diani Beach in Pictures</h2>
+      <div class="grid gallery-grid">
+        <div class="gallery-item"><img src="images/diani1.avif" alt="White Sands"></div>
+        <div class="gallery-item"><img src="images/diani2.avif" alt="Turquoise Waters"></div>
+        <div class="gallery-item"><img src="images/diani3.avif" alt="Palm Trees"></div>
+        <div class="gallery-item"><img src="images/diani4.avif" alt="Beach Activities"></div>
+
+        <div class="gallery-item"><img src="images/diani1.avif" alt="Sunrise"></div>
+        <div class="gallery-item"><img src="images/diani2.avif" alt="Water Sports"></div>
+        <div class="gallery-item"><img src="images/diani3.avif" alt="Beach Resorts"></div>
+        <div class="gallery-item"><img src="images/diani4.avif" alt="Marine Life"></div>
+      </div>
+    </section>
+
+    <section class="hotels container" aria-labelledby="hotelsHeading">
+      <h2 id="hotelsHeading">Hotels & Resorts</h2>
+      <div class="grid four-grid">
+        <article class="card">
+          <div class="card-image"><img src="images/diani1.avif" alt="Baobab Beach Resort"></div>
+          <div class="card-body"><h3>Baobab Beach Resort</h3><p>Luxurious beachfront resort with multiple pools and dining options.</p></div>
+        </article>
+
+        <article class="card">
+          <div class="card-image"><img src="images/diani2.avif" alt="Diani Sea Lodge"></div>
+          <div class="card-body"><h3>Diani Sea Lodge</h3><p>Beautiful property with direct beach access and water sports facilities.</p></div>
+        </article>
+
+        <article class="card">
+          <div class="card-image"><img src="images/diani3.avif" alt="The Sands at Nomad"></div>
+          <div class="card-body"><h3>The Sands at Nomad</h3><p>Boutique hotel offering personalized service and tranquil surroundings.</p></div>
+        </article>
+
+        <article class="card">
+          <div class="card-image"><img src="images/diani4.avif" alt="Diani Reef Beach Resort"></div>
+          <div class="card-body"><h3>Diani Reef Beach Resort</h3><p>All-inclusive resort with extensive amenities and entertainment.</p></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="accommodation container" aria-labelledby="accomHeading">
+      <h2 id="accomHeading">Accommodation Options</h2>
+      <div class="grid four-grid accom">
+        <article class="card">
+          <div class="card-image"><img src="images/diani4.avif" alt="Luxury Villas"></div>
+          <div class="card-body"><h3>Luxury Beach Villas</h3><p>Private villas with ocean views and personal butler service.</p></div>
+        </article>
+
+        <article class="card">
+          <div class="card-image"><img src="images/diani1.avif" alt="Boutique Hotels"></div>
+          <div class="card-body"><h3>Boutique Hotels</h3><p>Intimate accommodations with unique design and personalized service.</p></div>
+        </article>
+
+        <article class="card">
+          <div class="card-image"><img src="images/diani2.avif" alt="Beach Cottages"></div>
+          <div class="card-body"><h3>Beach Cottages</h3><p>Cozy cottages perfect for couples and small families.</p></div>
+        </article>
+
+        <article class="card">
+          <div class="card-image"><img src="images/diani3.avif" alt="Budget Accommodation"></div>
+          <div class="card-body"><h3>Budget Accommodation</h3><p>Affordable guesthouses and hostels for budget-conscious travelers.</p></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="restaurants container" aria-labelledby="restHeading">
+      <h2 id="restHeading">Restaurants</h2>
+      <div class="grid four-grid">
+        <article class="card">
+          <div class="card-image"><img src="images/diani2.avif" alt="Ali Barbour's Cave"></div>
+          <div class="card-body"><h3>Ali Barbour's Cave</h3><p>Dine in a natural coral cave with romantic candlelit atmosphere.</p></div>
+        </article>
+
+        <article class="card">
+          <div class="card-image"><img src="images/diani3.avif" alt="Sails Beach Bar & Restaurant"></div>
+          <div class="card-body"><h3>Sails Beach Bar & Restaurant</h3><p>Beachfront dining with fresh seafood and stunning ocean views.</p></div>
+        </article>
+
+        <article class="card">
+          <div class="card-image"><img src="images/diani4.avif" alt="The Edge Beach Restaurant"></div>
+          <div class="card-body"><h3>The Edge Beach Restaurant</h3><p>Modern cuisine with panoramic views of the Indian Ocean.</p></div>
+        </article>
+
+        <article class="card">
+          <div class="card-image"><img src="images/diani1.avif" alt="Nomad Beach Bar"></div>
+          <div class="card-body"><h3>Nomad Beach Bar</h3><p>Casual beach bar serving cocktails and light bites.</p></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="transport container" aria-labelledby="transHeading">
+      <h2 id="transHeading">Transport Options</h2>
+      <div class="grid four-grid">
+        <article class="card">
+          <div class="card-image"><img src="images/diani1.avif" alt="Airport Transfer"></div>
+          <div class="card-body"><h3>Airport Transfers</h3><p>Convenient transfers from Ukunda Airstrip to your accommodation.</p></div>
+        </article>
+
+        <article class="card">
+          <div class="card-image"><img src="images/diani2.avif" alt="Tuk-tuks"></div>
+          <div class="card-body"><h3>Tuk-tuks</h3><p>Fun and affordable way to explore Diani Beach and nearby areas.</p></div>
+        </article>
+
+        <article class="card">
+          <div class="card-image"><img src="images/diani3.avif" alt="Car Rental"></div>
+          <div class="card-body"><h3>Car Rental</h3><p>Flexible car rental options for exploring the South Coast.</p></div>
+        </article>
+
+        <article class="card">
+          <div class="card-image"><img src="images/diani4.avif" alt="Bicycle Hire"></div>
+          <div class="card-body"><h3>Bicycle Hire</h3><p>Eco-friendly way to explore the beach and local villages.</p></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="map container" aria-labelledby="mapHeading">
+      <h2 id="mapHeading">Find Us</h2>
+      <div class="map-container">
+        <!-- Mini map embedded -->
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15918.15098229358!2d39.5619447!3d-4.3063883!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x184046e2c1b4e0c9%3A0x4c1c3a5d18341e0!2sDiani%20Beach!5e0!3m2!1sen!2ske!4v1700000000001!5m2!1sen!2ske"
+          width="100%" height="280" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+      </div>
+    </section>
+
+    <section class="cta">
+      <h2>Plan Your Beach Getaway</h2>
+      <button id="bottomStartBtn" class="cta-btn">Start Planning</button>
+    </section>
+
+    <footer class="footer">
+      <p>© 2025 Viva Utalii. All Rights Reserved.</p>
+    </footer>
+  </main>
+
+  <!-- Floating reviews CTA -->
+  <button class="reviews-cta" id="reviewsBtn" aria-label="Read reviews">Reviews</button>
+
+  <!-- Login Required Card Overlay -->
+  <div id="login-required-overlay">
+    <div id="login-required-card">
+      <div class="warning-icon">🔒</div>
+      <h3>Login Required</h3>
+      <p>To access this feature, you need to be logged in.</p>
+      <p style="font-size: 14px; opacity: 0.9; margin-top: 10px;">Please log in or create an account to plan your trip.</p>
+      <div class="login-card-buttons">
+        <button class="login-card-btn close-login-card" id="closeLoginCard">Close</button>
+        <button class="login-card-btn login-now-btn" id="goToLoginFromCard">Login Now</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Include auth.js (user-supplied) -->
+  <script src="auth.js"></script>
+
+  <script>
+    // Initialize when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('=== AUTHENTICATION DEBUG ===');
+      
+      // Login required card elements
+      const loginRequiredOverlay = document.getElementById('login-required-overlay');
+      const closeLoginCard = document.getElementById('closeLoginCard');
+      const goToLoginFromCard = document.getElementById('goToLoginFromCard');
+
+      // Login required card functionality
+      if (closeLoginCard) {
+        closeLoginCard.addEventListener('click', () => {
+          loginRequiredOverlay.style.display = 'none';
+        });
+      }
+
+      if (goToLoginFromCard) {
+        goToLoginFromCard.addEventListener('click', () => {
+          window.location.href = '../backend/login.html';
+        });
+      }
+
+      // Close login card when clicking outside
+      if (loginRequiredOverlay) {
+        loginRequiredOverlay.addEventListener('click', (e) => {
+          if (e.target === loginRequiredOverlay) {
+            loginRequiredOverlay.style.display = 'none';
+          }
+        });
+      }
+
+      // Enhanced user login detection
+      function userIsLoggedIn() {
+        // Check multiple possible localStorage keys
+        const possibleUserKeys = ['vivaUtalii_user', 'user_data', 'auth_user', 'currentUser', 'userLoggedIn'];
+        const possibleTokenKeys = ['vivaUtalii_token', 'auth_token', 'token', 'access_token', 'userToken'];
+        
+        let userData = null;
+        let token = null;
+        
+        // Find user data in localStorage
+        for (const key of possibleUserKeys) {
+          const data = localStorage.getItem(key);
+          if (data) {
+            userData = data;
+            console.log(`✓ Found user data in localStorage: ${key}`);
+            break;
+          }
+        }
+        
+        // Find token in localStorage
+        for (const key of possibleTokenKeys) {
+          const data = localStorage.getItem(key);
+          if (data) {
+            token = data;
+            console.log(`✓ Found token in localStorage: ${key}`);
+            break;
+          }
+        }
+        
+        // Also check sessionStorage as fallback
+        if (!userData) {
+          for (const key of possibleUserKeys) {
+            const data = sessionStorage.getItem(key);
+            if (data) {
+              userData = data;
+              console.log(`✓ Found user data in sessionStorage: ${key}`);
+              break;
+            }
+          }
+        }
+        
+        if (!token) {
+          for (const key of possibleTokenKeys) {
+            const data = sessionStorage.getItem(key);
+            if (data) {
+              token = data;
+              console.log(`✓ Found token in sessionStorage: ${key}`);
+              break;
+            }
+          }
+        }
+        
+        // Special case: check if userLoggedIn is a string "true"
+        if (userData === "true" || token === "true") {
+          console.log('✓ Found boolean true value for login status');
+          return true;
+        }
+        
+        // Parse JSON data if possible
+        try {
+          if (userData && typeof userData === 'string') {
+            const parsed = JSON.parse(userData);
+            if (parsed && typeof parsed === 'object') {
+              userData = parsed;
+              console.log('✓ Successfully parsed user data JSON');
+            }
+          }
+        } catch (e) {
+          console.log('User data is not JSON, using as-is');
+        }
+        
+        const isLoggedIn = !!(userData && token);
+        console.log('Final login status:', isLoggedIn ? 'LOGGED IN' : 'NOT LOGGED IN');
+        console.log('All localStorage keys:', Object.keys(localStorage));
+        console.log('================================');
+        
+        return isLoggedIn;
+      }
+
+      // Function to handle plan trip button clicks
+      function handlePlanTripClick() {
+        console.log('Plan Trip button clicked - checking authentication...');
+        const isLoggedIn = userIsLoggedIn();
+        
+        if (isLoggedIn) {
+          console.log('✓ User is logged in, redirecting to plan.html');
+          window.location.href = 'plan.html';
+        } else {
+          console.log('✗ User is not logged in, showing login card');
+          if (loginRequiredOverlay) {
+            loginRequiredOverlay.style.display = 'flex';
+          } else {
+            console.error('Login overlay element not found!');
+            // Fallback: redirect to login page
+            window.location.href = '../backend/login.html';
+          }
+        }
+      }
+
+      // Plan button logic (top-right)
+      const topPlanBtn = document.getElementById('topPlanBtn');
+      topPlanBtn.addEventListener('click', handlePlanTripClick);
+
+      // Mobile dropdown plan link
+      const mobilePlan = document.getElementById('mobilePlan');
+      if (mobilePlan) {
+        mobilePlan.addEventListener('click', function(e){
+          e.preventDefault();
+          handlePlanTripClick();
+        });
+      }
+
+      // Bottom CTA logic
+      const bottomStartBtn = document.getElementById('bottomStartBtn');
+      bottomStartBtn.addEventListener('click', handlePlanTripClick);
+
+      // Reviews button - updated to redirect to dianirev.html
+      document.getElementById('reviewsBtn').addEventListener('click', function(){
+        window.location.href = 'dianirev.html';
+      });
+
+      // Hamburger & mobile dropdown logic (collapse under header)
+      const hamburgerToggle = document.getElementById('hamburgerToggle');
+      const mobileDropdown = document.getElementById('mobileDropdown');
+
+      hamburgerToggle && hamburgerToggle.addEventListener('click', function(e){
+        if (!mobileDropdown) return;
+        const isOpen = mobileDropdown.classList.contains('open');
+        if (isOpen) {
+          mobileDropdown.classList.remove('open');
+          mobileDropdown.setAttribute('aria-hidden','true');
+          hamburgerToggle.setAttribute('aria-expanded','false');
+        } else {
+          mobileDropdown.classList.add('open');
+          mobileDropdown.setAttribute('aria-hidden','false');
+          hamburgerToggle.setAttribute('aria-expanded','true');
+        }
+      });
+
+      // Close mobile dropdown on outside click or Escape
+      document.addEventListener('click', function(e){
+        if (!mobileDropdown || !mobileDropdown.classList.contains('open')) return;
+        const target = e.target;
+        const insideDropdown = mobileDropdown.contains(target);
+        const clickedHamburger = hamburgerToggle.contains(target);
+        if (!insideDropdown && !clickedHamburger) {
+          mobileDropdown.classList.remove('open');
+          mobileDropdown.setAttribute('aria-hidden','true');
+          hamburgerToggle.setAttribute('aria-expanded','false');
+        }
+      });
+
+      document.addEventListener('keydown', function(e){
+        if (e.key === 'Escape' && mobileDropdown && mobileDropdown.classList.contains('open')) {
+          mobileDropdown.classList.remove('open');
+          mobileDropdown.setAttribute('aria-hidden','true');
+          hamburgerToggle.setAttribute('aria-expanded','false');
+        }
+      });
+
+      // Initial authentication check
+      userIsLoggedIn();
+    });
+  </script>
+
+</body>
+</html>

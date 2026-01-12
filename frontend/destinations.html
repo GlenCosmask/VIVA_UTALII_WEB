@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Destinations - Viva Utalii</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* Reset */
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+
+    /* Theme */
+    :root{
+      --accent-dark: #fff8f1;
+      --gold: #d4af37;
+      --yellow: #f7e05e;
+      --light: #fff8f1;
+      --card-bg: rgba(255,255,255,0.15);
+    }
+
+    body{
+      font-family: 'Poppins', sans-serif;
+      color: var(--accent-dark);
+      background: linear-gradient(135deg, #004e64, #007f5f, #d4af37);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* ---------- NAVBAR ---------- */
+    .navbar{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 48px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(0,0,0,0.15);
+      backdrop-filter: blur(6px);
+      border-bottom: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .logo{
+      font-family: 'Cinzel', serif;
+      font-size: 1.6rem;
+      color: var(--accent-dark);
+      font-weight: 700;
+      letter-spacing: 0.6px;
+    }
+
+    .nav-links{
+      list-style: none;
+      display: flex;
+      gap: 26px;
+      align-items: center;
+    }
+
+    .nav-links li{ position: relative; }
+
+    .nav-links a{
+      text-decoration: none;
+      color: var(--accent-dark);
+      font-weight: 500;
+      padding: 6px 0;
+      display: inline-block;
+      transition: color .25s ease;
+    }
+
+    .nav-links a::after{
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: -6px;
+      width: 0%;
+      height: 3px;
+      border-radius: 3px;
+      background: var(--gold);
+      transition: width .28s cubic-bezier(.2,.9,.3,1);
+    }
+
+    .nav-links a:hover::after,
+    .nav-links a.active::after{ width: 100%; }
+
+    .auth-buttons{
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .auth-buttons .btn{
+      padding: 10px 18px;
+      border-radius: 26px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      background: linear-gradient(45deg,var(--gold), #f8e473);
+      color: var(--accent-dark);
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+
+    .auth-buttons .btn:hover{
+      transform: translateY(-3px);
+      box-shadow: 0 10px 28px rgba(0,0,0,0.2);
+    }
+
+    .user-menu {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .user-menu .btn {
+      padding: 10px 18px;
+      border-radius: 26px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+
+    .profile-btn {
+      background: linear-gradient(45deg, var(--gold), #f8e473);
+      color: var(--accent-dark);
+    }
+
+    .logout-btn {
+      background: transparent;
+      border: 2px solid var(--gold);
+      color: var(--accent-dark);
+    }
+
+    .user-menu .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 28px rgba(0,0,0,0.2);
+    }
+
+    .welcome-text {
+      font-size: 0.9rem;
+      color: var(--accent-dark);
+      margin-right: 8px;
+    }
+
+    /* Hamburger */
+    .hamburger{
+      display: none;
+      width: 40px;
+      height: 36px;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      cursor: pointer;
+      background: transparent;
+      border: none;
+    }
+
+    .hamburger .bar{
+      width: 24px;
+      height: 3px;
+      background: var(--accent-dark);
+      border-radius: 2px;
+    }
+
+    /* Mobile Menu */
+    .mobile-menu{
+      position: fixed;
+      top: 0;
+      right: -100%;
+      width: 100%;
+      max-width: 400px;
+      height: 100%;
+      background: rgba(0,0,0,0.9);
+      z-index: 300;
+      transition: right .35s ease;
+      padding: 36px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .mobile-menu.open{ right: 0; }
+
+    .mobile-menu .close-btn{
+      align-self: flex-end;
+      font-size: 22px;
+      background: transparent;
+      border: none;
+      color: var(--accent-dark);
+      cursor: pointer;
+    }
+
+    .mobile-menu nav{ margin-top: 12px; display: flex; flex-direction: column; gap: 16px; }
+    .mobile-menu nav a{
+      color: var(--accent-dark);
+      font-weight: 600;
+      font-size: 1.1rem;
+      text-decoration: none;
+      padding: 12px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.05);
+    }
+
+    .mobile-menu nav a:hover{ background: rgba(255,255,255,0.15); }
+
+    .mobile-auths .btn{ width: 100%; text-align: center; padding: 12px; margin-top: 10px; }
+
+    .mobile-user-menu {
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .mobile-user-menu .btn {
+      width: 100%;
+      text-align: center;
+      padding: 12px;
+      margin-top: 10px;
+    }
+
+    /* Hero */
+    .small-hero{
+      position: relative;
+      height: 48vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      margin: 20px 48px;
+      border-radius: 8px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+      background: rgba(0,0,0,0.2);
+    }
+
+    .small-hero .hero-content{ position: relative; z-index: 2; padding: 0 20px; }
+    .small-hero h1{ font-family: 'Cinzel', serif; font-size: clamp(1.6rem, 3.6vw, 2.4rem); color: var(--accent-dark); margin-bottom: 10px; }
+    .small-hero p{ color: var(--accent-dark); font-size: clamp(.95rem, 2vw, 1.05rem); }
+
+    /* Destinations Grid */
+    .section-title{
+      text-align: center;
+      font-family: 'Cinzel', serif;
+      font-size: 2rem;
+      margin: 38px 0 18px;
+      color: var(--accent-dark);
+    }
+
+    .card-container{
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+      padding: 0 48px 60px;
+    }
+
+    .destination-card{
+      position: relative;
+      overflow: hidden;
+      border-radius: 12px;
+      background: var(--card-bg);
+      display: flex;
+      flex-direction: column;
+      transition: transform .3s ease, box-shadow .3s ease;
+    }
+
+    .destination-card:hover{ transform: translateY(-6px); box-shadow: 0 15px 35px rgba(0,0,0,0.3); }
+
+    .destination-card img{ width: 100%; height: 200px; object-fit: cover; }
+
+    .card-content{
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      color: var(--accent-dark);
+      flex: 1;
+    }
+
+    .card-content h2{ font-family: 'Cinzel', serif; font-size: 1.1rem; color: var(--accent-dark); }
+    .card-content p{ font-size: .9rem; color: var(--accent-dark); flex: 1; }
+
+    .explore-btn{
+      align-self: flex-start;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: var(--yellow);
+      color: #000;
+      border: none;
+      cursor: pointer;
+      font-weight: 700;
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+
+    .explore-btn:hover{ transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
+
+    footer{
+      text-align:center;
+      padding:30px 12px;
+      color: var(--accent-dark);
+      font-size:.95rem;
+      border-top: 1px solid rgba(255,255,255,0.2);
+      background: transparent;
+    }
+
+    /* Responsive */
+    @media (max-width: 900px){
+      .navbar{ padding: 14px 20px; }
+      .small-hero{ margin: 20px; height: 36vh; }
+      .card-container{ padding: 0 20px 40px; gap: 18px; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+    }
+
+    @media (max-width: 720px){
+      .nav-links{ display: none; }
+      .auth-buttons{ display: none; }
+      .user-menu { display: none; }
+      .hamburger{ display: flex; }
+      .small-hero{ height: 32vh; }
+    }
+
+    @media (max-width: 420px){
+      .logo{ font-size: 1.3rem; }
+      .card-content h2{ font-size: 1rem; }
+      .card-content p{ font-size: .85rem; }
+      .explore-btn{ padding: 6px 12px; font-size: .85rem; }
+    }
+
+  </style>
+</head>
+<body>
+
+  <header class="navbar">
+    <div class="logo">Viva Utalii</div>
+    <nav class="nav-menu" aria-label="Primary">
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="destinations.html" class="active">Destinations</a></li>
+        <li><a href="recommendations.html">Recommendations</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </nav>
+
+    <div class="auth-buttons" id="authButtons">
+      <a href="../backend/login.html?form=login"><button class="btn signin-btn">Sign In</button></a>
+      <a href="../backend/login.html?form=signup"><button class="btn signup-btn">Sign Up</button></a>
+    </div>
+
+    <div class="user-menu" id="userMenu">
+      <span class="welcome-text" id="welcomeText">Welcome</span>
+      <a href="profile.html"><button class="btn profile-btn">Profile</button></a>
+      <button class="btn logout-btn" onclick="logout()">Logout</button>
+    </div>
+
+    <button class="hamburger" id="hamburger" aria-label="Open menu">
+      <span class="bar"></span>
+      <span class="bar"></span>
+      <span class="bar"></span>
+    </button>
+  </header>
+
+  <aside class="mobile-menu" id="mobileMenu" aria-hidden="true">
+    <button class="close-btn" id="mobileClose" aria-label="Close menu">✕</button>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="destinations.html" class="active">Destinations</a>
+      <a href="recommendations.html">Recommendations</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <div class="mobile-auths" id="mobileAuths">
+      <a href="../backend/login.html?form=login" class="btn">Sign In</a>
+      <a href="../backend/login.html?form=signup" class="btn">Sign Up</a>
+    </div>
+    <div class="mobile-user-menu" id="mobileUserMenu">
+      <span style="color: var(--accent-dark); text-align: center; margin-bottom: 10px;" id="mobileWelcomeText">Welcome</span>
+      <a href="profile.html" class="btn profile-btn">Profile</a>
+      <button class="btn logout-btn" onclick="logout()">Logout</button>
+    </div>
+  </aside>
+
+  <section class="small-hero" role="banner" aria-label="Discover Kenya">
+    <div class="hero-content">
+      <h1>Discover Kenya's Beauty</h1>
+      <p>Choose from our handpicked destinations and start your adventure today.</p>
+    </div>
+  </section>
+
+  <section class="destinations" aria-labelledby="top-destinations">
+    <h2 id="top-destinations" class="section-title">Top Destinations</h2>
+    <div class="card-container">
+
+      <article class="destination-card">
+        <img src="images/diani1.avif" alt="Diani Beach" />
+        <div class="card-content">
+          <h2>Diani Beach</h2>
+          <p>Pristine white sands and turquoise waters await at Diani, Kenya's tropical paradise.</p>
+          <a href="diani.html"><button class="explore-btn">Explore More</button></a>
+        </div>
+      </article>
+
+      <article class="destination-card">
+        <img src="images/amboseli1.avif" alt="Amboseli National Park" />
+        <div class="card-content">
+          <h2>Amboseli</h2>
+          <p>Home of elephants with breathtaking views of Mount Kilimanjaro.</p>
+          <a href="amboseli.html"><button class="explore-btn">Explore More</button></a>
+        </div>
+      </article>
+
+      <article class="destination-card">
+        <img src="images/mm1.avif" alt="Maasai Mara" />
+        <div class="card-content">
+          <h2>Maasai Mara</h2>
+          <p>Witness the Great Migration and explore Kenya's most iconic safari destination.</p>
+          <a href="maasaimara.html"><button class="explore-btn">Explore More</button></a>
+        </div>
+      </article>
+
+      <article class="destination-card">
+        <img src="images/nnp1.avif" alt="Nairobi National Park" />
+        <div class="card-content">
+          <h2>Nairobi National Park</h2>
+          <p>A unique safari experience with wildlife roaming against the city skyline.</p>
+          <a href="nnp.html"><button class="explore-btn">Explore More</button></a>
+        </div>
+      </article>
+
+      <article class="destination-card">
+        <img src="images/mk1.jpg" alt="Mt. Kenya" />
+        <div class="card-content">
+          <h2>Mt. Kenya National Park</h2>
+          <p>Experience the majestic peaks, alpine meadows, and unique wildlife of Mt. Kenya.</p>
+          <a href="mtkenya.html"><button class="explore-btn">Explore More</button></a>
+        </div>
+      </article>
+
+      <article class="destination-card">
+        <img src="images/olp2.jpg" alt="Ol Pejeta Conservancy" />
+        <div class="card-content">
+          <h2>Ol Pejeta Conservancy</h2>
+          <p>Visit East Africa's largest black rhino sanctuary and meet the last northern white rhinos.</p>
+          <a href="olpajeta.html"><button class="explore-btn">Explore More</button></a>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <footer>
+    <p>© 2025 Viva Utalii. All rights reserved.</p>
+  </footer>
+
+  <script>
+    // Login checker function
+    function checkLoginStatus() {
+      const authToken = localStorage.getItem('auth_token');
+      const userData = localStorage.getItem('user_data');
+      
+      const authButtons = document.getElementById('authButtons');
+      const userMenu = document.getElementById('userMenu');
+      const mobileAuths = document.getElementById('mobileAuths');
+      const mobileUserMenu = document.getElementById('mobileUserMenu');
+      const welcomeText = document.getElementById('welcomeText');
+      const mobileWelcomeText = document.getElementById('mobileWelcomeText');
+      
+      if (authToken && userData) {
+        try {
+          const user = JSON.parse(userData);
+          const userName = user.name || 'User';
+          
+          // Update welcome text
+          if (welcomeText) welcomeText.textContent = `Welcome, ${userName}`;
+          if (mobileWelcomeText) mobileWelcomeText.textContent = `Welcome, ${userName}`;
+          
+          // Show user menu, hide auth buttons
+          if (authButtons) authButtons.style.display = 'none';
+          if (userMenu) userMenu.style.display = 'flex';
+          if (mobileAuths) mobileAuths.style.display = 'none';
+          if (mobileUserMenu) mobileUserMenu.style.display = 'flex';
+          
+        } catch (e) {
+          console.error('Error parsing user data:', e);
+          // Fallback to default behavior if there's an error
+          showAuthButtons();
+        }
+      } else {
+        showAuthButtons();
+      }
+    }
+
+    function showAuthButtons() {
+      const authButtons = document.getElementById('authButtons');
+      const userMenu = document.getElementById('userMenu');
+      const mobileAuths = document.getElementById('mobileAuths');
+      const mobileUserMenu = document.getElementById('mobileUserMenu');
+      
+      if (authButtons) authButtons.style.display = 'flex';
+      if (userMenu) userMenu.style.display = 'none';
+      if (mobileAuths) mobileAuths.style.display = 'block';
+      if (mobileUserMenu) mobileUserMenu.style.display = 'none';
+    }
+
+    function logout() {
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user_data');
+      window.location.href = 'index.html';
+    }
+
+    // Initialize login status check when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+      checkLoginStatus();
+      
+      // Mobile menu functionality
+      const hamburger = document.getElementById('hamburger');
+      const mobileMenu = document.getElementById('mobileMenu');
+      const mobileClose = document.getElementById('mobileClose');
+
+      if (hamburger && mobileMenu && mobileClose) {
+        hamburger.addEventListener('click', () => { 
+          mobileMenu.classList.add('open'); 
+          mobileMenu.setAttribute('aria-hidden','false'); 
+          mobileClose.focus(); 
+        });
+        
+        mobileClose.addEventListener('click', () => { 
+          mobileMenu.classList.remove('open'); 
+          mobileMenu.setAttribute('aria-hidden','true'); 
+          hamburger.focus(); 
+        });
+
+        window.addEventListener('click', (e) => {
+          if (!mobileMenu.contains(e.target) && !hamburger.contains(e.target)) { 
+            mobileMenu.classList.remove('open'); 
+            mobileMenu.setAttribute('aria-hidden','true'); 
+          }
+        });
+        
+        window.addEventListener('keydown', (e) => { 
+          if (e.key === 'Escape') mobileMenu.classList.remove('open'); 
+        });
+      }
+    });
+
+    // Optional: Listen for storage changes to update login status across tabs
+    window.addEventListener('storage', function(e) {
+      if (e.key === 'auth_token' || e.key === 'user_data') {
+        checkLoginStatus();
+      }
+    });
+  </script>
+</body>
+</html>

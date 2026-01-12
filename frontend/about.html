@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>About | Viva Utalii</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Poppins&display=swap" rel="stylesheet">
+<style>
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #004e64, #007f5f, #d4af37);
+  color: #2b1d0e;
+  overflow-x: hidden;
+  text-align: center;
+}
+
+/* Fade-in Animation */
+@keyframes fadeInUp {
+  from {opacity:0; transform:translateY(30px);}
+  to {opacity:1; transform:translateY(0);}
+}
+section, .card, .founder-card, .portfolio-gallery img {
+  animation: fadeInUp 1s ease forwards;
+  opacity: 0;
+}
+
+/* ---------------- Navbar ---------------- */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 40px;
+  background: rgba(255,255,255,0.25);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.logo-text {
+  font-family: 'Playfair Display', serif;
+  font-size: 30px;
+  font-weight: 700;
+  color: #fff;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+  justify-content: center;
+  gap: 25px;
+  margin: 0;
+  padding: 0;
+}
+
+nav a {
+  text-decoration: none;
+  color: #fff;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-family: 'Playfair Display', serif;
+  position: relative;
+}
+
+nav a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0;
+  height: 3px;
+  background: #ffd966;
+  transition: width 0.3s ease;
+  border-radius: 3px;
+}
+
+nav a:hover::after, nav a.active::after {
+  width: 100%;
+}
+
+nav a:hover, nav a.active {
+  color: #ffd966;
+}
+
+/* Auth Buttons */
+.auth-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.auth-buttons a {
+  text-decoration: none;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 30px;
+  color: #3b2714;
+  background: #ffd966;
+  transition: 0.3s;
+}
+
+.auth-buttons a:hover {
+  background: #fff;
+}
+
+/* Hero Section */
+.hero {
+  text-align: center;
+  padding: 100px 20px 60px;
+  color: #fff;
+}
+
+.hero h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 50px;
+  margin-bottom: 20px;
+  font-weight: 700;
+}
+
+.hero p {
+  font-size: 18px;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+/* Cards */
+.card {
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(10px);
+  border-radius: 25px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+  margin: 30px auto;
+  padding: 40px;
+  max-width: 850px;
+  color: #fff;
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 35px rgba(0,0,0,0.3);
+}
+
+.card h2, .card h3 {
+  font-family: 'Playfair Display', serif;
+  margin-bottom: 20px;
+}
+
+/* Mission & Vision */
+.mission-vision {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+.mission, .vision {
+  max-width: 400px;
+  padding: 30px;
+}
+
+/* Values */
+.value-list {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-top: 25px;
+}
+
+.value-item {
+  background: rgba(255,255,255,0.2);
+  padding: 15px 25px;
+  border-radius: 25px;
+  font-weight: bold;
+  font-family: 'Playfair Display', serif;
+  transition: transform 0.3s, background 0.3s;
+}
+
+.value-item:hover {
+  transform: scale(1.1);
+  background: #ffd966;
+  color: #3b2714;
+}
+
+/* Founder */
+.founder-card {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+.founder-card img {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 5px solid #ffd966;
+}
+
+.founder-info {
+  max-width: 500px;
+}
+
+/* Portfolio Gallery */
+.portfolio-gallery {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  max-width: 1200px;
+  margin: 30px auto;
+}
+
+.portfolio-gallery img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 20px;
+  transition: transform 0.5s, box-shadow 0.5s;
+}
+
+.portfolio-gallery img:hover {
+  transform: scale(1.1);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+/* CTA Button */
+.cta .join-btn {
+  background: #ffd966;
+  color: #3b2714;
+  padding: 14px 40px;
+  border-radius: 30px;
+  font-weight: bold;
+  font-family: 'Playfair Display', serif;
+  font-size: 18px;
+  text-decoration: none;
+  transition: 0.3s;
+}
+
+.cta .join-btn:hover {
+  background: #fff;
+  color: #3b2714;
+}
+
+/* Footer */
+footer {
+  background: linear-gradient(135deg, #004e64, #007f5f, #d4af37);
+  color: #fff;
+  text-align: center;
+  padding: 15px;
+  margin-top: 50px;
+  font-family: 'Playfair Display', serif;
+}
+
+/* Responsive Navbar & Hamburger Menu */
+.menu-toggle {
+  display: none;
+  flex-direction: column;
+  cursor: pointer;
+  gap: 5px;
+}
+
+.menu-toggle div {
+  width: 25px;
+  height: 3px;
+  background: #fff;
+}
+
+@media screen and (max-width: 900px) {
+  nav ul {
+    position: fixed;
+    top: 70px;
+    right: -100%;
+    background: rgba(0,0,0,0.85);
+    flex-direction: column;
+    width: 250px;
+    height: 100%;
+    gap: 20px;
+    padding-top: 50px;
+    transition: right 0.3s ease;
+    z-index: 99;
+  }
+  nav ul.show {
+    right: 0;
+  }
+  .menu-toggle {
+    display: flex;
+  }
+}
+</style>
+</head>
+
+<body>
+  <header class="navbar">
+    <div class="logo-text">VIVA UTALII</div>
+    <div class="menu-toggle" onclick="toggleMenu()">
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
+    <nav>
+      <ul id="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="destinations.html">Destinations</a></li>
+        <li><a href="recommendations.html">Recommendations</a></li>
+        <li><a href="about.html" class="active">About</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </nav>
+    <div class="auth-buttons">
+      <a href="destinations.html" class="get-started-btn">Get Started</a>
+    </div>
+  </header>
+
+  <section class="hero">
+    <h1>Discover the Story Behind Viva Utalii</h1>
+    <p>Where wanderlust meets innovation — blending technology and travel to inspire explorers across the world.</p>
+  </section>
+
+  <section class="about card">
+    <h2>About Viva Utalii</h2>
+    <p>Viva Utalii brings together culture, technology, and passion for travel. Our goal is to simplify trip planning and connect travelers with authentic experiences that make every journey memorable.</p>
+  </section>
+
+  <section class="mission-vision">
+    <div class="mission card">
+      <h3>Our Mission</h3>
+      <p>To simplify travel planning through personalized, credible, and inspiring tools for every traveler.</p>
+    </div>
+    <div class="vision card">
+      <h3>Our Vision</h3>
+      <p>To become Africa's leading travel companion, helping people connect with cultures, destinations, and unforgettable stories.</p>
+    </div>
+  </section>
+
+  <section class="values card">
+    <h2>Our Core Values</h2>
+    <div class="value-list">
+      <div class="value-item">🌍 Authenticity</div>
+      <div class="value-item">🧭 Adventure</div>
+      <div class="value-item">🤝 Connection</div>
+      <div class="value-item">💡 Innovation</div>
+      <div class="value-item">❤️ Passion</div>
+    </div>
+  </section>
+
+  <section class="founder card">
+    <h2>Meet the Founder</h2>
+    <div class="founder-card">
+      <img src="images/ceo.jpg" alt="Founder Glen Cosmas Kamau">
+      <div class="founder-info">
+        <h3>Glen Cosmas Kamau</h3>
+        <p>Founder & Developer, Viva Utalii</p>
+        <p>I created Viva Utalii out of a passion for discovery, helping explorers everywhere find their next adventure with ease.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="portfolio">
+    <h2>Travel Moments</h2>
+    <div class="portfolio-gallery">
+      <img src="images/amboseli2.avif" alt="Amboseli">
+      <img src="images/diani3.avif" alt="Diani">
+      <img src="images/nnp2.avif" alt="Nairobi National Park">
+      <img src="images/mm3.avif" alt="Maasai Mara">
+      <img src="images/tp4.jpeg" alt="London">
+      <img src="images/tp6.jpeg" alt="Chicago">
+      <img src="images/tp5.jpeg" alt="Paris">
+      <img src="images/diani4.avif" alt="Diani">
+    </div>
+  </section>
+
+  <section class="cta">
+    <a href="destinations.html" class="join-btn">Get Started</a>
+  </section>
+
+  <footer>
+    <p>© 2025 Viva Utalii. All Rights Reserved.</p>
+  </footer>
+
+<script>
+function toggleMenu() {
+  const navLinks = document.getElementById('nav-links');
+  navLinks.classList.toggle('show');
+}
+</script>
+</body>
+</html>
