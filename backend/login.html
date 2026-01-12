@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
 <style>
-/* Your existing CSS styles remain exactly the same */
+/* --- CORE STYLES --- */
 body {
   font-family: "Playfair Display", serif;
   background: linear-gradient(135deg, #004e64, #007f5f, #d4af37);
@@ -400,12 +400,10 @@ a:hover {
 </head>
 <body>
 
-<!-- Notification Container -->
 <div class="notification-container" id="notificationContainer"></div>
 
 <div class="container" id="container">
 
-  <!-- SIGN UP -->
   <div class="form-container sign-up-container" id="signupSection">
     <form id="signupForm">
       <h1>Create Account</h1>
@@ -429,7 +427,6 @@ a:hover {
     </form>
   </div>
 
-  <!-- SIGN IN -->
   <div class="form-container sign-in-container" id="signinSection">
     <form id="signinForm">
       <h1>Sign in</h1>
@@ -448,7 +445,6 @@ a:hover {
     </form>
   </div>
 
-  <!-- OVERLAY -->
   <div class="overlay-container">
     <div class="overlay">
       <div class="overlay-panel overlay-left">
@@ -468,10 +464,11 @@ a:hover {
 </div>
 
 <script>
-// BACKEND URL - This will work with any port
-const BACKEND_URL = 'http://127.0.0.1:5000';
+// ----- BACKEND CONFIGURATION -----
+// Updated to your Render Backend URL
+const BACKEND_URL = 'https://viva-backend-p91j.onrender.com';
 
-// Elements (use getElementById for reliability)
+// ----- DOM ELEMENTS -----
 const containerEl = document.getElementById('container');
 const signUpBtn = document.getElementById('signUp');   // overlay button
 const signInBtn = document.getElementById('signIn');   // overlay button
@@ -479,9 +476,11 @@ const gotoSignUp = document.getElementById('gotoSignUp'); // text link in sign-i
 const gotoSignIn = document.getElementById('gotoSignIn'); // text link in sign-up form
 const signupSection = document.getElementById('signupSection');
 const signinSection = document.getElementById('signinSection');
+const signupForm = document.getElementById('signupForm');
+const signinForm = document.getElementById('signinForm');
 
-// ----- BEAUTIFUL NOTIFICATION SYSTEM -----
-function showNotification(type, title, message, duration = 5000) {
+// ----- NOTIFICATION SYSTEM -----
+function showNotification(type, title, message, duration = 4000) {
   const container = document.getElementById('notificationContainer');
   const notification = document.createElement('div');
   notification.className = `notification ${type}`;
@@ -509,12 +508,12 @@ function showNotification(type, title, message, duration = 5000) {
   // Animate in
   setTimeout(() => {
     notification.classList.add('show');
-    
-    // Start progress bar
+    // Start progress bar animation
     const progressBar = notification.querySelector('.notification-progress');
-    setTimeout(() => {
-      progressBar.style.transform = 'scaleX(0)';
-    }, 10);
+    if(progressBar) {
+        // We set transition via CSS, so we just change scale
+        setTimeout(() => progressBar.style.transform = 'scaleX(0)', 10);
+    }
   }, 10);
   
   // Close button functionality
@@ -531,8 +530,6 @@ function showNotification(type, title, message, duration = 5000) {
       }
     }, duration);
   }
-  
-  return notification;
 }
 
 function closeNotification(notification) {
@@ -546,18 +543,19 @@ function closeNotification(notification) {
   }, 400);
 }
 
+// ----- UI INTERACTION LOGIC -----
+
 // Helper to detect mobile width
 function isMobile() {
   return window.innerWidth <= 768;
 }
 
-// Desktop behavior: overlay sliding (preserve original)
+// Desktop behavior: overlay sliding
 if (signUpBtn) signUpBtn.addEventListener('click', () => containerEl.classList.add('right-panel-active'));
 if (signInBtn) signInBtn.addEventListener('click', () => containerEl.classList.remove('right-panel-active'));
 
-// Mobile behavior: show/hide appropriate form containers (no sliding)
+// Mobile behavior: show/hide appropriate form containers
 function showMobileForm(which) {
-  // which = 'signin' or 'signup'
   signinSection.classList.remove('mobile-active');
   signupSection.classList.remove('mobile-active');
 
@@ -565,7 +563,7 @@ function showMobileForm(which) {
   else signupSection.classList.add('mobile-active');
 }
 
-// Attach links that switch view; respect desktop vs mobile
+// Attach links that switch view
 if (gotoSignUp) gotoSignUp.addEventListener('click', (e) => {
   e.preventDefault();
   if (isMobile()) {
@@ -584,24 +582,18 @@ if (gotoSignIn) gotoSignIn.addEventListener('click', (e) => {
   }
 });
 
-// On load: set appropriate initial view for mobile and desktop
+// Setup Initial View logic
 function setupInitialView() {
   if (isMobile()) {
-    // On mobile show sign-in by default
     showMobileForm('signin');
-    // ensure overlay is hidden visually (CSS already hides it)
   } else {
-    // Desktop: ensure both form containers are present (overlay handles visibility)
-    // Remove any mobile-only classes if present
+    // Desktop: ensure both form containers are present, overlay handles visibility
     signinSection.classList.remove('mobile-active');
     signupSection.classList.remove('mobile-active');
   }
 }
 window.addEventListener('load', setupInitialView);
-window.addEventListener('resize', () => {
-  // Keep UI consistent after resize
-  setupInitialView();
-});
+window.addEventListener('resize', setupInitialView);
 
 // Toggle password visibility
 document.querySelectorAll('.toggle-password').forEach(icon => {
@@ -614,156 +606,129 @@ document.querySelectorAll('.toggle-password').forEach(icon => {
   });
 });
 
-// Function to test index.html path
-function testIndexPath() {
-  const testPaths = [
-    '../frontend/index.html',
-    '/frontend/index.html',
-    './frontend/index.html',
-    'frontend/index.html',
-    '../../frontend/index.html',
-    '/index.html',
-    './index.html',
-    'index.html'
-  ];
-  
-  console.log('Current URL:', window.location.href);
-  console.log('Testing index.html paths:');
-  
-  testPaths.forEach(path => {
-    console.log(`Testing: ${path} -> ${new URL(path, window.location.href).href}`);
-  });
-}
+// ----- NAVIGATION / REDIRECT LOGIC -----
 
-// Call this to debug path issues
-testIndexPath();
-
-// Function to redirect to index.html with fallback options
 async function redirectToIndex() {
-  const baseUrl = window.location.origin;
-  const indexPaths = [
-    '../frontend/index.html',
-    '/frontend/index.html',
-    baseUrl + '/frontend/index.html',
-    './frontend/index.html',
-    'frontend/index.html',
-    '../index.html',
-    '/index.html',
-    baseUrl + '/index.html'
+  // Standard list of paths where index.html might be located relative to login.html
+  const paths = [
+    '../index.html',     // If login is in a subfolder (e.g., /auth/login.html)
+    'index.html',        // If they are siblings
+    './index.html',      
+    '../frontend/index.html'
   ];
   
-  // Test each path until one works
-  for (let path of indexPaths) {
-    try {
-      const testUrl = new URL(path, baseUrl).href;
-      console.log('Testing redirect to:', testUrl);
-      
-      // Create a test request to see if the file exists
-      const testResponse = await fetch(testUrl, { method: 'HEAD' });
-      if (testResponse.ok) {
-        console.log('Found index.html at:', testUrl);
-        window.location.href = path;
-        return true;
-      }
-    } catch (err) {
-      console.log('Path not accessible:', path, err);
-    }
-  }
+  console.log('Attempting to redirect...');
+
+  // Simple client-side check. We try the most likely path first.
+  // Note: We can't easily "check" file existence without making a HEAD request,
+  // but for simple navigation, we usually just assign href.
   
-  // If no paths work, show error
-  console.error('Could not find index.html. Available paths tested:', indexPaths);
-  showNotification('error', 'Navigation Error', 'Home page not found. Please contact administrator.');
-  return false;
+  // Default fallback: Go to parent index
+  window.location.href = 'index.html'; 
 }
 
-/* --- FORM HANDLERS --- */
-const signupForm = document.getElementById('signupForm');
-const signinForm = document.getElementById('signinForm');
+// ----- AUTHENTICATION LOGIC -----
 
+// SIGNUP HANDLER
 signupForm.addEventListener('submit', async (e) => {
   e.preventDefault();
+  
   const name = document.getElementById("signupName").value.trim();
   const email = document.getElementById("signupEmail").value.trim();
   const password = document.getElementById("signupPassword").value.trim();
   const confirm = document.getElementById("signupConfirm").value.trim();
 
+  // Basic Validation
   if (password !== confirm) {
     showNotification('error', 'Password Mismatch', 'Passwords do not match!');
     return;
   }
+  
+  if (password.length < 6) {
+    showNotification('warning', 'Weak Password', 'Password should be at least 6 characters.');
+    return;
+  }
+
+  // Button State (Loading)
+  const btn = signupForm.querySelector('button');
+  const originalText = btn.innerText;
+  btn.innerText = 'Creating Account...';
+  btn.disabled = true;
 
   try {
     const response = await fetch(`${BACKEND_URL}/signup`, {
       method: 'POST',
-      headers: { 'Content-Type':'application/json' },
-      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, email, password })
     });
     
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || 'Signup failed');
-    }
-    
     const result = await response.json();
     
-    // Store token and user data in localStorage
-    if (result.token && result.user) {
-      localStorage.setItem('auth_token', result.token);
-      localStorage.setItem('user_data', JSON.stringify(result.user));
-      console.log('Token and user data stored successfully');
+    if (response.ok && result.token) {
+      // SUCCESS: Save using the keys compatible with auth.js
+      localStorage.setItem('vivaUtalii_token', result.token);
+      localStorage.setItem('vivaUtalii_user', JSON.stringify(result.user));
+      
+      showNotification('success', 'Account Created!', 'Welcome to Viva Utalii!');
+      
+      setTimeout(() => {
+        window.location.href = 'index.html';
+      }, 1500);
+    } else {
+      // SERVER ERROR
+      throw new Error(result.message || result.error || 'Signup failed');
     }
-    
-    showNotification('success', 'Account Created!', result.message || 'Your account has been created successfully!');
-    
-    // Redirect to index.html after a short delay
-    setTimeout(() => {
-      redirectToIndex();
-    }, 2000);
     
   } catch (err) {
     console.error('Signup error:', err);
-    showNotification('error', 'Signup Failed', err.message || 'Network error during signup.');
+    showNotification('error', 'Signup Failed', err.message || 'Network error. Please try again.');
+    btn.innerText = originalText;
+    btn.disabled = false;
   }
 });
 
+// LOGIN HANDLER
 signinForm.addEventListener('submit', async (e) => {
   e.preventDefault();
+  
   const email = document.getElementById("signinEmail").value.trim();
   const password = document.getElementById("signinPassword").value.trim();
+
+  // Button State (Loading)
+  const btn = signinForm.querySelector('button');
+  const originalText = btn.innerText;
+  btn.innerText = 'Signing In...';
+  btn.disabled = true;
 
   try {
     const response = await fetch(`${BACKEND_URL}/login`, {
       method: 'POST',
-      headers: { 'Content-Type':'application/json' },
-      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password })
     });
     
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || 'Login failed');
-    }
-    
     const result = await response.json();
     
-    // Store token and user data in localStorage
-    if (result.token && result.user) {
-      localStorage.setItem('auth_token', result.token);
-      localStorage.setItem('user_data', JSON.stringify(result.user));
-      console.log('Token and user data stored successfully');
+    if (response.ok && result.token) {
+      // SUCCESS: Save using the keys compatible with auth.js
+      localStorage.setItem('vivaUtalii_token', result.token);
+      localStorage.setItem('vivaUtalii_user', JSON.stringify(result.user));
+      
+      showNotification('success', 'Welcome Back!', `Logged in as ${result.user.name || 'User'}`);
+      
+      setTimeout(() => {
+        window.location.href = 'index.html';
+      }, 1500);
+    } else {
+      // SERVER ERROR
+      throw new Error(result.message || result.error || 'Invalid credentials');
     }
-    
-    showNotification('success', 'Welcome Back!', result.message || 'You have successfully logged in!');
-    
-    // Redirect to index.html after a short delay
-    setTimeout(() => {
-      redirectToIndex();
-    }, 2000);
     
   } catch (err) {
     console.error('Login error:', err);
-    showNotification('error', 'Login Failed', err.message || 'Network error during login.');
+    showNotification('error', 'Login Failed', err.message || 'Network error. Please try again.');
+    btn.innerText = originalText;
+    btn.disabled = false;
   }
 });
 </script>

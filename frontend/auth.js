@@ -1,6 +1,8 @@
 // auth.js - Authentication system for Viva Utalii
 class AuthSystem {
     constructor() {
+        // Base URL for your Render backend
+        this.API_BASE_URL = 'https://viva-backend-p91j.onrender.com';
         this.currentUser = null;
         this.init();
     }
@@ -16,9 +18,15 @@ class AuthSystem {
         const token = localStorage.getItem('vivaUtalii_token');
         
         if (userData && token) {
-            this.currentUser = JSON.parse(userData);
-            this.updateUI();
-            return true;
+            try {
+                this.currentUser = JSON.parse(userData);
+                this.updateUI();
+                return true;
+            } catch (e) {
+                console.error("Error parsing user data", e);
+                this.logout(); // Clear corrupted data
+                return false;
+            }
         }
         return false;
     }
@@ -26,7 +34,7 @@ class AuthSystem {
     // Login function
     async login(email, password) {
         try {
-            const response = await fetch('https://siphonal-corny-dawson.ngrok-free.dev/login', {
+            const response = await fetch(`${this.API_BASE_URL}/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -36,26 +44,23 @@ class AuthSystem {
 
             const result = await response.json();
 
-            if (result.message === 'Login successful!' && result.token) {
-                // Store user data and token
-                localStorage.setItem('vivaUtalii_user', JSON.stringify(result.user));
-                localStorage.setItem('vivaUtalii_token', result.token);
-                this.currentUser = result.user;
-                this.updateUI();
+            // Checking for 200 OK status or specific success message
+            if (response.ok && result.token) {
+                this.saveSession(result.user, result.token);
                 return { success: true, user: result.user };
             } else {
-                return { success: false, error: result.error || 'Login failed' };
+                return { success: false, error: result.message || result.error || 'Login failed' };
             }
         } catch (error) {
             console.error('Login error:', error);
-            return { success: false, error: 'Network error. Please try again.' };
+            return { success: false, error: 'Connection to server failed. Please try again.' };
         }
     }
 
     // Signup function
     async signup(name, email, password) {
         try {
-            const response = await fetch('https://siphonal-corny-dawson.ngrok-free.dev/signup', {
+            const response = await fetch(`${this.API_BASE_URL}/signup`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -65,20 +70,24 @@ class AuthSystem {
 
             const result = await response.json();
 
-            if (result.message === 'Account created successfully!' && result.token) {
-                // Store user data and token
-                localStorage.setItem('vivaUtalii_user', JSON.stringify(result.user));
-                localStorage.setItem('vivaUtalii_token', result.token);
-                this.currentUser = result.user;
-                this.updateUI();
+            if (response.ok && result.token) {
+                this.saveSession(result.user, result.token);
                 return { success: true, user: result.user };
             } else {
-                return { success: false, error: result.error || 'Signup failed' };
+                return { success: false, error: result.message || result.error || 'Signup failed' };
             }
         } catch (error) {
             console.error('Signup error:', error);
-            return { success: false, error: 'Network error. Please try again.' };
+            return { success: false, error: 'Connection to server failed. Please try again.' };
         }
+    }
+
+    // Helper to save session data
+    saveSession(user, token) {
+        localStorage.setItem('vivaUtalii_user', JSON.stringify(user));
+        localStorage.setItem('vivaUtalii_token', token);
+        this.currentUser = user;
+        this.updateUI();
     }
 
     // Logout function
@@ -87,33 +96,36 @@ class AuthSystem {
         localStorage.removeItem('vivaUtalii_token');
         this.currentUser = null;
         this.updateUI();
+        // Adjust redirect path if your login page is in a different folder
         window.location.href = 'index.html';
     }
 
-    // Check if user is logged in
     isLoggedIn() {
         return this.currentUser !== null;
     }
 
-    // Get current user
     getCurrentUser() {
         return this.currentUser;
     }
 
-    // Update UI based on auth state
-    updateUI() {
-        // Update profile button if it exists
-        const profileBtn = document.querySelector('.profile-btn');
-        if (profileBtn && this.currentUser) {
-            profileBtn.innerHTML = `👤 ${this.currentUser.name || 'Profile'}`;
-        }
-
-        // You can add more UI updates here as needed
-        console.log('Auth state updated. User:', this.currentUser ? this.currentUser.name : 'Not logged in');
+    // Get the JWT token for authenticated API calls
+    getToken() {
+        return localStorage.getItem('vivaUtalii_token');
     }
 
-    // Check authentication and redirect if not logged in
-    requireAuth(redirectTo = '../backend/login.html') {
+    updateUI() {
+        const profileBtn = document.querySelector('.profile-btn');
+        if (profileBtn) {
+            if (this.currentUser) {
+                profileBtn.innerHTML = `👤 ${this.currentUser.name || 'Profile'}`;
+            } else {
+                profileBtn.innerHTML = `👤 Login`;
+            }
+        }
+        console.log('Auth state:', this.currentUser ? `Logged in as ${this.currentUser.email}` : 'Logged out');
+    }
+
+    requireAuth(redirectTo = 'login.html') {
         if (!this.isLoggedIn()) {
             window.location.href = redirectTo;
             return false;
@@ -122,15 +134,10 @@ class AuthSystem {
     }
 }
 
-// Initialize auth system
+// Initialize and attach to window
 const auth = new AuthSystem();
-
-// Global functions for backward compatibility
 window.auth = auth;
+
+// Compatibility exports
 window.isLoggedIn = () => auth.isLoggedIn();
 window.getCurrentUser = () => auth.getCurrentUser();
-
-// Export for module use
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { auth };
-}
