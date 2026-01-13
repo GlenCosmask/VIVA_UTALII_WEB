@@ -453,8 +453,8 @@
   <script>
     // Login checker function
     function checkLoginStatus() {
-      const authToken = localStorage.getItem('auth_token');
-      const userData = localStorage.getItem('user_data');
+      const authToken = localStorage.getItem('vivaUtalii_token');
+      const userData = localStorage.getItem('vivaUtalii_user');
       
       const authButtons = document.getElementById('authButtons');
       const userMenu = document.getElementById('userMenu');
@@ -501,8 +501,8 @@
     }
 
     function logout() {
-      localStorage.removeItem('auth_token');
-      localStorage.removeItem('user_data');
+      localStorage.removeItem('vivaUtalii_token');
+      localStorage.removeItem('vivaUtalii_user');
       window.location.href = 'index.html';
     }
 
@@ -543,7 +543,7 @@
 
     // Optional: Listen for storage changes to update login status across tabs
     window.addEventListener('storage', function(e) {
-      if (e.key === 'auth_token' || e.key === 'user_data') {
+      if (e.key === 'vivaUtalii_token' || e.key === 'vivaUtalii_user') {
         checkLoginStatus();
       }
     });
