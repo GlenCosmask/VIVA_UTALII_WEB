@@ -348,7 +348,6 @@
     <div class="user-menu" id="userMenu">
       <span class="welcome-text" id="welcomeText">Welcome</span>
       <a href="profile.html"><button class="btn profile-btn">Profile</button></a>
-      <button class="btn logout-btn" onclick="logout()">Logout</button>
     </div>
 
     <button class="hamburger" id="hamburger" aria-label="Open menu">
@@ -374,7 +373,6 @@
     <div class="mobile-user-menu" id="mobileUserMenu">
       <span style="color: var(--accent-dark); text-align: center; margin-bottom: 10px;" id="mobileWelcomeText">Welcome</span>
       <a href="profile.html" class="btn profile-btn">Profile</a>
-      <button class="btn logout-btn" onclick="logout()">Logout</button>
     </div>
   </aside>
 
@@ -500,11 +498,7 @@
       if (mobileUserMenu) mobileUserMenu.style.display = 'none';
     }
 
-    function logout() {
-      localStorage.removeItem('vivaUtalii_token');
-      localStorage.removeItem('vivaUtalii_user');
-      window.location.href = 'index.html';
-    }
+    // Use centralized logout from auth.js instead of page-local implementation
 
     // Initialize login status check when page loads
     document.addEventListener('DOMContentLoaded', function() {

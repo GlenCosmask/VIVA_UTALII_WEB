@@ -291,21 +291,28 @@ function ensureAuthUI() {
     }
 
     if (!profileSection) {
-        profileSection = document.createElement('div');
-        profileSection.id = 'profile-section';
-        profileSection.className = 'auth-buttons';
-        profileSection.style.display = 'none';
-        // Profile link
-        const profileLink = document.createElement('a');
-        profileLink.href = 'profile.html';
-        profileLink.innerHTML = '<button class="profile-btn">Profile</button>';
-        // Logout button
-        const logoutBtn = document.createElement('button');
-        logoutBtn.innerText = 'Logout';
-        logoutBtn.addEventListener('click', logout);
-        profileSection.appendChild(profileLink);
-        profileSection.appendChild(logoutBtn);
-        header.appendChild(profileSection);
+        // If page already has a profile button, prefer the existing one and avoid creating a new profile+logout block
+        const existingProfileBtn = document.querySelector('.profile-btn');
+        if (!existingProfileBtn) {
+            profileSection = document.createElement('div');
+            profileSection.id = 'profile-section';
+            profileSection.className = 'auth-buttons';
+            profileSection.style.display = 'none';
+            // Profile link
+            const profileLink = document.createElement('a');
+            profileLink.href = 'profile.html';
+            profileLink.innerHTML = '<button class="profile-btn">Profile</button>';
+            // Logout button
+            const logoutBtn = document.createElement('button');
+            logoutBtn.innerText = 'Logout';
+            logoutBtn.addEventListener('click', logout);
+            profileSection.appendChild(profileLink);
+            profileSection.appendChild(logoutBtn);
+            header.appendChild(profileSection);
+        } else {
+            // Remove any page-local logout buttons to avoid duplicates; keep the single profile button
+            Array.from(document.querySelectorAll('.logout-btn')).forEach(b => b.parentNode && b.parentNode.removeChild(b));
+        }
     }
 
     // Move existing login/signup links into authButtons if they're not already inside
@@ -334,12 +341,18 @@ function updateAuthUI() {
     const token = localStorage.getItem('vivaUtalii_token');
     const authButtons = document.getElementById('auth-buttons');
     const profileSection = document.getElementById('profile-section');
+    const existingProfileBtns = Array.from(document.querySelectorAll('.profile-btn'));
     if (token) {
         if (authButtons) authButtons.style.display = 'none';
         if (profileSection) profileSection.style.display = '';
+        // Show any existing profile buttons (page-local) and remove page-local logout buttons
+        existingProfileBtns.forEach(b => { b.style.display = ''; });
+        Array.from(document.querySelectorAll('.logout-btn')).forEach(b => b.parentNode && b.parentNode.removeChild(b));
     } else {
         if (authButtons) authButtons.style.display = '';
         if (profileSection) profileSection.style.display = 'none';
+        // Hide any existing profile buttons when not logged in
+        existingProfileBtns.forEach(b => { b.style.display = 'none'; });
     }
 }
 
