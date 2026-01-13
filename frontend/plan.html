@@ -40,6 +40,12 @@
       font-weight: bold;
       color: #d4af37;
       letter-spacing: 2px;
+      text-decoration: none;
+      display: block;
+    }
+
+    .logo:hover {
+      color: #d4af37;
     }
 
     .nav-links {
@@ -96,48 +102,15 @@
       transform: translateY(-2px);
     }
 
-    .auth-buttons {
-      display: flex;
-      gap: 10px;
-    }
-
-    .signin-btn, .signup-btn {
-      padding: 8px 20px;
-      border-radius: 20px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: 0.3s ease;
-      border: none;
-      font-size: 14px;
-    }
-
-    .signin-btn {
-      background: transparent;
-      color: white;
-      border: 2px solid #d4af37;
-    }
-
-    .signin-btn:hover {
-      background: #d4af37;
-      color: black;
-    }
-
-    .signup-btn {
-      background: #d4af37;
-      color: black;
-    }
-
-    .signup-btn:hover {
-      background: white;
-      color: black;
-    }
-
     .hamburger {
       display: none;
       flex-direction: column;
       cursor: pointer;
       gap: 5px;
       z-index: 1001;
+      background: none;
+      border: none;
+      padding: 5px;
     }
 
     .hamburger span {
@@ -266,7 +239,7 @@
     }
 
     @media (max-width: 900px) {
-      .nav-links, .auth-buttons, .profile-btn {
+      .nav-links, .profile-btn {
         display: none;
       }
 
@@ -607,31 +580,15 @@
 <body>
 
   <header class="header">
-    <div class="logo">VIVA UTALII</div>
-    <div class="hamburger" id="hamburger">
+    <a href="index.html" class="logo">VIVA UTALII</a>
+    <button class="hamburger" id="hamburger" aria-label="Toggle menu">
       <span></span><span></span><span></span>
-    </div>
-    <nav class="nav-links" id="nav-links">
-      <a href="index.html">Home</a>
-      <a href="destinations.html">Destinations</a>
-      <a href="recommendations.html">Recommendations</a>
-      <a href="about.html">About</a>
-      <a href="contact.html">Contact</a>
-    </nav>
-    
-    <!-- Auth Buttons for Desktop -->
-    <div class="auth-buttons" id="auth-buttons-desktop">
-      <button class="signin-btn" onclick="window.location.href='login.html'">Sign In</button>
-      <button class="signup-btn" onclick="window.location.href='signup.html'">Sign Up</button>
-    </div>
-    
-    <!-- Profile Button for Desktop (shown when logged in) -->
-    <button class="profile-btn" id="profile-btn-desktop" onclick="window.location.href='profile.html'" style="display: none;">👤 Profile</button>
+    </button>
   </header>
 
   <!-- Mobile Menu -->
   <div class="mobile-menu" id="mobileMenu">
-    <button class="close-menu" id="closeMenu">×</button>
+    <button class="close-menu" id="closeMenu" aria-label="Close menu">×</button>
     <a href="index.html">Home</a>
     <a href="destinations.html">Destinations</a>
     <a href="recommendations.html">Recommendations</a>
@@ -804,8 +761,6 @@
     const closeSuccess = document.getElementById('close-success');
     
     // Auth UI elements
-    const authButtonsDesktop = document.getElementById('auth-buttons-desktop');
-    const profileBtnDesktop = document.getElementById('profile-btn-desktop');
     const mobileProfileBtn = document.getElementById('mobile-profile-btn');
     const mobileSigninBtn = document.getElementById('mobile-signin-btn');
     const mobileSignupBtn = document.getElementById('mobile-signup-btn');
@@ -849,26 +804,37 @@
       document.body.style.overflow = 'hidden';
     });
 
+    // Close mobile menu when X is clicked
     closeMenu.addEventListener('click', () => {
       mobileMenu.classList.remove('active');
       hamburger.classList.remove('active');
       document.body.style.overflow = 'auto';
+      
+      // Return focus to the hamburger button for accessibility
+      hamburger.focus();
     });
 
-    // Close mobile menu when clicking on links or buttons
-    mobileMenu.querySelectorAll('a, button').forEach(element => {
-      if (element.id !== 'closeMenu') {
-        element.addEventListener('click', () => {
-          mobileMenu.classList.remove('active');
-          hamburger.classList.remove('active');
-          document.body.style.overflow = 'auto';
-        });
-      }
+    // Close mobile menu when clicking on links
+    mobileMenu.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        mobileMenu.classList.remove('active');
+        hamburger.classList.remove('active');
+        document.body.style.overflow = 'auto';
+      });
     });
 
     // Close mobile menu when clicking outside (on the backdrop)
     mobileMenu.addEventListener('click', (e) => {
       if (e.target === mobileMenu) {
+        mobileMenu.classList.remove('active');
+        hamburger.classList.remove('active');
+        document.body.style.overflow = 'auto';
+      }
+    });
+
+    // Close mobile menu with Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && mobileMenu.classList.contains('active')) {
         mobileMenu.classList.remove('active');
         hamburger.classList.remove('active');
         document.body.style.overflow = 'auto';
@@ -896,24 +862,18 @@
 
     // Function to update auth UI
     function updateAuthUI() {
-      // Check if user is logged in (you should replace this with your actual auth check)
+      // Check if user is logged in
       const isLoggedIn = localStorage.getItem('userToken') || 
                         localStorage.getItem('userId') || 
                         sessionStorage.getItem('userToken');
       
       if (isLoggedIn) {
         // User is logged in - show profile button, hide sign in/up
-        authButtonsDesktop.style.display = 'none';
-        profileBtnDesktop.style.display = 'flex';
-        
         mobileProfileBtn.style.display = 'flex';
         mobileSigninBtn.style.display = 'none';
         mobileSignupBtn.style.display = 'none';
       } else {
         // User is not logged in - show sign in/up, hide profile
-        authButtonsDesktop.style.display = 'flex';
-        profileBtnDesktop.style.display = 'none';
-        
         mobileProfileBtn.style.display = 'none';
         mobileSigninBtn.style.display = 'block';
         mobileSignupBtn.style.display = 'block';
