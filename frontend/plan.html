@@ -96,6 +96,42 @@
       transform: translateY(-2px);
     }
 
+    .auth-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .signin-btn, .signup-btn {
+      padding: 8px 20px;
+      border-radius: 20px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.3s ease;
+      border: none;
+      font-size: 14px;
+    }
+
+    .signin-btn {
+      background: transparent;
+      color: white;
+      border: 2px solid #d4af37;
+    }
+
+    .signin-btn:hover {
+      background: #d4af37;
+      color: black;
+    }
+
+    .signup-btn {
+      background: #d4af37;
+      color: black;
+    }
+
+    .signup-btn:hover {
+      background: white;
+      color: black;
+    }
+
     .hamburger {
       display: none;
       flex-direction: column;
@@ -161,6 +197,62 @@
       transform: translateX(10px);
     }
 
+    .mobile-auth-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-top: 20px;
+      width: 200px;
+    }
+
+    .mobile-profile-btn, .mobile-signin-btn, .mobile-signup-btn {
+      padding: 12px 20px;
+      border-radius: 25px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.3s ease;
+      border: none;
+      font-size: 16px;
+      text-align: center;
+      text-decoration: none;
+      width: 100%;
+    }
+
+    .mobile-profile-btn {
+      background: #d4af37;
+      color: black;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .mobile-profile-btn:hover {
+      background: #fff;
+      transform: translateY(-2px);
+    }
+
+    .mobile-signin-btn {
+      background: transparent;
+      color: white;
+      border: 2px solid #d4af37;
+    }
+
+    .mobile-signin-btn:hover {
+      background: #d4af37;
+      color: black;
+    }
+
+    .mobile-signup-btn {
+      background: #d4af37;
+      color: black;
+    }
+
+    .mobile-signup-btn:hover {
+      background: white;
+      color: black;
+    }
+
     .close-menu {
       position: absolute;
       top: 30px;
@@ -174,7 +266,7 @@
     }
 
     @media (max-width: 900px) {
-      .nav-links {
+      .nav-links, .auth-buttons, .profile-btn {
         display: none;
       }
 
@@ -526,7 +618,15 @@
       <a href="about.html">About</a>
       <a href="contact.html">Contact</a>
     </nav>
-    <button class="profile-btn" onclick="window.location.href='profile.html'">👤 Profile</button>
+    
+    <!-- Auth Buttons for Desktop -->
+    <div class="auth-buttons" id="auth-buttons-desktop">
+      <button class="signin-btn" onclick="window.location.href='login.html'">Sign In</button>
+      <button class="signup-btn" onclick="window.location.href='signup.html'">Sign Up</button>
+    </div>
+    
+    <!-- Profile Button for Desktop (shown when logged in) -->
+    <button class="profile-btn" id="profile-btn-desktop" onclick="window.location.href='profile.html'" style="display: none;">👤 Profile</button>
   </header>
 
   <!-- Mobile Menu -->
@@ -537,7 +637,22 @@
     <a href="recommendations.html">Recommendations</a>
     <a href="about.html">About</a>
     <a href="contact.html">Contact</a>
-    <a href="profile.html">Profile</a>
+    
+    <!-- Mobile Auth Buttons -->
+    <div class="mobile-auth-buttons" id="mobile-auth-buttons">
+      <!-- Profile button (shown when logged in) -->
+      <button class="mobile-profile-btn" id="mobile-profile-btn" onclick="window.location.href='profile.html'" style="display: none;">
+        👤 Profile
+      </button>
+      
+      <!-- Sign in/Sign up buttons (shown when not logged in) -->
+      <button class="mobile-signin-btn" id="mobile-signin-btn" onclick="window.location.href='login.html'">
+        Sign In
+      </button>
+      <button class="mobile-signup-btn" id="mobile-signup-btn" onclick="window.location.href='signup.html'">
+        Sign Up
+      </button>
+    </div>
   </div>
 
   <section class="hero">
@@ -687,6 +802,13 @@
     // New elements
     const successOverlay = document.getElementById('success-card-overlay');
     const closeSuccess = document.getElementById('close-success');
+    
+    // Auth UI elements
+    const authButtonsDesktop = document.getElementById('auth-buttons-desktop');
+    const profileBtnDesktop = document.getElementById('profile-btn-desktop');
+    const mobileProfileBtn = document.getElementById('mobile-profile-btn');
+    const mobileSigninBtn = document.getElementById('mobile-signin-btn');
+    const mobileSignupBtn = document.getElementById('mobile-signup-btn');
 
     // Realistic pricing model
     const destinationPrices = {
@@ -733,13 +855,24 @@
       document.body.style.overflow = 'auto';
     });
 
-    // Close mobile menu when clicking on links
-    mobileMenu.querySelectorAll('a').forEach(link => {
-      link.addEventListener('click', () => {
+    // Close mobile menu when clicking on links or buttons
+    mobileMenu.querySelectorAll('a, button').forEach(element => {
+      if (element.id !== 'closeMenu') {
+        element.addEventListener('click', () => {
+          mobileMenu.classList.remove('active');
+          hamburger.classList.remove('active');
+          document.body.style.overflow = 'auto';
+        });
+      }
+    });
+
+    // Close mobile menu when clicking outside (on the backdrop)
+    mobileMenu.addEventListener('click', (e) => {
+      if (e.target === mobileMenu) {
         mobileMenu.classList.remove('active');
         hamburger.classList.remove('active');
         document.body.style.overflow = 'auto';
-      });
+      }
     });
 
     // Email validation
@@ -758,6 +891,32 @@
       } else {
         emailError.style.display = 'none';
         return true;
+      }
+    }
+
+    // Function to update auth UI
+    function updateAuthUI() {
+      // Check if user is logged in (you should replace this with your actual auth check)
+      const isLoggedIn = localStorage.getItem('userToken') || 
+                        localStorage.getItem('userId') || 
+                        sessionStorage.getItem('userToken');
+      
+      if (isLoggedIn) {
+        // User is logged in - show profile button, hide sign in/up
+        authButtonsDesktop.style.display = 'none';
+        profileBtnDesktop.style.display = 'flex';
+        
+        mobileProfileBtn.style.display = 'flex';
+        mobileSigninBtn.style.display = 'none';
+        mobileSignupBtn.style.display = 'none';
+      } else {
+        // User is not logged in - show sign in/up, hide profile
+        authButtonsDesktop.style.display = 'flex';
+        profileBtnDesktop.style.display = 'none';
+        
+        mobileProfileBtn.style.display = 'none';
+        mobileSigninBtn.style.display = 'block';
+        mobileSignupBtn.style.display = 'block';
       }
     }
 
@@ -1164,6 +1323,10 @@
 
     // Initialize auth UI
     document.addEventListener('DOMContentLoaded', function() { 
+      // Call the updateAuthUI function on page load
+      updateAuthUI();
+      
+      // Also call window.updateAuthUI if it exists (for compatibility)
       if (window.updateAuthUI) window.updateAuthUI(); 
     });
   </script>
