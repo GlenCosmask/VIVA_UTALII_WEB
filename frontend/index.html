@@ -40,7 +40,7 @@
       background: rgba(0, 0, 0, 0.7);
     }
 
-      .logo {
+    .logo {
       font-family: 'Cinzel', serif;
       font-size: 28px;
       font-weight: 600;
@@ -253,22 +253,23 @@
       display: none;
     }
 
-    .btn-primary{ 
-      background:linear-gradient(90deg,#00ffe0,#00aaff); 
-      color:#08121a; 
-      border:none; 
-      padding:10px 16px; 
-      border-radius:12px; 
-      font-weight:700; 
-      cursor:pointer; 
+    .btn-primary { 
+      background: linear-gradient(90deg, #00ffe0, #00aaff); 
+      color: #08121a; 
+      border: none; 
+      padding: 10px 16px; 
+      border-radius: 12px; 
+      font-weight: 700; 
+      cursor: pointer; 
     }
-    .btn-ghost{ 
-      background:transparent; 
-      border:1px solid rgba(255,255,255,0.12); 
-      padding:10px 14px; 
-      border-radius:12px; 
-      color:#fff; 
-      cursor:pointer; 
+    
+    .btn-ghost { 
+      background: transparent; 
+      border: 1px solid rgba(255,255,255,0.12); 
+      padding: 10px 14px; 
+      border-radius: 12px; 
+      color: #fff; 
+      cursor: pointer; 
     }
 
     @media (max-width: 768px) {
@@ -311,6 +312,14 @@
         order: -1;
         margin-left: auto;
       }
+      
+      .hero h1 {
+        font-size: 40px;
+      }
+      
+      .hero p {
+        font-size: 18px;
+      }
     }
   </style>
 </head>
@@ -330,9 +339,9 @@
       </ul>
     </nav>
 
-    <!-- Auth Buttons - Will be dynamically updated -->
+    <!-- Auth Buttons - Dynamically updated by auth.js -->
     <div id="auth-buttons" class="auth-buttons">
-      <!-- Default state - will be updated by JavaScript -->
+      <!-- Default state - auth.js will update this -->
       <a href="login.html?form=login"><button>Sign In</button></a>
       <a href="login.html?form=signup"><button>Sign Up</button></a>
     </div>
@@ -361,47 +370,10 @@
     <p>© 2025 Viva Utalii. All rights reserved.</p>
   </footer>
 
+  <!-- Load auth.js FIRST -->
+  <script src="auth.js"></script>
+  
   <script>
-    function checkAuthStatus() {
-      const authButtons = document.getElementById('auth-buttons');
-      const token = localStorage.getItem('vivaUtalii_token');
-      const userData = localStorage.getItem('vivaUtalii_user');
-      
-     
-      if (token && userData) {
-        try {
-          const user = JSON.parse(userData);
-          
-          authButtons.innerHTML = `
-            <button class="profile-btn" onclick="goToProfile()">
-              <i class="fas fa-user"></i> Profile
-            </button>
-          `;
-          console.log('User is logged in, showing profile button');
-        } catch (error) {
-          console.error('Error parsing user data:', error);
-          // If error parsing, show login buttons
-          showLoginButtons();
-        }
-      } else {
-        // User is not logged in - show ONLY sign in/sign up buttons
-        showLoginButtons();
-      }
-    }
-
-    function showLoginButtons() {
-      const authButtons = document.getElementById('auth-buttons');
-      authButtons.innerHTML = `
-        <a href="login.html?form=login"><button>Sign In</button></a>
-        <a href="login.html?form=signup"><button>Sign Up</button></a>
-      `;
-      console.log('User is not logged in, showing sign in/sign up buttons');
-    }
-
-    function goToProfile() {
-      window.location.href = 'profile.html';
-    }
-
     // Login Required Card Functions
     function showLoginRequiredCard() {
       document.getElementById('loginRequiredCard').style.display = 'block';
@@ -413,114 +385,93 @@
       document.getElementById('loginOverlay').style.display = 'none';
     }
 
-    // Start Exploring button functionality
-    function handleStartExploring() {
-      const token = localStorage.getItem('vivaUtalii_token');
-      const userData = localStorage.getItem('vivaUtalii_user');
-      
-      // Check if user is properly logged in
-      if (token && userData) {
-        try {
-          JSON.parse(userData);
-          // User is logged in - redirect to plan.html
-          console.log('User is logged in, redirecting to plan.html');
-          window.location.href = 'plan.html';
-        } catch (error) {
-          console.error('Error parsing user data:', error);
-          // If error parsing, show login card
-          showLoginRequiredCard();
-        }
-      } else {
-        // User is not logged in - show login card
-        console.log('User is not logged in, showing login card');
-        showLoginRequiredCard();
-      }
-    }
-
-    // Verify token with backend (optional but recommended)
-    async function verifyToken() {
-      const token = localStorage.getItem('vivaUtalii_token');
-      if (!token) {
-        return false;
-      }
-
-      try {
-        const response = await fetch(`${window.BACKEND_URL}/verify-token`, {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
-
-        if (!response.ok) {
-          // Token is invalid, clear storage and show login buttons
-          localStorage.removeItem('vivaUtalii_token');
-          localStorage.removeItem('vivaUtalii_user');
-          showLoginButtons();
-          return false;
-        }
-        return true;
-      } catch (error) {
-        console.error('Token verification failed:', error);
-        // If verification fails but token exists, still consider user as logged in
-        return true;
-      }
+    // Helper function for profile navigation
+    function goToProfile() {
+      window.location.href = 'profile.html';
     }
 
     // Initialize when page loads
     document.addEventListener("DOMContentLoaded", async () => {
+      // Background image slider
       const hero = document.getElementById('hero');
       const images = [];
       for (let i = 1; i <= 17; i++) images.push(`images/tp${i}.jpeg`);
       let current = 0;
       
       function changeBackground() {
-        hero.style.backgroundImage = `url('${images[current]}')`;
-        hero.style.backgroundSize = 'cover';
-        hero.style.backgroundPosition = 'center';
-        current = (current + 1) % images.length;
+        if (images[current]) {
+          hero.style.backgroundImage = `url('${images[current]}')`;
+          hero.style.backgroundSize = 'cover';
+          hero.style.backgroundPosition = 'center';
+          current = (current + 1) % images.length;
+        }
       }
+      
+      // Set initial background
       changeBackground();
+      
+      // Change background every 9 seconds
       setInterval(changeBackground, 9000);
 
       // Hamburger menu toggle
       const toggle = document.getElementById("menu-toggle");
       const nav = document.getElementById("nav-links");
-      toggle.addEventListener("click", () => nav.classList.toggle("active"));
+      if (toggle && nav) {
+        toggle.addEventListener("click", () => nav.classList.toggle("active"));
+      }
 
       // Setup Start Exploring button
       const startExploreBtn = document.getElementById('startExploreBtn');
-      startExploreBtn.addEventListener('click', handleStartExploring);
+      if (startExploreBtn) {
+        startExploreBtn.addEventListener('click', async () => {
+          // Use the auth system to check login status
+          if (window.auth && window.auth.isLoggedIn()) {
+            window.location.href = 'plan.html';
+          } else {
+            showLoginRequiredCard();
+          }
+        });
+      }
 
       // Setup login card buttons
-      document.getElementById('closeLoginCard').addEventListener('click', hideLoginRequiredCard);
-      document.getElementById('goToLogin').addEventListener('click', () => {
-        window.location.href = 'login.html?form=login';
-      });
+      const closeLoginCard = document.getElementById('closeLoginCard');
+      const goToLoginBtn = document.getElementById('goToLogin');
+      const loginOverlay = document.getElementById('loginOverlay');
+      
+      if (closeLoginCard) {
+        closeLoginCard.addEventListener('click', hideLoginRequiredCard);
+      }
+      
+      if (goToLoginBtn) {
+        goToLoginBtn.addEventListener('click', () => {
+          window.location.href = 'login.html?form=login';
+        });
+      }
 
       // Close login card when clicking overlay
-      document.getElementById('loginOverlay').addEventListener('click', hideLoginRequiredCard);
-
-      // Check authentication status
-      await verifyToken();
-      checkAuthStatus();
-    });
-
-    // Listen for storage changes (if user logs in/out in another tab)
-    window.addEventListener('storage', function(e) {
-      if (e.key === 'vivaUtalii_token' || e.key === 'vivaUtalii_user') {
-        checkAuthStatus();
+      if (loginOverlay) {
+        loginOverlay.addEventListener('click', hideLoginRequiredCard);
       }
+
+      // Verify token on page load (optional - auth.js handles UI)
+      if (window.auth && typeof window.auth.verifyToken === 'function') {
+        await window.auth.verifyToken();
+      }
+      
+      console.log('Viva Utalii initialized successfully');
     });
 
-    // Also check auth status when page becomes visible (if user comes back from another tab)
-    document.addEventListener('visibilitychange', function() {
-      if (!document.hidden) {
-        checkAuthStatus();
+    // Close mobile menu when clicking on a link
+    document.addEventListener('click', (e) => {
+      const nav = document.getElementById('nav-links');
+      const toggle = document.getElementById('menu-toggle');
+      
+      if (nav && nav.classList.contains('active') && 
+          !nav.contains(e.target) && 
+          e.target !== toggle) {
+        nav.classList.remove('active');
       }
     });
   </script>
-  <script src="auth.js"></script>
 </body>
-</html> 
+</html>
