@@ -20,18 +20,20 @@ body {
     overflow-x: hidden;
 }
 
-nav {
+/* Header Styles */
+.header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 1rem 2rem;
     background: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(10px);
-    position: relative;
-    z-index: 100;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
 }
 
-nav .logo {
+.logo {
     font-size: 1.8rem;
     font-weight: bold;
     color: #ffd700;
@@ -39,15 +41,16 @@ nav .logo {
     text-transform: uppercase;
 }
 
-nav ul {
-    list-style: none;
+/* Desktop Navigation */
+.nav-links {
     display: flex;
+    list-style: none;
     gap: 2rem;
     margin: 0;
     padding: 0;
 }
 
-nav ul li a {
+.nav-links a {
     text-decoration: none;
     color: #fff;
     font-weight: 500;
@@ -56,7 +59,7 @@ nav ul li a {
     position: relative;
 }
 
-nav ul li a:after {
+.nav-links a:after {
     content: '';
     position: absolute;
     width: 0;
@@ -67,15 +70,22 @@ nav ul li a:after {
     transition: width 0.3s;
 }
 
-nav ul li a:hover {
+.nav-links a:hover {
     color: #d4af37;
 }
 
-nav ul li a:hover:after {
+.nav-links a:hover:after {
     width: 100%;
 }
 
-nav .logout-btn {
+/* Desktop Auth Buttons */
+.auth-buttons {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.logout-btn {
     background: #d4af37;
     border: none;
     padding: 0.7rem 1.5rem;
@@ -87,12 +97,138 @@ nav .logout-btn {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-nav .logout-btn:hover {
+.logout-btn:hover {
     background: #ffd700;
     transform: translateY(-2px);
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
 }
 
+/* Hamburger Menu */
+.hamburger {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+    gap: 5px;
+    z-index: 1001;
+    padding: 10px;
+}
+
+.hamburger span {
+    width: 25px;
+    height: 3px;
+    background: #fff;
+    border-radius: 5px;
+    transition: 0.3s ease;
+}
+
+.hamburger.active span:nth-child(1) {
+    transform: rotate(45deg) translate(6px, 6px);
+}
+
+.hamburger.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger.active span:nth-child(3) {
+    transform: rotate(-45deg) translate(6px, -6px);
+}
+
+/* Mobile Menu */
+.mobile-menu {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 80%;
+    max-width: 300px;
+    height: 100%;
+    background: linear-gradient(135deg, #004e64, #007f5f, #d4af37);
+    backdrop-filter: blur(10px);
+    display: flex;
+    flex-direction: column;
+    padding: 100px 30px 30px;
+    transition: right 0.3s ease;
+    z-index: 999;
+    overflow-y: auto;
+    box-shadow: -5px 0 20px rgba(0, 0, 0, 0.3);
+}
+
+.mobile-menu.active {
+    right: 0;
+}
+
+.mobile-menu .close-menu {
+    position: absolute;
+    top: 25px;
+    right: 25px;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 30px;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.mobile-nav-links {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.mobile-nav-links a {
+    text-decoration: none;
+    color: #fff;
+    font-size: 1.2rem;
+    padding: 10px 15px;
+    border-radius: 10px;
+    transition: all 0.3s;
+    display: block;
+}
+
+.mobile-nav-links a:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #d4af37;
+    transform: translateX(5px);
+}
+
+.mobile-logout-btn {
+    background: #d4af37;
+    border: none;
+    padding: 1rem 1.5rem;
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: bold;
+    color: #004e64;
+    transition: all 0.3s;
+    margin-top: 1rem;
+    width: 100%;
+    font-size: 1rem;
+}
+
+.mobile-logout-btn:hover {
+    background: #ffd700;
+    transform: translateY(-2px);
+}
+
+/* Overlay for mobile menu */
+.menu-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(3px);
+    display: none;
+    z-index: 998;
+}
+
+.menu-overlay.active {
+    display: block;
+}
+
+/* Container */
 .container {
     max-width: 1400px;
     margin: 2rem auto;
@@ -686,28 +822,60 @@ nav .logout-btn:hover {
     transform: translateY(-2px);
 }
 
+/* Responsive Design */
 @media (max-width: 768px) {
-    nav {
-        flex-direction: column;
-        gap: 1rem;
+    .header {
         padding: 1rem;
     }
     
-    nav ul {
-        gap: 1rem;
+    .logo {
+        font-size: 1.5rem;
+    }
+    
+    .nav-links, .auth-buttons {
+        display: none;
+    }
+    
+    .hamburger {
+        display: flex;
     }
     
     .container {
         padding: 0 1rem;
+        margin: 1rem auto;
+        gap: 1.5rem;
     }
     
     .user-card {
         flex-direction: column;
         text-align: center;
+        padding: 1.2rem;
+    }
+    
+    .user-card img {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .user-card h2 {
+        font-size: 1.5rem;
+    }
+    
+    .card {
+        padding: 1.2rem;
+    }
+    
+    .card h3 {
+        font-size: 1.2rem;
     }
     
     .offers-container {
         grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 0.8rem;
+    }
+    
+    .offer-image {
+        height: 80px;
     }
     
     .confirmation-buttons {
@@ -716,28 +884,157 @@ nav .logout-btn:hover {
     
     .bookings-grid {
         grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .booking-card {
+        padding: 15px;
+    }
+    
+    .booking-card-image {
+        height: 120px;
+    }
+    
+    .booking-detail-row {
+        font-size: 13px;
+    }
+    
+    .popup, .confirmation-card, .success-card, .thank-you-card {
+        padding: 1.5rem;
+        width: 95%;
+    }
+    
+    .thank-you-card h2 {
+        font-size: 1.5rem;
+    }
+    
+    .booking-detail-row {
+        flex-direction: column;
+        gap: 2px;
+    }
+    
+    .booking-detail-label, .booking-detail-value {
+        text-align: left;
     }
 }
 
-@media (min-width: 1200px) {
+@media (min-width: 769px) and (max-width: 1024px) {
+    .container {
+        max-width: 95%;
+        padding: 0 1.5rem;
+    }
+    
+    .bookings-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .offers-container {
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    }
+}
+
+@media (min-width: 1025px) {
+    .bookings-grid {
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    }
+}
+
+/* Small Mobile Screens */
+@media (max-width: 480px) {
+    .logo {
+        font-size: 1.3rem;
+    }
+    
+    .user-card img {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .user-card h2 {
+        font-size: 1.3rem;
+    }
+    
+    .offers-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .mobile-menu {
+        width: 85%;
+    }
+}
+
+/* Tablet Landscape */
+@media (min-width: 1024px) and (max-height: 768px) {
+    .container {
+        margin: 1.5rem auto;
+    }
+    
+    .user-card, .card {
+        padding: 1.2rem;
+    }
+}
+
+/* Large Screens */
+@media (min-width: 1400px) {
+    .container {
+        max-width: 1300px;
+    }
+    
     .bookings-grid {
         grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* Fix for very tall screens */
+@media (min-height: 1200px) {
+    .container {
+        margin: 3rem auto;
     }
 }
 </style>
 </head>
 <body>
-<nav>
+<!-- Header with responsive design -->
+<header class="header">
   <div class="logo">VIVA UTALII</div>
-  <ul>
+  
+  <!-- Desktop Navigation -->
+  <nav>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="destinations.html">Destinations</a></li>
+      <li><a href="recommendations.html">Recommendations</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+  </nav>
+  
+  <!-- Desktop Auth Buttons -->
+  <div class="auth-buttons">
+    <button class="logout-btn" onclick="showThankYou()">Log Out</button>
+  </div>
+  
+  <!-- Hamburger Menu for Mobile -->
+  <div class="hamburger" id="hamburger">
+    <span></span><span></span><span></span>
+  </div>
+</header>
+
+<!-- Mobile Menu Overlay -->
+<div class="menu-overlay" id="menuOverlay"></div>
+
+<!-- Mobile Menu -->
+<div class="mobile-menu" id="mobileMenu">
+  <button class="close-menu" id="closeMenu">×</button>
+  <ul class="mobile-nav-links">
     <li><a href="index.html">Home</a></li>
     <li><a href="destinations.html">Destinations</a></li>
     <li><a href="recommendations.html">Recommendations</a></li>
     <li><a href="about.html">About</a></li>
     <li><a href="contact.html">Contact</a></li>
   </ul>
-  <button class="logout-btn" onclick="showThankYou()">Log Out</button>
-</nav>
+  <button class="mobile-logout-btn" onclick="showThankYou()">Log Out</button>
+</div>
 
 <div class="container">
   <div class="user-card">
@@ -839,6 +1136,43 @@ const userData = localStorage.getItem('vivaUtalii_user');
 
 // Store the current booking being cancelled
 let currentCancellationBooking = null;
+
+// Mobile Menu Functionality
+const hamburger = document.getElementById('hamburger');
+const mobileMenu = document.getElementById('mobileMenu');
+const closeMenu = document.getElementById('closeMenu');
+const menuOverlay = document.getElementById('menuOverlay');
+
+hamburger.addEventListener('click', () => {
+    mobileMenu.classList.add('active');
+    hamburger.classList.add('active');
+    menuOverlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+});
+
+closeMenu.addEventListener('click', () => {
+    mobileMenu.classList.remove('active');
+    hamburger.classList.remove('active');
+    menuOverlay.classList.remove('active');
+    document.body.style.overflow = 'auto';
+});
+
+menuOverlay.addEventListener('click', () => {
+    mobileMenu.classList.remove('active');
+    hamburger.classList.remove('active');
+    menuOverlay.classList.remove('active');
+    document.body.style.overflow = 'auto';
+});
+
+// Close mobile menu when clicking on links
+mobileMenu.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+        mobileMenu.classList.remove('active');
+        hamburger.classList.remove('active');
+        menuOverlay.classList.remove('active');
+        document.body.style.overflow = 'auto';
+    });
+});
 
 // Helper function to create headers with authentication
 function getAuthHeaders() {
@@ -1307,6 +1641,17 @@ function processCancellation(bookingId, destination) {
 document.addEventListener('DOMContentLoaded', function() {
     loadUserInfo();
     setupAutomaticNewsletter();
+    
+    // Add resize event listener to handle orientation changes
+    window.addEventListener('resize', function() {
+        if (window.innerWidth > 768) {
+            // Close mobile menu if open when switching to desktop
+            mobileMenu.classList.remove('active');
+            hamburger.classList.remove('active');
+            menuOverlay.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+    });
 });
 
 function showThankYou() {
