@@ -1,9 +1,9 @@
 /**
  * auth.js - Authentication & Global Configuration for Viva Utalii
+ * Updated to handle both desktop and mobile auth buttons
  */
 
 // 1. GLOBAL CONFIGURATION
-// Attached to window so it's accessible in plan.html and recommendations.html
 window.BACKEND_URL = 'https://viva-backend-p91j.onrender.com';
 
 class AuthSystem {
@@ -39,17 +39,17 @@ class AuthSystem {
         if (userData && token) {
             try {
                 this.currentUser = JSON.parse(userData);
-                this.updateUI();
+                this.updateAllAuthUI();
                 return true;
             } catch (e) {
                 console.error("Failed to parse user data", e);
                 this.currentUser = null;
-                this.updateUI();
+                this.updateAllAuthUI();
                 return false;
             }
         }
         this.currentUser = null;
-        this.updateUI();
+        this.updateAllAuthUI();
         return false;
     }
 
@@ -68,7 +68,7 @@ class AuthSystem {
                 localStorage.setItem('vivaUtalii_user', JSON.stringify(result.user));
                 localStorage.setItem('vivaUtalii_token', result.token);
                 this.currentUser = result.user;
-                this.updateUI();
+                this.updateAllAuthUI();
                 return { success: true, user: result.user };
             } else {
                 return { success: false, error: result.error || 'Login failed' };
@@ -94,7 +94,7 @@ class AuthSystem {
                 localStorage.setItem('vivaUtalii_user', JSON.stringify(result.user));
                 localStorage.setItem('vivaUtalii_token', result.token);
                 this.currentUser = result.user;
-                this.updateUI();
+                this.updateAllAuthUI();
                 return { success: true, user: result.user };
             } else {
                 return { success: false, error: result.error || 'Signup failed' };
@@ -113,7 +113,7 @@ class AuthSystem {
         localStorage.removeItem('user_data');
         
         this.currentUser = null;
-        this.updateUI(); // Update UI immediately
+        this.updateAllAuthUI(); // Update UI immediately
         window.location.href = 'index.html';
     }
 
@@ -121,30 +121,66 @@ class AuthSystem {
         return this.currentUser !== null;
     }
 
-    updateUI() {
-        const authButtons = document.getElementById('auth-buttons');
-
-        if (!authButtons) {
-            console.log('auth-buttons element not found on this page');
-            return;
-        }
-
+    // NEW: Update both desktop AND mobile UI
+    updateAllAuthUI() {
+        // Update desktop auth buttons
+        const desktopAuthButtons = document.getElementById('auth-buttons');
+        
+        // Update mobile auth buttons
+        const mobileAuthButtons = document.getElementById('mobile-auth-buttons');
+        
         if (this.isLoggedIn()) {
-            // User is logged in - show profile button
-            authButtons.innerHTML = `
-                <button class="profile-btn" onclick="window.location.href='profile.html'">
-                    <i class="fas fa-user"></i> ${this.currentUser.name || 'Profile'}
-                </button>
-            `;
-            console.log('UI updated: Profile button shown for', this.currentUser.name);
+            // User is logged in - show profile button in both locations
+            const userName = this.currentUser.name || 'Profile';
+            const shortName = userName.split(' ')[0]; // Get first name only
+            
+            // Desktop version
+            if (desktopAuthButtons) {
+                desktopAuthButtons.innerHTML = `
+                    <button class="profile-btn" onclick="window.location.href='profile.html'">
+                        <i class="fas fa-user-circle"></i>
+                        ${shortName}
+                    </button>
+                `;
+            }
+            
+            // Mobile version
+            if (mobileAuthButtons) {
+                mobileAuthButtons.innerHTML = `
+                    <button class="mobile-profile-btn" onclick="window.location.href='profile.html'">
+                        <i class="fas fa-user-circle"></i>
+                        ${shortName}
+                    </button>
+                `;
+            }
+            
+            console.log('UI updated: Profile button shown for', userName);
         } else {
-            // User is not logged in - show sign in/up buttons
-            authButtons.innerHTML = `
-                <a href="login.html?form=login"><button>Sign In</button></a>
-                <a href="login.html?form=signup"><button>Sign Up</button></a>
-            `;
+            // User is not logged in - show sign in/up buttons in both locations
+            
+            // Desktop version
+            if (desktopAuthButtons) {
+                desktopAuthButtons.innerHTML = `
+                    <a href="login.html?form=login"><button>Sign In</button></a>
+                    <a href="login.html?form=signup"><button>Sign Up</button></a>
+                `;
+            }
+            
+            // Mobile version
+            if (mobileAuthButtons) {
+                mobileAuthButtons.innerHTML = `
+                    <a href="login.html?form=login"><button>Sign In</button></a>
+                    <a href="login.html?form=signup"><button>Sign Up</button></a>
+                `;
+            }
+            
             console.log('UI updated: Sign in/up buttons shown');
         }
+    }
+
+    // Legacy method for compatibility (only updates desktop)
+    updateUI() {
+        this.updateAllAuthUI();
     }
 
     // Helper method to get current user
@@ -157,7 +193,7 @@ class AuthSystem {
         return localStorage.getItem('vivaUtalii_token');
     }
 
-    // Build headers for backend requests; include Authorization only when token exists
+    // Build headers for backend requests
     getRequestHeaders(includeContentType = true) {
         const headers = {};
         if (includeContentType) headers['Content-Type'] = 'application/json';
@@ -166,7 +202,7 @@ class AuthSystem {
         return headers;
     }
 
-    // Verify token with backend (resilient to network/CORS failures)
+    // Verify token with backend
     async verifyToken() {
         const token = this.getToken();
         if (!token) return false;
@@ -204,19 +240,22 @@ window.auth = auth;
 // Make logout available globally
 window.logout = () => auth.logout();
 
-// Backwards compatibility: expose a global getAuthHeaders() used by existing pages
+// Expose methods for other pages
 window.getAuthHeaders = function(includeContentType = true) {
     return auth.getRequestHeaders(includeContentType);
 };
 
-// Expose API base for pages that reference API_BASE
 window.API_BASE = window.BACKEND_URL;
+window.isLoggedIn = () => auth.isLoggedIn();
 
 // 3. AUTO-UI SYNC ON LOAD
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM loaded - updating UI from auth.js');
-    // Update UI based on current auth state
-    auth.updateUI();
+    console.log('DOM loaded - updating auth UI');
+    // Update both desktop and mobile UI based on current auth state
+    auth.updateAllAuthUI();
+    
+    // Also check auth state to ensure consistency
+    auth.checkAuthState();
 });
 
 // 4. Listen for storage changes (if user logs in/out in another tab)
@@ -226,3 +265,8 @@ window.addEventListener('storage', function(e) {
         auth.checkAuthState();
     }
 });
+
+// 5. Helper function for profile navigation (for use in onclick handlers)
+window.goToProfile = function() {
+    window.location.href = 'profile.html';
+};
