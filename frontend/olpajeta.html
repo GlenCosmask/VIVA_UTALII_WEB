@@ -135,6 +135,21 @@
     }
     .trip-btn:hover { transform: translateY(-3px); background:#fff; }
 
+    .profile-btn {
+      background: var(--accent);
+      color: black;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 25px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform .18s ease, background .18s ease;
+      white-space: nowrap;
+      display: none;
+    }
+    .profile-btn:hover { transform: translateY(-3px); background:#fff; }
+
     /* Mobile dropdown (Option A) - hidden on desktop */
     .mobile-dropdown {
       display: none;
@@ -460,7 +475,7 @@
       .experiences-grid, .gallery-grid, .four-grid { grid-template-columns: 1fr; }
       .card-image { height: 210px; }
       .header-right { gap:8px; }
-      .trip-btn { padding: 8px 12px; font-size:14px; }
+      .trip-btn, .profile-btn { padding: 8px 12px; font-size:14px; }
       .mobile-dropdown { left: 0; right: 0; }
     }
   </style>
@@ -486,8 +501,11 @@
     </div>
 
     <div id="auth-buttons" class="header-right">
-      <!-- removed search box as requested -->
+      <!-- "Plan Your Trip" button - always visible -->
       <button id="topPlanBtn" class="trip-btn" aria-label="Plan your trip">Plan Your Trip</button>
+      
+      <!-- Profile button - shown when logged in -->
+      <button id="profileBtn" class="profile-btn" aria-label="View profile">Profile</button>
     </div>
 
     <!-- Mobile dropdown (collapsible below header, only on small screens) -->
@@ -499,6 +517,7 @@
         <a href="about.html">About</a>
         <a href="contact.html">Contact</a>
         <a id="mobilePlan" href="#">Plan Your Trip</a>
+        <a id="mobileProfile" href="#" style="display: none;">Profile</a>
       </nav>
     </div>
   </header>
@@ -721,6 +740,13 @@
       const loginRequiredOverlay = document.getElementById('login-required-overlay');
       const closeLoginCard = document.getElementById('closeLoginCard');
       const goToLoginFromCard = document.getElementById('goToLoginFromCard');
+      
+      // Button elements
+      const topPlanBtn = document.getElementById('topPlanBtn');
+      const profileBtn = document.getElementById('profileBtn');
+      const mobilePlan = document.getElementById('mobilePlan');
+      const mobileProfile = document.getElementById('mobileProfile');
+      const bottomStartBtn = document.getElementById('bottomStartBtn');
 
       // Login required card functionality
       if (closeLoginCard) {
@@ -823,6 +849,22 @@
         return isLoggedIn;
       }
 
+      // Function to update UI based on login status
+      function updateUIForLoginStatus() {
+        const isLoggedIn = userIsLoggedIn();
+        
+        if (isLoggedIn) {
+          // Show profile button, keep plan button visible
+          if (profileBtn) profileBtn.style.display = 'block';
+          if (mobileProfile) mobileProfile.style.display = 'block';
+          // Plan button remains visible - it's always visible now
+        } else {
+          // Hide profile button, plan button remains visible
+          if (profileBtn) profileBtn.style.display = 'none';
+          if (mobileProfile) mobileProfile.style.display = 'none';
+        }
+      }
+
       // Function to handle plan trip button clicks
       function handlePlanTripClick() {
         console.log('Plan Trip button clicked - checking authentication...');
@@ -843,12 +885,26 @@
         }
       }
 
+      // Function to handle profile button click
+      function handleProfileClick() {
+        const isLoggedIn = userIsLoggedIn();
+        if (isLoggedIn) {
+          // Redirect to profile page or show profile dropdown
+          window.location.href = 'profile.html'; // Update with your profile page URL
+        }
+      }
+
       // Plan button logic (top-right)
-      const topPlanBtn = document.getElementById('topPlanBtn');
-      topPlanBtn.addEventListener('click', handlePlanTripClick);
+      if (topPlanBtn) {
+        topPlanBtn.addEventListener('click', handlePlanTripClick);
+      }
+
+      // Profile button logic
+      if (profileBtn) {
+        profileBtn.addEventListener('click', handleProfileClick);
+      }
 
       // Mobile dropdown plan link
-      const mobilePlan = document.getElementById('mobilePlan');
       if (mobilePlan) {
         mobilePlan.addEventListener('click', function(e){
           e.preventDefault();
@@ -856,9 +912,18 @@
         });
       }
 
+      // Mobile dropdown profile link
+      if (mobileProfile) {
+        mobileProfile.addEventListener('click', function(e){
+          e.preventDefault();
+          handleProfileClick();
+        });
+      }
+
       // Bottom CTA logic
-      const bottomStartBtn = document.getElementById('bottomStartBtn');
-      bottomStartBtn.addEventListener('click', handlePlanTripClick);
+      if (bottomStartBtn) {
+        bottomStartBtn.addEventListener('click', handlePlanTripClick);
+      }
 
       // Reviews button - updated to redirect to olpajetarev.html
       document.getElementById('reviewsBtn').addEventListener('click', function(){
@@ -904,8 +969,11 @@
         }
       });
 
-      // Initial authentication check
-      userIsLoggedIn();
+      // Initial authentication check and UI update
+      updateUIForLoginStatus();
+      
+      // Also update UI periodically in case auth status changes
+      setInterval(updateUIForLoginStatus, 2000);
     });
   </script>
 
