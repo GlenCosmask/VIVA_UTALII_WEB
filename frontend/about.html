@@ -107,6 +107,37 @@ nav a:hover, nav a.active {
   background: #fff;
 }
 
+/* Plan Trip Button (shown when logged out) */
+.plan-trip-btn {
+  text-decoration: none;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 30px;
+  color: #3b2714;
+  background: #ffd966;
+  transition: 0.3s;
+  margin-right: 10px;
+}
+
+.plan-trip-btn:hover {
+  background: #fff;
+}
+
+/* Profile Button (shown when logged in) */
+.profile-btn {
+  text-decoration: none;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 30px;
+  color: #3b2714;
+  background: #ffd966;
+  transition: 0.3s;
+}
+
+.profile-btn:hover {
+  background: #fff;
+}
+
 /* Hero Section */
 .hero {
   text-align: center;
@@ -315,7 +346,7 @@ footer {
       </ul>
     </nav>
     <div id="auth-buttons" class="auth-buttons">
-      <a href="destinations.html" class="get-started-btn">Get Started</a>
+      <!-- This will be populated by JavaScript based on login status -->
     </div>
   </header>
 
@@ -390,6 +421,30 @@ function toggleMenu() {
   const navLinks = document.getElementById('nav-links');
   navLinks.classList.toggle('show');
 }
+
+// Function to update auth buttons based on login status
+function updateAuthButtons() {
+  const authButtonsContainer = document.getElementById('auth-buttons');
+  
+  // Check if user is logged in (using localStorage as an example)
+  const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+  
+  if (isLoggedIn) {
+    // User is logged in - show Profile button
+    authButtonsContainer.innerHTML = `
+      <a href="profile.html" class="profile-btn">Profile</a>
+    `;
+  } else {
+    // User is logged out - show Get Started and Plan Your Trip buttons
+    authButtonsContainer.innerHTML = `
+      <a href="plan.html" class="plan-trip-btn">Plan Your Trip</a>
+      <a href="destinations.html" class="get-started-btn">Get Started</a>
+    `;
+  }
+}
+
+// Initialize auth buttons on page load
+document.addEventListener('DOMContentLoaded', updateAuthButtons);
 </script>
 <script src="auth.js"></script>
 </body>
