@@ -623,7 +623,7 @@
         <div id="deposit-info">10% deposit required</div>
       </div>
       <div class="phone-input-container">
-        <input type="tel" class="phone-input" id="phone-input" placeholder="Enter your M-Pesa number (2547...)" maxlength="12">
+        <input type="tel" class="phone-input" id="phone-input" placeholder="Enter your M-Pesa number (2547XXXXXXXX)" maxlength="12">
       </div>
       <div class="payment-buttons">
         <button class="cancel-btn" id="cancel-payment">Cancel</button>
@@ -934,8 +934,8 @@
             'Accept': 'application/json'
           },
           body: JSON.stringify({
-            phoneNumber: formattedPhone,
-            amount: bookingFee, // Use the booking fee amount
+            phone: formattedPhone,  // FIXED: Changed from phoneNumber to phone
+            amount: bookingFee,
           })
         });
         

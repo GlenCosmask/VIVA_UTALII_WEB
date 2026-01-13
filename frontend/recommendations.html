@@ -1,4 +1,4 @@
-<!DOCTYPE html>  
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
@@ -638,7 +638,7 @@
     window.BACKEND_URL = BACKEND_URL;
 
     /**************************************************************************/
-    /* UPDATED Payment Function - FIXED VERSION                              */
+    /* UPDATED Payment Function - FIXED VERSION with corrected phone field   */
     /**************************************************************************/
     async function handlePayment(phoneNumber, amount) {
       // Use BACKEND_URL (with fallback)
@@ -657,7 +657,7 @@
             'Accept': 'application/json'
           },
           body: JSON.stringify({
-            phoneNumber: phoneNumber,
+            phone: phoneNumber, // CHANGED FROM phoneNumber: phoneNumber to phone: phoneNumber
             amount: amount,
             description: `Deposit for ${currentDest.name}`,
             account_reference: 'VIVAUTALII',
@@ -1134,7 +1134,7 @@
         return;
       }
 
-      const fullPhoneNumber = `254${rawPhone}`;
+      const formattedPhone = `254${rawPhone}`; // This is the formatted phone number
       const depositAmount = Number(sDeposit.textContent.replace(/,/g,''));
       
       confirmPaymentBtn.disabled = true;
@@ -1146,7 +1146,7 @@
 
       try {
         console.log('🔄 Payment prompt sent - triggering confirmation emails...');
-        const emailSuccess = await sendConfirmationEmails(email, fullPhoneNumber);
+        const emailSuccess = await sendConfirmationEmails(email, formattedPhone);
         
         if (emailSuccess) {
           paymentMessage.textContent = '✅ Emails sent! Processing payment...';
@@ -1156,8 +1156,8 @@
           console.log('⚠️ Email sending failed but continuing with payment');
         }
 
-        // Call the UPDATED handlePayment function
-        const response = await handlePayment(fullPhoneNumber, depositAmount);
+        // Call the UPDATED handlePayment function with corrected parameter
+        const response = await handlePayment(formattedPhone, depositAmount); // CHANGED: Using formattedPhone directly
         
         if (response && response.success) {
           paymentStatus.className = 'payment-status payment-success';
@@ -1174,7 +1174,7 @@
             deposit: depositAmount,
             paidDeposit: true,
             email: email,
-            phone: fullPhoneNumber,
+            phone: formattedPhone,
             time: new Date().toISOString(),
             mpesaReference: response.checkout_request_id || 'Pending',
             status: 'confirmed'
