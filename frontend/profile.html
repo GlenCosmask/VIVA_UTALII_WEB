@@ -831,11 +831,10 @@ nav .logout-btn:hover {
     emailjs.init("PVuh_QoJ_cr04G6nd");
 })();
 
-// Base URL for your Flask backend
-const API_BASE = 'http://127.0.0.1:5000';
+// Base URL for your Flask backend (use global BACKEND_URL when available)
+const API_BASE = window.BACKEND_URL || 'http://127.0.0.1:5000';
 
-// Get authentication token from localStorage
-const authToken = localStorage.getItem('vivaUtalii_token');
+// Get user data (token is read dynamically by getAuthHeaders)
 const userData = localStorage.getItem('vivaUtalii_user');
 
 // Store the current booking being cancelled
@@ -843,16 +842,13 @@ let currentCancellationBooking = null;
 
 // Helper function to create headers with authentication
 function getAuthHeaders() {
-    const headers = {
-        'Content-Type': 'application/json'
-    };
-    
-    // Add authorization header if token exists
-    if (authToken) {
-        headers['Authorization'] = `Bearer ${authToken}`;
-    }
-    
-    return headers;
+  const headers = {
+    'Content-Type': 'application/json'
+  };
+  // Add authorization header only if token exists at call-time
+  const token = localStorage.getItem('vivaUtalii_token');
+  if (token) headers['Authorization'] = `Bearer ${token}`;
+  return headers;
 }
 
 // Pre-populate user data if available

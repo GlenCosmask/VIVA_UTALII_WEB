@@ -58,7 +58,7 @@ class AuthSystem {
         try {
             const response = await fetch(`${window.BACKEND_URL}/login`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: this.getRequestHeaders(true),
                 body: JSON.stringify({ email, password })
             });
 
@@ -84,7 +84,7 @@ class AuthSystem {
         try {
             const response = await fetch(`${window.BACKEND_URL}/signup`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: this.getRequestHeaders(true),
                 body: JSON.stringify({ name, email, password })
             });
 
@@ -157,31 +157,41 @@ class AuthSystem {
         return localStorage.getItem('vivaUtalii_token');
     }
 
-    // Verify token with backend
+    // Build headers for backend requests; include Authorization only when token exists
+    getRequestHeaders(includeContentType = true) {
+        const headers = {};
+        if (includeContentType) headers['Content-Type'] = 'application/json';
+        const token = this.getToken();
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+        return headers;
+    }
+
+    // Verify token with backend (resilient to network/CORS failures)
     async verifyToken() {
         const token = this.getToken();
-        if (!token) {
-            return false;
-        }
+        if (!token) return false;
 
         try {
             const response = await fetch(`${window.BACKEND_URL}/verify-token`, {
                 method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
+                headers: this.getRequestHeaders(false)
             });
 
             if (!response.ok) {
-                // Token is invalid, clear storage
-                this.logout();
-                return false;
+                // If the backend explicitly rejects the token, log out
+                if (response.status === 401) {
+                    this.logout();
+                    return false;
+                }
+                // If some other non-OK status, warn but don't force logout
+                console.warn('Token verification returned non-OK status:', response.status);
+                return this.isLoggedIn();
             }
+
             return true;
         } catch (error) {
-            console.error('Token verification failed:', error);
-            // If verification fails but token exists, still consider user as logged in
+            // Network or CORS error - warn, but preserve local token and session
+            console.warn('Token verification network/CORS error — keeping local session:', error);
             return this.isLoggedIn();
         }
     }
@@ -193,6 +203,14 @@ window.auth = auth;
 
 // Make logout available globally
 window.logout = () => auth.logout();
+
+// Backwards compatibility: expose a global getAuthHeaders() used by existing pages
+window.getAuthHeaders = function(includeContentType = true) {
+    return auth.getRequestHeaders(includeContentType);
+};
+
+// Expose API base for pages that reference API_BASE
+window.API_BASE = window.BACKEND_URL;
 
 // 3. AUTO-UI SYNC ON LOAD
 document.addEventListener('DOMContentLoaded', () => {

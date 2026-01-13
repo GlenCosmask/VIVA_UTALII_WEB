@@ -27,7 +27,7 @@ CORS(app, resources={r"/*": {
     "origins": "*",
     "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     "allow_headers": ["Content-Type", "Authorization"]
-}})
+}}, supports_credentials=True)
 
 # ------------------- M-Pesa Daraja credentials (HARDCODED) -------------------
 CONSUMER_KEY = "MYO5kqmnAhdpKIbNlNoQnSweJ0KgxMImMGNiEG61Uc7XOAwD"
@@ -154,6 +154,19 @@ def get_user():
                 print(f"Error getting user from token: {e}")
     
     return None
+
+
+# Verify-token endpoint for client-side token validation (handles preflight)
+@app.route('/verify-token', methods=['GET', 'OPTIONS'])
+def verify_token():
+    # Allow CORS preflight through without authentication
+    if request.method == 'OPTIONS':
+        return '', 200
+
+    user = get_user()
+    if user:
+        return jsonify({'valid': True, 'user': user}), 200
+    return jsonify({'valid': False}), 401
 
 # ------------------- M-Pesa Functions -------------------
 def get_access_token():
