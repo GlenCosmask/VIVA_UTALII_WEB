@@ -629,10 +629,74 @@
 
   <script>
     /**************************************************************************/
-    /* Backend URL Configuration - NOW USING GLOBAL VARIABLE FROM auth.js    */
+    /* FIXED: BACKEND_URL Configuration with fallback                        */
     /**************************************************************************/
-    // Using window.BACKEND_URL from auth.js - no local constant needed
-    console.log(`🔗 Backend URL: ${window.BACKEND_URL}`);
+    const BACKEND_URL = window.BACKEND_URL || 'https://viva-backend-p91j.onrender.com';
+    console.log(`🔗 Backend URL: ${BACKEND_URL}`);
+    
+    // Also set it back to window for consistency
+    window.BACKEND_URL = BACKEND_URL;
+
+    /**************************************************************************/
+    /* UPDATED Payment Function - FIXED VERSION                              */
+    /**************************************************************************/
+    async function handlePayment(phoneNumber, amount) {
+      // Use BACKEND_URL (with fallback)
+      const targetUrl = `${BACKEND_URL}/api/mpesa/stkpush`;
+
+      console.log("Payment function called");
+      console.log("Phone:", phoneNumber);
+      console.log("Amount:", amount);
+      console.log("Pushing to:", targetUrl);
+
+      try {
+        const response = await fetch(targetUrl, {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+            phoneNumber: phoneNumber,
+            amount: amount,
+            description: `Deposit for ${currentDest.name}`,
+            account_reference: 'VIVAUTALII',
+            transaction_desc: `Travel deposit - ${currentDest.name}`
+          })
+        });
+        
+        console.log("Response status:", response.status);
+        
+        // Check if response is okay
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('HTTP error details:', errorText);
+          throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+        }
+        
+        // Try to parse JSON
+        const text = await response.text();
+        console.log("Raw response:", text);
+        
+        let data;
+        try {
+          data = text ? JSON.parse(text) : {};
+        } catch (e) {
+          console.error('Failed to parse JSON:', e);
+          throw new Error('Invalid JSON response from server');
+        }
+        
+        console.log("Parsed response data:", data);
+        
+        // Show success message
+        alert("Payment initiated! Check your phone for the M-Pesa prompt!");
+        return data;
+      } catch (error) {
+        console.error("Payment Error:", error);
+        alert(`Payment failed: ${error.message}. Please try again.`);
+        throw error;
+      }
+    }
 
     /**************************************************************************/
     /* Data & algorithm (logical scoring)                                      */
@@ -647,7 +711,7 @@
     ];
 
     /**************************************************************************/
-    /* Improved Login Detection System                                        */
+    /* Improved Login Detection System - UPDATED TO USE BACKEND_URL          */
     /**************************************************************************/
     async function checkLogin(){
       console.log("Checking login status...");
@@ -668,10 +732,10 @@
         return true;
       }
       
-      // Method 3: Check backend API
+      // Method 3: Check backend API - USING BACKEND_URL
       try {
         console.log("Trying backend login check...");
-        const res = await fetch(`${window.BACKEND_URL}/check_login`, { 
+        const res = await fetch(`${BACKEND_URL}/check_login`, { 
           credentials: 'include', 
           cache: 'no-cache',
           headers: {
@@ -1092,10 +1156,10 @@
           console.log('⚠️ Email sending failed but continuing with payment');
         }
 
-        // Updated payment function to use global window.BACKEND_URL
+        // Call the UPDATED handlePayment function
         const response = await handlePayment(fullPhoneNumber, depositAmount);
         
-        if (response.success) {
+        if (response && response.success) {
           paymentStatus.className = 'payment-status payment-success';
           paymentMessage.textContent = 'Payment initiated successfully! Please check your phone to complete the transaction.';
           
@@ -1127,7 +1191,7 @@
           }, 3000);
         } else {
           paymentStatus.className = 'payment-status payment-error';
-          paymentMessage.textContent = `Payment failed: ${response.error || 'Unknown error'}`;
+          paymentMessage.textContent = `Payment failed: ${response?.error || 'Unknown error'}`;
           confirmPaymentBtn.disabled = false;
           cancelPaymentBtn.disabled = false;
         }
@@ -1139,43 +1203,6 @@
         cancelPaymentBtn.disabled = false;
       }
     });
-
-    /**************************************************************************/
-    /* Updated Payment Function using Global BACKEND_URL                      */
-    /**************************************************************************/
-    async function handlePayment(phoneNumber, amount) {
-      // Use window.BACKEND_URL from auth.js
-      const targetUrl = `${window.BACKEND_URL}/api/mpesa/stkpush`;
-
-      console.log("Pushing to:", targetUrl);
-
-      try {
-        const response = await fetch(targetUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            phoneNumber: phoneNumber,
-            amount: amount,
-            description: `Deposit for ${currentDest.name}`,
-            account_reference: 'VIVAUTALII',
-            transaction_desc: `Travel deposit - ${currentDest.name}`
-          })
-        });
-        
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.error('HTTP error details:', errorText);
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        alert("Check your phone for the M-Pesa prompt!");
-        return data;
-      } catch (error) {
-        console.error("Payment Error:", error);
-        throw error;
-      }
-    }
 
     /**************************************************************************/
     /* EmailJS Integration for Confirmation Emails                           */

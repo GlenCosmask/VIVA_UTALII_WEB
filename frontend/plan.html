@@ -655,9 +655,17 @@
     })();
   </script>
 
+  <!-- Load auth.js first to ensure window.BACKEND_URL is available -->
   <script src="auth.js"></script>
 
   <script>
+    // FIXED: BACKEND_URL Configuration with fallback
+    const BACKEND_URL = window.BACKEND_URL || 'https://viva-backend-p91j.onrender.com';
+    console.log(`🔗 Backend URL: ${BACKEND_URL}`);
+    
+    // Also set it back to window for consistency
+    window.BACKEND_URL = BACKEND_URL;
+
     // DOM Elements
     const citySelect = document.getElementById('city');
     const townSelect = document.getElementById('town');
@@ -891,7 +899,9 @@
       overlay.style.display = 'none';
     });
 
-    // UPDATED PAYMENT FUNCTION
+    /**************************************************************************/
+    /* UPDATED Payment Function - FIXED VERSION                              */
+    /**************************************************************************/
     async function handlePayment() {
       const phone = document.getElementById('phone-input').value.trim();
       
@@ -912,21 +922,47 @@
       paymentStatusText.style.color = '#d4af37';
 
       try {
-        // Use window.BACKEND_URL (this pulls from auth.js)
-        const targetUrl = `${window.BACKEND_URL}/api/mpesa/stkpush`;
+        // Use BACKEND_URL (with fallback)
+        const targetUrl = `${BACKEND_URL}/api/mpesa/stkpush`;
 
         console.log("Pushing to:", targetUrl);
 
         const response = await fetch(targetUrl, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
           body: JSON.stringify({
             phoneNumber: formattedPhone,
             amount: bookingFee, // Use the booking fee amount
           })
         });
         
-        const data = await response.json();
+        // Check if response is okay
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('HTTP error details:', errorText);
+          paymentStatusText.textContent = `❌ Payment failed: HTTP error ${response.status}`;
+          paymentStatusText.style.color = '#ff6b6b';
+          return;
+        }
+        
+        // Try to parse JSON
+        const text = await response.text();
+        console.log("Raw response:", text);
+        
+        let data;
+        try {
+          data = text ? JSON.parse(text) : {};
+        } catch (e) {
+          console.error('Failed to parse JSON:', e);
+          paymentStatusText.textContent = '❌ Invalid response from server';
+          paymentStatusText.style.color = '#ff6b6b';
+          return;
+        }
+        
+        console.log("Parsed response data:", data);
         
         if (data.success) {
           paymentStatusText.textContent = '✅ Payment initiated! Check your phone for the M-Pesa prompt!';
@@ -1087,6 +1123,25 @@
       return newBooking;
     }
 
+    async function formatPhone(phone) {
+      phone = phone.replace(/\s|[-()+]/g, '');
+      if (phone.startsWith("0")) return "254" + phone.slice(1);
+      if (phone.startsWith("7")) return "254" + phone;
+      if (phone.startsWith("+")) return phone.slice(1);
+      if (phone.startsWith("254") && phone.length === 12) return phone;
+      return null;
+    }
+
+    // Set minimum date to today
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('start-date').min = today;
+    document.getElementById('end-date').min = today;
+
+    // Update end date min when start date changes
+    document.getElementById('start-date').addEventListener('change', function() {
+      document.getElementById('end-date').min = this.value;
+    });
+
     // Close overlays when clicking on them
     overlay.addEventListener('click', (e) => {
       if (e.target === overlay) {
@@ -1105,25 +1160,6 @@
       successOverlay.style.display = 'none';
       // Redirect to profile page
       window.location.href = 'profile.html';
-    });
-
-    async function formatPhone(phone) {
-      phone = phone.replace(/\s|[-()+]/g, '');
-      if (phone.startsWith("0")) return "254" + phone.slice(1);
-      if (phone.startsWith("7")) return "254" + phone;
-      if (phone.startsWith("+")) return phone.slice(1);
-      if (phone.startsWith("254") && phone.length === 12) return phone;
-      return null;
-    }
-
-    // Set minimum date to today
-    const today = new Date().toISOString().split('T')[0];
-    document.getElementById('start-date').min = today;
-    document.getElementById('end-date').min = today;
-
-    // Update end date min when start date changes
-    document.getElementById('start-date').addEventListener('change', function() {
-      document.getElementById('end-date').min = this.value;
     });
 
     // Initialize auth UI
