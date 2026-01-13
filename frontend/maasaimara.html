@@ -485,8 +485,8 @@
       </ul>
     </div>
 
-    <div id="auth-buttons" class="header-right">
-      <!-- removed search box as requested -->
+    <div class="header-right">
+      <!-- SIMPLE: Always show "Plan Your Trip" button -->
       <button id="topPlanBtn" class="trip-btn" aria-label="Plan your trip">Plan Your Trip</button>
     </div>
 
@@ -744,83 +744,23 @@
         });
       }
 
-      // Enhanced user login detection
+      // SIMPLIFIED: Check if user is logged in using auth.js system
       function userIsLoggedIn() {
-        // Check multiple possible localStorage keys
-        const possibleUserKeys = ['vivaUtalii_user', 'user_data', 'auth_user', 'currentUser', 'userLoggedIn'];
-        const possibleTokenKeys = ['vivaUtalii_token', 'auth_token', 'token', 'access_token', 'userToken'];
-        
-        let userData = null;
-        let token = null;
-        
-        // Find user data in localStorage
-        for (const key of possibleUserKeys) {
-          const data = localStorage.getItem(key);
-          if (data) {
-            userData = data;
-            console.log(`✓ Found user data in localStorage: ${key}`);
-            break;
-          }
+        // Method 1: Check if window.auth exists and is logged in
+        if (window.auth && typeof window.auth.isLoggedIn === 'function') {
+          return window.auth.isLoggedIn();
         }
         
-        // Find token in localStorage
-        for (const key of possibleTokenKeys) {
-          const data = localStorage.getItem(key);
-          if (data) {
-            token = data;
-            console.log(`✓ Found token in localStorage: ${key}`);
-            break;
-          }
-        }
+        // Method 2: Check localStorage for auth.js specific keys
+        const userData = localStorage.getItem('vivaUtalii_user');
+        const token = localStorage.getItem('vivaUtalii_token');
         
-        // Also check sessionStorage as fallback
-        if (!userData) {
-          for (const key of possibleUserKeys) {
-            const data = sessionStorage.getItem(key);
-            if (data) {
-              userData = data;
-              console.log(`✓ Found user data in sessionStorage: ${key}`);
-              break;
-            }
-          }
-        }
+        // Also check for other common auth storage patterns
+        const loggedIn = localStorage.getItem('vua_logged_in') === 'true';
+        const clientUser = localStorage.getItem('vua_client_user');
         
-        if (!token) {
-          for (const key of possibleTokenKeys) {
-            const data = sessionStorage.getItem(key);
-            if (data) {
-              token = data;
-              console.log(`✓ Found token in sessionStorage: ${key}`);
-              break;
-            }
-          }
-        }
-        
-        // Special case: check if userLoggedIn is a string "true"
-        if (userData === "true" || token === "true") {
-          console.log('✓ Found boolean true value for login status');
-          return true;
-        }
-        
-        // Parse JSON data if possible
-        try {
-          if (userData && typeof userData === 'string') {
-            const parsed = JSON.parse(userData);
-            if (parsed && typeof parsed === 'object') {
-              userData = parsed;
-              console.log('✓ Successfully parsed user data JSON');
-            }
-          }
-        } catch (e) {
-          console.log('User data is not JSON, using as-is');
-        }
-        
-        const isLoggedIn = !!(userData && token);
-        console.log('Final login status:', isLoggedIn ? 'LOGGED IN' : 'NOT LOGGED IN');
-        console.log('All localStorage keys:', Object.keys(localStorage));
-        console.log('================================');
-        
-        return isLoggedIn;
+        // Return true if ANY of these authentication methods indicate logged in
+        return !!(userData && token) || loggedIn || clientUser;
       }
 
       // Function to handle plan trip button clicks
@@ -843,9 +783,11 @@
         }
       }
 
-      // Plan button logic (top-right)
+      // Plan button logic (top-right) - ALWAYS SHOW THIS BUTTON
       const topPlanBtn = document.getElementById('topPlanBtn');
-      topPlanBtn.addEventListener('click', handlePlanTripClick);
+      if (topPlanBtn) {
+        topPlanBtn.addEventListener('click', handlePlanTripClick);
+      }
 
       // Mobile dropdown plan link
       const mobilePlan = document.getElementById('mobilePlan');
@@ -858,41 +800,49 @@
 
       // Bottom CTA logic
       const bottomStartBtn = document.getElementById('bottomStartBtn');
-      bottomStartBtn.addEventListener('click', handlePlanTripClick);
+      if (bottomStartBtn) {
+        bottomStartBtn.addEventListener('click', handlePlanTripClick);
+      }
 
       // Reviews button
-      document.getElementById('reviewsBtn').addEventListener('click', function(){
-        window.location.href = 'maasaimararev.html';
-      });
+      const reviewsBtn = document.getElementById('reviewsBtn');
+      if (reviewsBtn) {
+        reviewsBtn.addEventListener('click', function(){
+          window.location.href = 'maasaimararev.html';
+        });
+      }
 
       // Hamburger & mobile dropdown logic (collapse under header)
       const hamburgerToggle = document.getElementById('hamburgerToggle');
       const mobileDropdown = document.getElementById('mobileDropdown');
 
-      hamburgerToggle && hamburgerToggle.addEventListener('click', function(e){
-        if (!mobileDropdown) return;
-        const isOpen = mobileDropdown.classList.contains('open');
-        if (isOpen) {
-          mobileDropdown.classList.remove('open');
-          mobileDropdown.setAttribute('aria-hidden','true');
-          hamburgerToggle.setAttribute('aria-expanded','false');
-        } else {
-          mobileDropdown.classList.add('open');
-          mobileDropdown.setAttribute('aria-hidden','false');
-          hamburgerToggle.setAttribute('aria-expanded','true');
-        }
-      });
+      if (hamburgerToggle && mobileDropdown) {
+        hamburgerToggle.addEventListener('click', function(e){
+          const isOpen = mobileDropdown.classList.contains('open');
+          if (isOpen) {
+            mobileDropdown.classList.remove('open');
+            mobileDropdown.setAttribute('aria-hidden','true');
+            hamburgerToggle.setAttribute('aria-expanded','false');
+          } else {
+            mobileDropdown.classList.add('open');
+            mobileDropdown.setAttribute('aria-hidden','false');
+            hamburgerToggle.setAttribute('aria-expanded','true');
+          }
+        });
+      }
 
       // Close mobile dropdown on outside click or Escape
       document.addEventListener('click', function(e){
         if (!mobileDropdown || !mobileDropdown.classList.contains('open')) return;
         const target = e.target;
         const insideDropdown = mobileDropdown.contains(target);
-        const clickedHamburger = hamburgerToggle.contains(target);
+        const clickedHamburger = hamburgerToggle && hamburgerToggle.contains(target);
         if (!insideDropdown && !clickedHamburger) {
           mobileDropdown.classList.remove('open');
           mobileDropdown.setAttribute('aria-hidden','true');
-          hamburgerToggle.setAttribute('aria-expanded','false');
+          if (hamburgerToggle) {
+            hamburgerToggle.setAttribute('aria-expanded','false');
+          }
         }
       });
 
@@ -900,12 +850,16 @@
         if (e.key === 'Escape' && mobileDropdown && mobileDropdown.classList.contains('open')) {
           mobileDropdown.classList.remove('open');
           mobileDropdown.setAttribute('aria-hidden','true');
-          hamburgerToggle.setAttribute('aria-expanded','false');
+          if (hamburgerToggle) {
+            hamburgerToggle.setAttribute('aria-expanded','false');
+          }
         }
       });
 
-      // Initial authentication check
-      userIsLoggedIn();
+      // Check if auth.js is loaded and update UI if needed
+      if (window.updateAuthUI) {
+        window.updateAuthUI();
+      }
     });
   </script>
 
