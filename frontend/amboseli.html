@@ -76,8 +76,33 @@
     .nav-links a:hover{ color:var(--gold); }
 
     .actions{display:flex;align-items:center;gap:12px}
-    #tripTop{background:var(--gold);color:#000;border:none;padding:9px 16px;border-radius:24px;font-weight:800;cursor:pointer;box-shadow:0 8px 20px rgba(0,0,0,0.25);transition:transform 160ms ease}
-    #tripTop:hover{transform:translateY(-2px)}
+    .header-btn{
+      background:var(--gold);
+      color:#000;
+      border:none;
+      padding:9px 16px;
+      border-radius:24px;
+      font-weight:800;
+      cursor:pointer;
+      box-shadow:0 8px 20px rgba(0,0,0,0.25);
+      transition:transform 160ms ease;
+      text-decoration:none;
+      display:inline-block;
+      text-align:center;
+      font-size:14px;
+    }
+    .header-btn:hover{transform:translateY(-2px)}
+
+    /* Profile button specific styling */
+    .profile-btn{
+      background:rgba(255,255,255,0.1);
+      color:var(--text);
+      border:1px solid rgba(255,255,255,0.2);
+    }
+    .profile-btn:hover{
+      background:rgba(255,255,255,0.15);
+      color:var(--gold);
+    }
 
     /* Hero */
     .hero{padding:80px 16px 40px;text-align:center}
@@ -322,9 +347,9 @@
         </div>
       </div>
 
-      <!-- actions top-right -->
-      <div id="auth-buttons" class="actions">
-        <button id="tripTop">Plan Your Trip</button>
+      <!-- actions top-right - Will be dynamically populated -->
+      <div class="actions" id="headerActions">
+        <!-- Button will be inserted here by JavaScript -->
       </div>
     </div>
   </header>
@@ -342,6 +367,7 @@
       <a href="recommendations.html">Recommendations</a>
       <a href="about.html">About</a>
       <a href="contact.html">Contact</a>
+      <!-- Panel plan link will be dynamically updated -->
       <a href="#" id="panelPlan">Plan Your Trip</a>
     </nav>
   </aside>
@@ -612,6 +638,56 @@
         return isLoggedIn;
       }
 
+      // Function to update header buttons based on login status
+      function updateHeaderButtons() {
+        const headerActions = document.getElementById('headerActions');
+        const panelPlan = document.getElementById('panelPlan');
+        const isLoggedIn = userIsLoggedIn();
+        
+        // Clear existing content
+        headerActions.innerHTML = '';
+        
+        if (isLoggedIn) {
+          // User is logged in: Show Profile button
+          const profileBtn = document.createElement('a');
+          profileBtn.href = 'profile.html';
+          profileBtn.className = 'header-btn profile-btn';
+          profileBtn.textContent = 'Profile';
+          headerActions.appendChild(profileBtn);
+          
+          // Update side panel link to redirect to plan.html
+          if (panelPlan) {
+            panelPlan.textContent = 'Plan Your Trip';
+            panelPlan.onclick = null; // Remove any existing handlers
+            panelPlan.href = 'plan.html';
+          }
+          
+          console.log('✓ User logged in: Profile button displayed');
+        } else {
+          // User is NOT logged in: Show Plan Your Trip button
+          const tripBtn = document.createElement('button');
+          tripBtn.id = 'tripTop';
+          tripBtn.className = 'header-btn';
+          tripBtn.textContent = 'Plan Your Trip';
+          headerActions.appendChild(tripBtn);
+          
+          // Add click handler for the dynamically created button
+          tripBtn.addEventListener('click', handlePlanTripClick);
+          
+          // Update side panel link to show login prompt
+          if (panelPlan) {
+            panelPlan.textContent = 'Plan Your Trip';
+            panelPlan.href = '#';
+            panelPlan.onclick = (e) => {
+              e.preventDefault();
+              handlePlanTripClick();
+            };
+          }
+          
+          console.log('✓ User not logged in: Plan Your Trip button displayed');
+        }
+      }
+
       // Function to handle plan trip button clicks
       function handlePlanTripClick() {
         console.log('Plan Trip button clicked - checking authentication...');
@@ -632,26 +708,8 @@
         }
       }
 
-      // Top Plan Your Trip button
-      const tripTop = document.getElementById('tripTop');
-      if(tripTop){
-        tripTop.addEventListener('click', handlePlanTripClick);
-        console.log('✓ tripTop button event listener added');
-      } else {
-        console.error('✗ tripTop button not found!');
-      }
-
-      // Panel plan link
-      const panelPlan = document.getElementById('panelPlan');
-      if(panelPlan){
-        panelPlan.addEventListener('click', (e) => {
-          e.preventDefault();
-          handlePlanTripClick();
-        });
-        console.log('✓ panelPlan link event listener added');
-      } else {
-        console.error('✗ panelPlan link not found!');
-      }
+      // Initialize header buttons
+      updateHeaderButtons();
 
       // Bottom Start Planning CTA
       const startPlan = document.getElementById('startPlan');
