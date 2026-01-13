@@ -558,7 +558,7 @@
 
     <div class="header-right">
       <!-- The "Plan Your Trip" button - will redirect to plan.html only when user logged in,
-           otherwise to ../backend/login.html. Logic at bottom uses auth.js to detect login -->
+           otherwise to login.html. Logic at bottom uses auth.js to detect login -->
       <button class="trip-btn" id="planBtn">Plan Your Trip</button>
     </div>
   </header>
@@ -845,7 +845,7 @@
 
       if (goToLoginFromCard) {
         goToLoginFromCard.addEventListener("click", function(){
-          window.location.href = "../backend/login.html";
+          window.location.href = "login.html";
         });
       }
 
@@ -953,7 +953,7 @@
           } else {
             console.error('Login overlay element not found!');
             // Fallback: redirect to login page
-            window.location.href = "../backend/login.html";
+            window.location.href = "login.html";
           }
         }
       }

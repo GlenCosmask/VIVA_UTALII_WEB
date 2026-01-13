@@ -963,7 +963,7 @@
       const logged = await checkLogin();
       if(!logged){
         alert('You must be logged in to pay. Redirecting to login.');
-        window.location.href = '../backend/login.html?form=login';
+        window.location.href = 'login.html?form=login';
         return;
       }
       openPaymentModal();
@@ -1314,7 +1314,7 @@
 
     document.getElementById('closeLoginCard').addEventListener('click', hideLoginRequiredCard);
     document.getElementById('goToLogin').addEventListener('click', ()=>{
-      window.location.href = '../backend/login.html?form=login';
+      window.location.href = 'login.html?form=login';
     });
 
     document.getElementById('loginOverlay').addEventListener('click', hideLoginRequiredCard);
@@ -1335,7 +1335,7 @@
             <a style="display:block;padding:10px 6px;border-radius:8px;color:var(--text);" href="about.html">About</a>
             <a style="display:block;padding:10px 6px;border-radius:8px;color:var(--text);" href="contact.html">Contact</a>
             <div style="height:8px"></div>
-            <button class="auth-btn" style="width:100%; display:block" onclick="window.location.href='../backend/login.html?form=login'">Sign In</button>
+            <button class="auth-btn" style="width:100%; display:block" onclick="window.location.href='login.html?form=login'">Sign In</button>
           </div>`;
       } else {
         mobileMenu.style.display = 'none';
