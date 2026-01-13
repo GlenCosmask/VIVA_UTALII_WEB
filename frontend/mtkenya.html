@@ -149,27 +149,6 @@
       background: #fff;
     }
 
-    /* Profile button style */
-    .profile-btn {
-      background: transparent;
-      color: var(--gold);
-      border: 2px solid var(--gold);
-      padding: 8px 16px;
-      border-radius: 28px;
-      font-size: 15px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all .18s ease;
-    }
-
-    .profile-btn:hover {
-      background: var(--gold);
-      color: black;
-      transform: translateY(-3px);
-    }
-
-    /* Remove the search box per request - so not included */
-
     /* HERO */
     .hero {
       text-align: center;
@@ -590,12 +569,6 @@
       background: var(--gold);
       color: black;
     }
-
-    .mobile-profile-btn {
-      background: transparent;
-      color: var(--yellow-menu);
-      border: 2px solid var(--yellow-menu);
-    }
   </style>
 </head>
 <body>
@@ -618,10 +591,8 @@
     </div>
 
     <div id="auth-buttons" class="header-right">
-      <!-- Always show "Plan Your Trip" button -->
+      <!-- SINGLE "Plan Your Trip" button - functionality changes based on login status -->
       <button class="trip-btn" id="planBtn">Plan Your Trip</button>
-      <!-- Profile button will be shown/hidden based on login status -->
-      <button class="profile-btn" id="profileBtn" style="display: none;">Profile</button>
     </div>
   </header>
 
@@ -636,10 +607,8 @@
       <a href="contact.html" role="menuitem">Contact</a>
       
       <div class="mobile-auth-container" id="mobileAuthContainer">
-        <!-- Mobile "Plan Your Trip" button -->
+        <!-- SINGLE Mobile "Plan Your Trip" button -->
         <button class="mobile-auth-btn mobile-plan-btn" id="mobilePlanBtn">Plan Your Trip</button>
-        <!-- Mobile profile button (shown when logged in) -->
-        <button class="mobile-auth-btn mobile-profile-btn" id="mobileProfileBtn" style="display: none;">Profile</button>
       </div>
     </div>
   </div>
@@ -904,12 +873,10 @@
       const closeLoginCard = document.getElementById("closeLoginCard");
       const goToLoginFromCard = document.getElementById("goToLoginFromCard");
 
-      // UI elements
+      // UI elements - ONLY "Plan Your Trip" buttons
       const planBtn = document.getElementById("planBtn");
-      const profileBtn = document.getElementById("profileBtn");
       const startPlanBtn = document.getElementById("startPlanBtn");
       const mobilePlanBtn = document.getElementById("mobilePlanBtn");
-      const mobileProfileBtn = document.getElementById("mobileProfileBtn");
 
       // Login required card functionality
       if (closeLoginCard) {
@@ -1012,36 +979,11 @@
         return isLoggedIn;
       }
 
-      // Function to update UI based on login status
-      function updateAuthUI() {
-        const isLoggedIn = userIsLoggedIn();
-        
-        // Update desktop UI
-        if (profileBtn) {
-          if (isLoggedIn) {
-            profileBtn.style.display = "block";
-          } else {
-            profileBtn.style.display = "none";
-          }
-        }
-        
-        // Update mobile UI
-        if (mobileProfileBtn) {
-          if (isLoggedIn) {
-            mobileProfileBtn.style.display = "block";
-          } else {
-            mobileProfileBtn.style.display = "none";
-          }
-        }
-        
-        return isLoggedIn;
-      }
-
       // Function to handle plan trip button clicks
       function handlePlanTripClick(evt) {
         evt && evt.preventDefault();
         console.log('Plan Trip button clicked - checking authentication...');
-        const isLoggedIn = updateAuthUI();
+        const isLoggedIn = userIsLoggedIn();
         
         if (isLoggedIn) {
           console.log('✓ User is logged in, redirecting to plan.html');
@@ -1058,28 +1000,15 @@
         }
       }
 
-      // Function to handle profile button click
-      function handleProfileClick() {
-        // Redirect to profile page or show profile menu
-        window.location.href = "profile.html";
-      }
-
-      // Attach handlers to buttons
+      // Attach handlers to ALL "Plan Your Trip" buttons
       if (planBtn) planBtn.addEventListener("click", handlePlanTripClick);
       if (startPlanBtn) startPlanBtn.addEventListener("click", handlePlanTripClick);
-      if (profileBtn) profileBtn.addEventListener("click", handleProfileClick);
       
       if (mobilePlanBtn) mobilePlanBtn.addEventListener("click", function(e){
         // mobile button in overlay should also close menu and redirect accordingly
         const overlay = document.getElementById("mobileMenuOverlay");
         if (overlay) overlay.style.display = "none";
         handlePlanTripClick(e);
-      });
-      
-      if (mobileProfileBtn) mobileProfileBtn.addEventListener("click", function(){
-        const overlay = document.getElementById("mobileMenuOverlay");
-        if (overlay) overlay.style.display = "none";
-        handleProfileClick();
       });
 
       // Mobile menu toggle
@@ -1110,8 +1039,8 @@
         });
       }
 
-      // Initial authentication check and UI update
-      updateAuthUI();
+      // Initial authentication check (no UI update needed since we only have one button)
+      console.log('Initial auth check:', userIsLoggedIn() ? 'LOGGED IN' : 'NOT LOGGED IN');
     });
   </script>
 </body>
