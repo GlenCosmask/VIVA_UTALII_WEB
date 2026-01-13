@@ -1029,23 +1029,24 @@
                 });
             });
             
-            // Helpful button functionality
-            const helpfulButtons = document.querySelectorAll('.helpful-btn');
-            helpfulButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const countElement = this.querySelector('span') || document.createElement('span');
-                    if (!this.querySelector('span')) {
-                        const text = this.innerHTML;
-                        const count = parseInt(text.match(/\((\d+)\)/)[1]);
-                        this.innerHTML = `<i class="far fa-thumbs-up"></i> Helpful <span>(${count + 1})</span>`;
-                    } else {
-                        const count = parseInt(countElement.textContent.match(/\((\d+)\)/)[1]);
-                        countElement.textContent = `(${count + 1})`;
-                    }
-                    this.style.color = '#FFD700';
-                });
+        // Helpful button functionality
+        const helpfulButtons = document.querySelectorAll('.helpful-btn');
+        helpfulButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const countElement = this.querySelector('span') || document.createElement('span');
+                if (!this.querySelector('span')) {
+                    const text = this.innerHTML;
+                    const count = parseInt(text.match(/\((\d+)\)/)[1]);
+                    this.innerHTML = `<i class="far fa-thumbs-up"></i> Helpful <span>(${count + 1})</span>`;
+                } else {
+                    const count = parseInt(countElement.textContent.match(/\((\d+)\)/)[1]);
+                    countElement.textContent = `(${count + 1})`;
+                }
+                this.style.color = '#FFD700';
             });
         });
-    </script>
+    });
+</script>
+    <script src="auth.js"></script>
 </body>
 </html>
