@@ -333,8 +333,8 @@
     <!-- Auth Buttons - Will be dynamically updated -->
     <div id="auth-buttons" class="auth-buttons">
       <!-- Default state - will be updated by JavaScript -->
-      <a href="../frontend/login.html?form=login"><button>Sign In</button></a>
-      <a href="../frontend/login.html?form=signup"><button>Sign Up</button></a>
+      <a href="login.html?form=login"><button>Sign In</button></a>
+      <a href="login.html?form=signup"><button>Sign Up</button></a>
     </div>
   </header>
 
@@ -393,8 +393,8 @@
     function showLoginButtons() {
       const authButtons = document.getElementById('auth-buttons');
       authButtons.innerHTML = `
-        <a href="../frontend/login.html?form=login"><button>Sign In</button></a>
-        <a href="../frontend/login.html?form=signup"><button>Sign Up</button></a>
+        <a href="login.html?form=login"><button>Sign In</button></a>
+        <a href="login.html?form=signup"><button>Sign Up</button></a>
       `;
       console.log('User is not logged in, showing sign in/sign up buttons');
     }
@@ -497,7 +497,7 @@
       // Setup login card buttons
       document.getElementById('closeLoginCard').addEventListener('click', hideLoginRequiredCard);
       document.getElementById('goToLogin').addEventListener('click', () => {
-        window.location.href = '../frontend/login.html?form=login';
+        window.location.href = 'login.html?form=login';
       });
 
       // Close login card when clicking overlay
