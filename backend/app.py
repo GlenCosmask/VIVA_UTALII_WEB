@@ -4,6 +4,8 @@ import os
 from flask_cors import CORS
 import secrets
 import requests
+import threading
+import time
 import base64
 from datetime import datetime
 
@@ -374,6 +376,11 @@ def health_check():
         "allowed_origins": "ALL PORTS"
     })
 
+
+@app.route('/health')
+def health():
+    return {"status": "alive"}, 200
+
 # ------------------- Existing Application Routes -------------------
 # SIGNUP AND LOGIN ROUTES
 @app.route('/signup', methods=['POST', 'OPTIONS'])
@@ -672,4 +679,18 @@ if __name__ == "__main__":
     print("💰 M-Pesa Integration: ACTIVE (Sandbox Mode)")
     print("👤 Test credentials: john@example.com / password123")
     print("✅ Backend ready - CORS will now work with ANY frontend port!")
+    # Background keep-alive thread to ping the Render health endpoint periodically
+    def keep_alive():
+        url = "https://viva-backend-p91j.onrender.com/health"
+        while True:
+            try:
+                requests.get(url, timeout=10)
+                print("Self-ping successful: Backend is awake.")
+            except Exception as e:
+                print(f"Self-ping failed: {e}")
+            # Wait 14 minutes (Render sleeps after ~15 minutes)
+            time.sleep(840)
+
+    threading.Thread(target=keep_alive, daemon=True).start()
+
     app.run(debug=True, port=5000)
