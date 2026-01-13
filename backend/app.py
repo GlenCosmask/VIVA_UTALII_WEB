@@ -22,8 +22,12 @@ app.config.update(
 
 DB = 'viva_utalii.db'
 
-# FIXED CORS: Allow all ports from localhost and 127.0.0.1
-CORS(app, resources={r"/*": {"origins": "*"}})
+# This setup allows everything and handles the 'preflight' OPTIONS request
+CORS(app, resources={r"/*": {
+    "origins": "*",
+    "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    "allow_headers": ["Content-Type", "Authorization"]
+}})
 
 # ------------------- M-Pesa Daraja credentials (HARDCODED) -------------------
 CONSUMER_KEY = "MYO5kqmnAhdpKIbNlNoQnSweJ0KgxMImMGNiEG61Uc7XOAwD"
