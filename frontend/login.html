@@ -465,8 +465,8 @@ a:hover {
 
 <script>
 // ----- BACKEND CONFIGURATION -----
-// Updated to your Render Backend URL
-const BACKEND_URL = 'https://viva-backend-p91j.onrender.com';
+// Use global BACKEND_URL from auth.js when available, fallback to Render URL
+const BACKEND_URL = window.BACKEND_URL || 'https://viva-backend-p91j.onrender.com';
 
 // ----- DOM ELEMENTS -----
 const containerEl = document.getElementById('container');
