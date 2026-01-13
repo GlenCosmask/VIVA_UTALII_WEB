@@ -121,6 +121,70 @@
       gap:14px;
     }
 
+    /* Auth buttons container */
+    .auth-buttons-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Authentication buttons styling */
+    .auth-btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 20px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 14px;
+    }
+
+    .signin-btn {
+      background: transparent;
+      border: 2px solid var(--accent);
+      color: var(--accent);
+    }
+
+    .signin-btn:hover {
+      background: var(--accent);
+      color: #000;
+    }
+
+    .signup-btn {
+      background: var(--accent);
+      color: #000;
+      border: 2px solid var(--accent);
+    }
+
+    .signup-btn:hover {
+      background: #fff;
+      border-color: #fff;
+    }
+
+    .profile-btn {
+      background: linear-gradient(45deg, #00aaff, #00ffe0);
+      color: #000;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 20px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+    }
+
+    .profile-btn:hover {
+      background: linear-gradient(45deg, #00ffe0, #00aaff);
+      transform: translateY(-2px);
+    }
+
+    .profile-btn i {
+      font-size: 14px;
+    }
+
+    /* Plan Your Trip button */
     .trip-btn {
       background: var(--accent);
       color: black;
@@ -455,12 +519,31 @@
       .login-card-buttons {
         flex-direction: column;
       }
+      
+      /* Mobile responsive for auth buttons */
+      .header-right {
+        gap: 8px;
+      }
+      
+      .auth-btn, .profile-btn {
+        padding: 6px 12px;
+        font-size: 12px;
+      }
+      
+      .trip-btn {
+        padding: 8px 12px;
+        font-size: 13px;
+      }
     }
     @media (max-width: 480px) {
       .experiences-grid, .gallery-grid, .four-grid { grid-template-columns: 1fr; }
       .card-image { height: 210px; }
-      .header-right { gap:8px; }
-      .trip-btn { padding: 8px 12px; font-size:14px; }
+      .header-right { gap:6px; }
+      .auth-btn, .profile-btn {
+        padding: 5px 10px;
+        font-size: 11px;
+      }
+      .trip-btn { padding: 6px 10px; font-size:12px; }
       .mobile-dropdown { left: 0; right: 0; }
     }
   </style>
@@ -485,8 +568,13 @@
       </ul>
     </div>
 
-    <div id="auth-buttons" class="header-right">
-      <!-- removed search box as requested -->
+    <div class="header-right">
+      <!-- Auth buttons container - only for auth buttons -->
+      <div id="auth-buttons" class="auth-buttons-container">
+        <!-- Will be populated by JavaScript based on login status -->
+      </div>
+      
+      <!-- Plan Your Trip button - ALWAYS visible -->
       <button id="topPlanBtn" class="trip-btn" aria-label="Plan your trip">Plan Your Trip</button>
     </div>
 
@@ -845,7 +933,9 @@
 
       // Plan button logic (top-right)
       const topPlanBtn = document.getElementById('topPlanBtn');
-      topPlanBtn.addEventListener('click', handlePlanTripClick);
+      if (topPlanBtn) {
+        topPlanBtn.addEventListener('click', handlePlanTripClick);
+      }
 
       // Mobile dropdown plan link
       const mobilePlan = document.getElementById('mobilePlan');
@@ -858,12 +948,17 @@
 
       // Bottom CTA logic
       const bottomStartBtn = document.getElementById('bottomStartBtn');
-      bottomStartBtn.addEventListener('click', handlePlanTripClick);
+      if (bottomStartBtn) {
+        bottomStartBtn.addEventListener('click', handlePlanTripClick);
+      }
 
       // Reviews button - updated to redirect to dianirev.html
-      document.getElementById('reviewsBtn').addEventListener('click', function(){
-        window.location.href = 'dianirev.html';
-      });
+      const reviewsBtn = document.getElementById('reviewsBtn');
+      if (reviewsBtn) {
+        reviewsBtn.addEventListener('click', function(){
+          window.location.href = 'dianirev.html';
+        });
+      }
 
       // Hamburger & mobile dropdown logic (collapse under header)
       const hamburgerToggle = document.getElementById('hamburgerToggle');
@@ -904,8 +999,56 @@
         }
       });
 
+      // Custom auth update for this page (separate from auth.js)
+      function updateAuthButtons() {
+        const authButtons = document.getElementById('auth-buttons');
+        if (!authButtons) return;
+        
+        const isLoggedIn = userIsLoggedIn();
+        
+        if (isLoggedIn) {
+          // Show profile button
+          authButtons.innerHTML = `
+            <button class="profile-btn" onclick="window.location.href='profile.html'">
+              <i class="fas fa-user"></i> Profile
+            </button>
+          `;
+        } else {
+          // Show nothing (empty) - only Plan Your Trip button visible
+          authButtons.innerHTML = '';
+        }
+      }
+      
+      // Initial auth buttons update
+      updateAuthButtons();
+      
+      // Also update when auth state changes (from auth.js)
+      if (window.auth && window.auth.updateUI) {
+        // Override the default updateUI to use our custom version
+        const originalUpdateUI = window.auth.updateUI;
+        window.auth.updateUI = function() {
+          // Call original if it exists
+          if (typeof originalUpdateUI === 'function') {
+            originalUpdateUI.call(this);
+          }
+          // Also update our custom buttons
+          updateAuthButtons();
+        };
+      }
+      
       // Initial authentication check
       userIsLoggedIn();
+    });
+    
+    // Listen for storage changes (if user logs in/out in another tab)
+    window.addEventListener('storage', function(e) {
+      if (e.key === 'vivaUtalii_token' || e.key === 'vivaUtalii_user') {
+        console.log('Storage changed - updating auth buttons');
+        // Trigger a re-check of auth status
+        if (window.auth && typeof window.auth.checkAuthState === 'function') {
+          window.auth.checkAuthState();
+        }
+      }
     });
   </script>
 
