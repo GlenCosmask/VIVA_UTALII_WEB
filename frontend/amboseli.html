@@ -480,7 +480,7 @@
       </div>
     </section>
 
-    <!-- Bottom CTA: start planning (redirect logic per auth.js) -->
+    <!-- Bottom Start Planning CTA -->
     <section class="bottom-cta">
       <button class="start-plan" id="startPlan">Start Planning</button>
     </section>
@@ -518,6 +518,166 @@
     const loginRequiredOverlay = document.getElementById('login-required-overlay');
     const closeLoginCard = document.getElementById('closeLoginCard');
     const goToLoginFromCard = document.getElementById('goToLoginFromCard');
+
+    // Enhanced user login detection
+    function userIsLoggedIn() {
+      // Check multiple possible localStorage keys based on your auth.js patterns
+      const possibleUserKeys = ['vivaUtalii_user', 'vua_client_user', 'user_data', 'auth_user', 'currentUser'];
+      const possibleTokenKeys = ['vivaUtalii_token', 'auth_token', 'token', 'access_token', 'userToken'];
+      const possibleLoginFlags = ['vua_logged_in', 'isLoggedIn', 'logged_in', 'userLoggedIn'];
+      
+      let userData = null;
+      let token = null;
+      let loginFlag = null;
+      
+      // Find user data in localStorage
+      for (const key of possibleUserKeys) {
+        const data = localStorage.getItem(key);
+        if (data) {
+          userData = data;
+          console.log(`✓ Found user data in localStorage: ${key}`);
+          break;
+        }
+      }
+      
+      // Find token in localStorage
+      for (const key of possibleTokenKeys) {
+        const data = localStorage.getItem(key);
+        if (data) {
+          token = data;
+          console.log(`✓ Found token in localStorage: ${key}`);
+          break;
+        }
+      }
+      
+      // Find login flag in localStorage
+      for (const key of possibleLoginFlags) {
+        const data = localStorage.getItem(key);
+        if (data) {
+          loginFlag = data;
+          console.log(`✓ Found login flag in localStorage: ${key} = ${data}`);
+          break;
+        }
+      }
+      
+      // Also check sessionStorage as fallback
+      if (!userData) {
+        for (const key of possibleUserKeys) {
+          const data = sessionStorage.getItem(key);
+          if (data) {
+            userData = data;
+            console.log(`✓ Found user data in sessionStorage: ${key}`);
+            break;
+          }
+        }
+      }
+      
+      if (!token) {
+        for (const key of possibleTokenKeys) {
+          const data = sessionStorage.getItem(key);
+          if (data) {
+            token = data;
+            console.log(`✓ Found token in sessionStorage: ${key}`);
+            break;
+          }
+        }
+      }
+      
+      if (!loginFlag) {
+        for (const key of possibleLoginFlags) {
+          const data = sessionStorage.getItem(key);
+          if (data) {
+            loginFlag = data;
+            console.log(`✓ Found login flag in sessionStorage: ${key} = ${data}`);
+            break;
+          }
+        }
+      }
+      
+      // Check if login flag is "true" string
+      const isLoginFlagTrue = (loginFlag === "true" || loginFlag === true);
+      
+      // Special case: check if userLoggedIn is a string "true"
+      if (userData === "true" || token === "true") {
+        console.log('✓ Found boolean true value for login status');
+        return true;
+      }
+      
+      // Parse JSON data if possible
+      try {
+        if (userData && typeof userData === 'string') {
+          const parsed = JSON.parse(userData);
+          if (parsed && typeof parsed === 'object') {
+            userData = parsed;
+            console.log('✓ Successfully parsed user data JSON');
+          }
+        }
+      } catch (e) {
+        console.log('User data is not JSON, using as-is');
+      }
+      
+      // User is logged in if we have EITHER:
+      // 1. Both user data and token
+      // 2. Login flag is true
+      const isLoggedIn = !!(userData && token) || isLoginFlagTrue;
+      
+      console.log('Final login status:', isLoggedIn ? 'LOGGED IN' : 'NOT LOGGED IN');
+      console.log('================================');
+      
+      return isLoggedIn;
+    }
+
+    // Function to update header buttons based on login status
+    function updateHeaderButtons() {
+      const headerActions = document.getElementById('headerActions');
+      const panelPlan = document.getElementById('panelPlan');
+      const isLoggedIn = userIsLoggedIn();
+      
+      // Clear existing content
+      headerActions.innerHTML = '';
+      
+      // ALWAYS show Plan Your Trip button (for both logged in and logged out users)
+      const tripBtn = document.createElement('button');
+      tripBtn.id = 'tripTop';
+      tripBtn.className = 'header-btn';
+      tripBtn.textContent = 'Plan Your Trip';
+      headerActions.appendChild(tripBtn);
+      
+      // Add click handler for the button
+      tripBtn.addEventListener('click', handlePlanTripClick);
+      
+      // Update side panel link
+      if (panelPlan) {
+        panelPlan.textContent = 'Plan Your Trip';
+        panelPlan.href = '#';
+        panelPlan.onclick = (e) => {
+          e.preventDefault();
+          handlePlanTripClick();
+        };
+      }
+      
+      console.log(`✓ Plan Your Trip button displayed (User is ${isLoggedIn ? 'logged in' : 'not logged in'})`);
+    }
+
+    // Function to handle plan trip button clicks
+    function handlePlanTripClick() {
+      console.log('Plan Trip button clicked - checking authentication...');
+      const isLoggedIn = userIsLoggedIn();
+      
+      if (isLoggedIn) {
+        console.log('✓ User is logged in, redirecting to plan.html');
+        window.location.href = 'plan.html';
+      } else {
+        console.log('✗ User is not logged in, showing login card');
+        if (loginRequiredOverlay) {
+          loginRequiredOverlay.style.display = 'flex';
+        } else {
+          console.error('Login overlay element not found!');
+          // Fallback: redirect to login page
+          window.location.href = 'login.html';
+        }
+      }
+    }
 
     // Initialize when page loads
     document.addEventListener('DOMContentLoaded', function() {
@@ -557,155 +717,6 @@
             loginRequiredOverlay.style.display = 'none';
           }
         });
-      }
-
-      // Enhanced user login detection
-      function userIsLoggedIn() {
-        // Check multiple possible localStorage keys
-        const possibleUserKeys = ['vivaUtalii_user', 'user_data', 'auth_user', 'currentUser', 'userLoggedIn'];
-        const possibleTokenKeys = ['vivaUtalii_token', 'auth_token', 'token', 'access_token', 'userToken'];
-        
-        let userData = null;
-        let token = null;
-        
-        // Find user data in localStorage
-        for (const key of possibleUserKeys) {
-          const data = localStorage.getItem(key);
-          if (data) {
-            userData = data;
-            console.log(`✓ Found user data in localStorage: ${key}`);
-            break;
-          }
-        }
-        
-        // Find token in localStorage
-        for (const key of possibleTokenKeys) {
-          const data = localStorage.getItem(key);
-          if (data) {
-            token = data;
-            console.log(`✓ Found token in localStorage: ${key}`);
-            break;
-          }
-        }
-        
-        // Also check sessionStorage as fallback
-        if (!userData) {
-          for (const key of possibleUserKeys) {
-            const data = sessionStorage.getItem(key);
-            if (data) {
-              userData = data;
-              console.log(`✓ Found user data in sessionStorage: ${key}`);
-              break;
-            }
-          }
-        }
-        
-        if (!token) {
-          for (const key of possibleTokenKeys) {
-            const data = sessionStorage.getItem(key);
-            if (data) {
-              token = data;
-              console.log(`✓ Found token in sessionStorage: ${key}`);
-              break;
-            }
-          }
-        }
-        
-        // Special case: check if userLoggedIn is a string "true"
-        if (userData === "true" || token === "true") {
-          console.log('✓ Found boolean true value for login status');
-          return true;
-        }
-        
-        // Parse JSON data if possible
-        try {
-          if (userData && typeof userData === 'string') {
-            const parsed = JSON.parse(userData);
-            if (parsed && typeof parsed === 'object') {
-              userData = parsed;
-              console.log('✓ Successfully parsed user data JSON');
-            }
-          }
-        } catch (e) {
-          console.log('User data is not JSON, using as-is');
-        }
-        
-        const isLoggedIn = !!(userData && token);
-        console.log('Final login status:', isLoggedIn ? 'LOGGED IN' : 'NOT LOGGED IN');
-        console.log('All localStorage keys:', Object.keys(localStorage));
-        console.log('================================');
-        
-        return isLoggedIn;
-      }
-
-      // Function to update header buttons based on login status
-      function updateHeaderButtons() {
-        const headerActions = document.getElementById('headerActions');
-        const panelPlan = document.getElementById('panelPlan');
-        const isLoggedIn = userIsLoggedIn();
-        
-        // Clear existing content
-        headerActions.innerHTML = '';
-        
-        if (isLoggedIn) {
-          // User is logged in: Show Profile button
-          const profileBtn = document.createElement('a');
-          profileBtn.href = 'profile.html';
-          profileBtn.className = 'header-btn profile-btn';
-          profileBtn.textContent = 'Profile';
-          headerActions.appendChild(profileBtn);
-          
-          // Update side panel link to redirect to plan.html
-          if (panelPlan) {
-            panelPlan.textContent = 'Plan Your Trip';
-            panelPlan.onclick = null; // Remove any existing handlers
-            panelPlan.href = 'plan.html';
-          }
-          
-          console.log('✓ User logged in: Profile button displayed');
-        } else {
-          // User is NOT logged in: Show Plan Your Trip button
-          const tripBtn = document.createElement('button');
-          tripBtn.id = 'tripTop';
-          tripBtn.className = 'header-btn';
-          tripBtn.textContent = 'Plan Your Trip';
-          headerActions.appendChild(tripBtn);
-          
-          // Add click handler for the dynamically created button
-          tripBtn.addEventListener('click', handlePlanTripClick);
-          
-          // Update side panel link to show login prompt
-          if (panelPlan) {
-            panelPlan.textContent = 'Plan Your Trip';
-            panelPlan.href = '#';
-            panelPlan.onclick = (e) => {
-              e.preventDefault();
-              handlePlanTripClick();
-            };
-          }
-          
-          console.log('✓ User not logged in: Plan Your Trip button displayed');
-        }
-      }
-
-      // Function to handle plan trip button clicks
-      function handlePlanTripClick() {
-        console.log('Plan Trip button clicked - checking authentication...');
-        const isLoggedIn = userIsLoggedIn();
-        
-        if (isLoggedIn) {
-          console.log('✓ User is logged in, redirecting to plan.html');
-          window.location.href = 'plan.html';
-        } else {
-          console.log('✗ User is not logged in, showing login card');
-          if (loginRequiredOverlay) {
-            loginRequiredOverlay.style.display = 'flex';
-          } else {
-            console.error('Login overlay element not found!');
-            // Fallback: redirect to login page
-            window.location.href = 'login.html';
-          }
-        }
       }
 
       // Initialize header buttons
