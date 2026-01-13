@@ -135,6 +135,20 @@
     }
     .trip-btn:hover { transform: translateY(-3px); background:#fff; }
 
+    .profile-btn {
+      background: transparent;
+      color: white;
+      padding: 8px 16px;
+      border: 2px solid var(--accent);
+      border-radius: 25px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .18s ease;
+      white-space: nowrap;
+    }
+    .profile-btn:hover { background: var(--accent); color: black; transform: translateY(-2px); }
+
     /* Mobile dropdown (Option A) - hidden on desktop */
     .mobile-dropdown {
       display: none;
@@ -460,7 +474,7 @@
       .experiences-grid, .gallery-grid, .four-grid { grid-template-columns: 1fr; }
       .card-image { height: 210px; }
       .header-right { gap:8px; }
-      .trip-btn { padding: 8px 12px; font-size:14px; }
+      .trip-btn, .profile-btn { padding: 8px 12px; font-size:14px; }
       .mobile-dropdown { left: 0; right: 0; }
     }
   </style>
@@ -486,8 +500,7 @@
     </div>
 
     <div id="auth-buttons" class="header-right">
-      <!-- removed search box as requested -->
-      <button id="topPlanBtn" class="trip-btn" aria-label="Plan your trip">Plan Your Trip</button>
+      <!-- This will be populated by JavaScript -->
     </div>
 
     <!-- Mobile dropdown (collapsible below header, only on small screens) -->
@@ -498,7 +511,7 @@
         <a href="recommendations.html">Recommendations</a>
         <a href="about.html">About</a>
         <a href="contact.html">Contact</a>
-        <a id="mobilePlan" href="#">Plan Your Trip</a>
+        <!-- Mobile plan link will be added by JavaScript -->
       </nav>
     </div>
   </header>
@@ -709,9 +722,6 @@
     </div>
   </div>
 
-  <!-- Include auth.js (user-supplied) -->
-  <script src="auth.js"></script>
-
   <script>
     // Initialize when page loads
     document.addEventListener('DOMContentLoaded', function() {
@@ -823,7 +833,126 @@
         return isLoggedIn;
       }
 
-      // Function to handle plan trip button clicks
+      // Function to update UI based on login status
+      function updateAuthUI() {
+        const authButtonsContainer = document.getElementById('auth-buttons');
+        const mobileDropdown = document.getElementById('mobileDropdown');
+        const isLoggedIn = userIsLoggedIn();
+        
+        // Clear existing buttons
+        authButtonsContainer.innerHTML = '';
+        
+        if (isLoggedIn) {
+          // User is logged in: Show Profile button + Plan Your Trip button
+          const profileBtn = document.createElement('button');
+          profileBtn.className = 'profile-btn';
+          profileBtn.id = 'profileBtn';
+          profileBtn.textContent = 'Profile';
+          profileBtn.addEventListener('click', function() {
+            window.location.href = 'profile.html';
+          });
+          
+          const planBtn = document.createElement('button');
+          planBtn.className = 'trip-btn';
+          planBtn.id = 'topPlanBtn';
+          planBtn.textContent = 'Plan Your Trip';
+          planBtn.addEventListener('click', function() {
+            // Direct redirect to plan.html when logged in
+            window.location.href = 'plan.html';
+          });
+          
+          authButtonsContainer.appendChild(profileBtn);
+          authButtonsContainer.appendChild(planBtn);
+          
+          // Update mobile dropdown
+          if (mobileDropdown) {
+            const mobileNav = mobileDropdown.querySelector('nav');
+            // Remove existing mobile plan link if exists
+            const existingMobilePlan = mobileDropdown.querySelector('#mobilePlan');
+            if (existingMobilePlan) existingMobilePlan.remove();
+            
+            // Add profile link for mobile
+            const profileLink = document.createElement('a');
+            profileLink.href = 'profile.html';
+            profileLink.textContent = 'Profile';
+            profileLink.id = 'mobileProfile';
+            mobileNav.appendChild(profileLink);
+            
+            // Add plan link for mobile
+            const planLink = document.createElement('a');
+            planLink.href = '#';
+            planLink.textContent = 'Plan Your Trip';
+            planLink.id = 'mobilePlan';
+            mobileNav.appendChild(planLink);
+          }
+        } else {
+          // User is logged out: Show only Plan Your Trip button
+          const planBtn = document.createElement('button');
+          planBtn.className = 'trip-btn';
+          planBtn.id = 'topPlanBtn';
+          planBtn.textContent = 'Plan Your Trip';
+          planBtn.addEventListener('click', function() {
+            // Show login overlay when not logged in
+            console.log('✗ User is not logged in, showing login card');
+            if (loginRequiredOverlay) {
+              loginRequiredOverlay.style.display = 'flex';
+            } else {
+              console.error('Login overlay element not found!');
+              window.location.href = 'login.html';
+            }
+          });
+          
+          authButtonsContainer.appendChild(planBtn);
+          
+          // Update mobile dropdown
+          if (mobileDropdown) {
+            const mobileNav = mobileDropdown.querySelector('nav');
+            // Remove existing mobile plan link if exists
+            const existingMobilePlan = mobileDropdown.querySelector('#mobilePlan');
+            if (existingMobilePlan) existingMobilePlan.remove();
+            
+            // Remove profile link if exists
+            const existingProfileLink = mobileDropdown.querySelector('#mobileProfile');
+            if (existingProfileLink) existingProfileLink.remove();
+            
+            // Add plan link for mobile
+            const planLink = document.createElement('a');
+            planLink.href = '#';
+            planLink.textContent = 'Plan Your Trip';
+            planLink.id = 'mobilePlan';
+            mobileNav.appendChild(planLink);
+          }
+        }
+        
+        // Add event listeners for mobile dropdown links
+        const mobilePlanLink = document.getElementById('mobilePlan');
+        if (mobilePlanLink) {
+          mobilePlanLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (isLoggedIn) {
+              // Direct redirect when logged in
+              window.location.href = 'plan.html';
+            } else {
+              // Show login overlay when not logged in
+              if (loginRequiredOverlay) {
+                loginRequiredOverlay.style.display = 'flex';
+              } else {
+                window.location.href = 'login.html';
+              }
+            }
+          });
+        }
+        
+        const mobileProfileLink = document.getElementById('mobileProfile');
+        if (mobileProfileLink) {
+          mobileProfileLink.addEventListener('click', function(e) {
+            // Profile link should work normally
+            // No preventDefault needed since it has href
+          });
+        }
+      }
+
+      // Function to handle plan trip button clicks (for bottom CTA)
       function handlePlanTripClick() {
         console.log('Plan Trip button clicked - checking authentication...');
         const isLoggedIn = userIsLoggedIn();
@@ -837,24 +966,13 @@
             loginRequiredOverlay.style.display = 'flex';
           } else {
             console.error('Login overlay element not found!');
-            // Fallback: redirect to login page
             window.location.href = 'login.html';
           }
         }
       }
 
-      // Plan button logic (top-right)
-      const topPlanBtn = document.getElementById('topPlanBtn');
-      topPlanBtn.addEventListener('click', handlePlanTripClick);
-
-      // Mobile dropdown plan link
-      const mobilePlan = document.getElementById('mobilePlan');
-      if (mobilePlan) {
-        mobilePlan.addEventListener('click', function(e){
-          e.preventDefault();
-          handlePlanTripClick();
-        });
-      }
+      // Initialize UI
+      updateAuthUI();
 
       // Bottom CTA logic
       const bottomStartBtn = document.getElementById('bottomStartBtn');
@@ -904,8 +1022,13 @@
         }
       });
 
-      // Initial authentication check
-      userIsLoggedIn();
+      // Listen for storage changes (in case user logs in/out in another tab)
+      window.addEventListener('storage', function(e) {
+        if (e.key.includes('user') || e.key.includes('token') || e.key.includes('auth')) {
+          console.log('Authentication state changed, updating UI...');
+          updateAuthUI();
+        }
+      });
     });
   </script>
   <script src="auth.js"></script>
