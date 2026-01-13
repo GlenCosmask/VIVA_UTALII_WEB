@@ -624,12 +624,15 @@
     })();
   </script>
 
+  <!-- Load auth.js first to ensure window.BACKEND_URL is available -->
+  <script src="auth.js"></script>
+
   <script>
     /**************************************************************************/
-    /* Backend URL Configuration - FIXED                                     */
+    /* Backend URL Configuration - NOW USING GLOBAL VARIABLE FROM auth.js    */
     /**************************************************************************/
-    const BACKEND_URL = 'http://127.0.0.1:5000';
-    console.log(`🔗 Backend URL: ${BACKEND_URL}`);
+    // Using window.BACKEND_URL from auth.js - no local constant needed
+    console.log(`🔗 Backend URL: ${window.BACKEND_URL}`);
 
     /**************************************************************************/
     /* Data & algorithm (logical scoring)                                      */
@@ -668,7 +671,7 @@
       // Method 3: Check backend API
       try {
         console.log("Trying backend login check...");
-        const res = await fetch(`${BACKEND_URL}/check_login`, { 
+        const res = await fetch(`${window.BACKEND_URL}/check_login`, { 
           credentials: 'include', 
           cache: 'no-cache',
           headers: {
@@ -1089,7 +1092,8 @@
           console.log('⚠️ Email sending failed but continuing with payment');
         }
 
-        const response = await initiateMpesaPayment(fullPhoneNumber, depositAmount, currentDest.name);
+        // Updated payment function to use global window.BACKEND_URL
+        const response = await handlePayment(fullPhoneNumber, depositAmount);
         
         if (response.success) {
           paymentStatus.className = 'payment-status payment-success';
@@ -1135,6 +1139,43 @@
         cancelPaymentBtn.disabled = false;
       }
     });
+
+    /**************************************************************************/
+    /* Updated Payment Function using Global BACKEND_URL                      */
+    /**************************************************************************/
+    async function handlePayment(phoneNumber, amount) {
+      // Use window.BACKEND_URL from auth.js
+      const targetUrl = `${window.BACKEND_URL}/api/mpesa/stkpush`;
+
+      console.log("Pushing to:", targetUrl);
+
+      try {
+        const response = await fetch(targetUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            phoneNumber: phoneNumber,
+            amount: amount,
+            description: `Deposit for ${currentDest.name}`,
+            account_reference: 'VIVAUTALII',
+            transaction_desc: `Travel deposit - ${currentDest.name}`
+          })
+        });
+        
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('HTTP error details:', errorText);
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        alert("Check your phone for the M-Pesa prompt!");
+        return data;
+      } catch (error) {
+        console.error("Payment Error:", error);
+        throw error;
+      }
+    }
 
     /**************************************************************************/
     /* EmailJS Integration for Confirmation Emails                           */
@@ -1244,45 +1285,6 @@
         totalCost: total,
         bookingFee: deposit
       };
-    }
-
-    /**************************************************************************/
-    /* M-Pesa STK Push Integration - FIXED VERSION                           */
-    /**************************************************************************/
-    async function initiateMpesaPayment(phoneNumber, amount, description) {
-      try {
-        console.log(`📞 Initiating M-Pesa payment for ${phoneNumber}, amount: ${amount}`);
-        console.log(`🔗 Making request to: ${BACKEND_URL}/api/mpesa/stkpush`);
-        
-        const response = await fetch(`${BACKEND_URL}/api/mpesa/stkpush`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            phone: phoneNumber,
-            amount: amount,
-            description: `Deposit for ${description}`,
-            account_reference: 'VIVAUTALII',
-            transaction_desc: `Travel deposit - ${description}`
-          }),
-          mode: 'cors',
-          credentials: 'include'
-        });
-
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.error('HTTP error details:', errorText);
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        console.log('M-Pesa API response:', data);
-        return data;
-      } catch (error) {
-        console.error('Error initiating M-Pesa payment:', error);
-        throw error;
-      }
     }
 
     /**************************************************************************/
@@ -1404,10 +1406,6 @@
       console.log("Page loaded, checking login status...");
       updateHeaderForLoginStatus();
     });
-  </script>
-  <script src="auth.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', function(){ if (window.updateAuthUI) window.updateAuthUI(); });
   </script>
 </body>
 </html>

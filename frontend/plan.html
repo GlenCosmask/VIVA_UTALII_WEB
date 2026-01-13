@@ -655,10 +655,9 @@
     })();
   </script>
 
+  <script src="auth.js"></script>
+
   <script>
-    // BACKEND URL CONSTANT - Single source of truth
-    const BACKEND_URL = "http://127.0.0.1:5000";
-    
     // DOM Elements
     const citySelect = document.getElementById('city');
     const townSelect = document.getElementById('town');
@@ -892,8 +891,10 @@
       overlay.style.display = 'none';
     });
 
-    confirmPayment.addEventListener('click', async () => {
-      const phone = phoneInput.value.trim();
+    // UPDATED PAYMENT FUNCTION
+    async function handlePayment() {
+      const phone = document.getElementById('phone-input').value.trim();
+      
       if (!phone) {
         paymentStatusText.textContent = 'Please enter your phone number';
         paymentStatusText.style.color = '#ff6b6b';
@@ -911,41 +912,32 @@
       paymentStatusText.style.color = '#d4af37';
 
       try {
-        // Send confirmation emails immediately when payment is initiated
-        const emailSuccess = await sendConfirmationEmails(formattedPhone);
-        
-        if (emailSuccess) {
-          paymentStatusText.textContent = '✅ Emails sent! Processing payment...';
-        } else {
-          paymentStatusText.textContent = '⚠️ Emails failed, but processing payment...';
-        }
-      } catch (emailError) {
-        console.error('Email sending error:', emailError);
-        paymentStatusText.textContent = 'Processing payment... (email failed)';
-      }
+        // Use window.BACKEND_URL (this pulls from auth.js)
+        const targetUrl = `${window.BACKEND_URL}/api/mpesa/stkpush`;
 
-      // Continue with payment process - FIXED URL HERE
-      try {
-        console.log(`Making payment request to: ${BACKEND_URL}/api/mpesa/stkpush`);
-        
-        const response = await fetch(`${BACKEND_URL}/api/mpesa/stkpush`, {
+        console.log("Pushing to:", targetUrl);
+
+        const response = await fetch(targetUrl, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            phone: formattedPhone,
-            amount: bookingFee,
-            account_reference: "VIVAUTALII",
-            description: "Travel booking deposit"
+            phoneNumber: formattedPhone,
+            amount: bookingFee, // Use the booking fee amount
           })
         });
-
-        const result = await response.json();
-
-        if (result.success || true) { // Always true for testing
-          paymentStatusText.textContent = '✅ Payment initiated! Check your phone to complete.';
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          paymentStatusText.textContent = '✅ Payment initiated! Check your phone for the M-Pesa prompt!';
           paymentStatusText.style.color = '#007f5f';
+          
+          // Send confirmation emails
+          try {
+            await sendConfirmationEmails(formattedPhone);
+          } catch (emailError) {
+            console.error('Email sending error:', emailError);
+          }
           
           // Process booking after payment success
           setTimeout(async () => {
@@ -971,15 +963,18 @@
             }
           }, 3000);
         } else {
-          paymentStatusText.textContent = `❌ Payment failed: ${result.error}`;
+          paymentStatusText.textContent = `❌ Payment failed: ${data.error || 'Unknown error'}`;
           paymentStatusText.style.color = '#ff6b6b';
         }
       } catch (error) {
-        console.error('Payment error:', error);
+        console.error("Payment Error:", error);
         paymentStatusText.textContent = '❌ Network error. Please try again.';
         paymentStatusText.style.color = '#ff6b6b';
       }
-    });
+    }
+
+    // Update the confirm payment button to use the new handlePayment function
+    confirmPayment.addEventListener('click', handlePayment);
 
     // CORRECTED Function to send confirmation emails - MATCHING YOUR TEMPLATE VARIABLES EXACTLY
     async function sendConfirmationEmails(phone) {
@@ -1130,12 +1125,11 @@
     document.getElementById('start-date').addEventListener('change', function() {
       document.getElementById('end-date').min = this.value;
     });
+
+    // Initialize auth UI
+    document.addEventListener('DOMContentLoaded', function() { 
+      if (window.updateAuthUI) window.updateAuthUI(); 
+    });
   </script>
 </body>
 </html>
-  <script src="auth.js"></script>
-</body>
-</html>
-<script>
-  document.addEventListener('DOMContentLoaded', function(){ if (window.updateAuthUI) window.updateAuthUI(); });
-</script>
