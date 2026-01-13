@@ -17,6 +17,7 @@ body {
   height: 100vh;
   margin: 0;
   color: #fff;
+  overflow-x: hidden;
 }
 
 /* main container */
@@ -41,11 +42,11 @@ body {
   align-items: center;
   justify-content: center;
   transition: all 0.6s ease-in-out;
+  width: 50%;
 }
 
 .sign-in-container {
   left: 0;
-  width: 50%;
   z-index: 2;
 }
 
@@ -55,7 +56,6 @@ body {
 
 .sign-up-container {
   left: 0;
-  width: 50%;
   opacity: 0;
   z-index: 1;
 }
@@ -228,27 +228,53 @@ a:hover {
 
 /* ----- MOBILE: Disable sliding & show only active form ----- */
 @media (max-width: 768px) {
-  .container { width: 95%; min-height: auto; padding: 20px; }
-  .overlay-container { display: none; } /* hide overlay entirely on mobile */
+  body {
+    padding: 20px 0;
+    height: auto;
+    min-height: 100vh;
+    align-items: flex-start;
+  }
+  
+  .container { 
+    width: 95%; 
+    min-height: auto; 
+    padding: 20px 0;
+    margin: 20px 0;
+  }
+  
+  .overlay-container { 
+    display: none; 
+  }
 
-  /* Make form containers stack and not positioned absolutely */
+  /* Mobile form containers - stack them properly */
   .form-container {
     position: relative !important;
     top: auto;
     left: 0 !important;
     width: 100% !important;
+    height: auto !important;
     transform: none !important;
     opacity: 1 !important;
-    display: none; /* hide by default; JS will show the active one */
-    padding: 10px 0;
+    display: none;
+    padding: 20px;
+    margin-bottom: 20px;
   }
 
-  /* when mobile, the container will show .mobile-active sections */
+  /* Active form for mobile */
   .form-container.mobile-active {
     display: flex;
   }
 
-  form { max-width: 100%; padding: 30px 20px; }
+  form { 
+    max-width: 100%; 
+    padding: 30px 20px; 
+    margin: 0 auto;
+  }
+  
+  /* Hide the desktop overlay buttons */
+  .ghost {
+    display: none;
+  }
 }
 
 /* ----- BEAUTIFUL CUSTOM NOTIFICATION STYLES ----- */
@@ -421,7 +447,7 @@ a:hover {
         <i class="fas fa-eye toggle-password" toggle="#signupConfirm" title="Show / Hide"></i>
       </div>
 
-      <a id="gotoSignIn">Already have an account? Sign In</a>
+      <a id="gotoSignIn" class="form-switch-link">Already have an account? Sign In</a>
 
       <button type="submit">Sign Up</button>
     </form>
@@ -438,7 +464,7 @@ a:hover {
         <i class="fas fa-eye toggle-password" toggle="#signinPassword" title="Show / Hide"></i>
       </div>
 
-      <a id="gotoSignUp">Don't have an account? Sign Up</a>
+      <a id="gotoSignUp" class="form-switch-link">Don't have an account? Sign Up</a>
       <a href="forgpass.html">Forgot your password?</a>
 
       <button type="submit">Sign In</button>
@@ -551,53 +577,119 @@ function isMobile() {
 }
 
 // Desktop behavior: overlay sliding
-if (signUpBtn) signUpBtn.addEventListener('click', () => containerEl.classList.add('right-panel-active'));
-if (signInBtn) signInBtn.addEventListener('click', () => containerEl.classList.remove('right-panel-active'));
+if (signUpBtn) signUpBtn.addEventListener('click', () => {
+  containerEl.classList.add('right-panel-active');
+});
+
+if (signInBtn) signInBtn.addEventListener('click', () => {
+  containerEl.classList.remove('right-panel-active');
+});
 
 // Mobile behavior: show/hide appropriate form containers
 function showMobileForm(which) {
+  // Remove active class from both
   signinSection.classList.remove('mobile-active');
   signupSection.classList.remove('mobile-active');
 
-  if (which === 'signin') signinSection.classList.add('mobile-active');
-  else signupSection.classList.add('mobile-active');
+  // Add active class to the selected form
+  if (which === 'signin') {
+    signinSection.classList.add('mobile-active');
+  } else {
+    signupSection.classList.add('mobile-active');
+  }
+  
+  // Update URL without reloading to maintain form state
+  const url = new URL(window.location);
+  url.searchParams.set('form', which === 'signin' ? 'login' : 'signup');
+  window.history.replaceState({}, '', url);
 }
 
-// Attach links that switch view
-if (gotoSignUp) gotoSignUp.addEventListener('click', (e) => {
-  e.preventDefault();
-  if (isMobile()) {
-    showMobileForm('signup');
-  } else {
-    containerEl.classList.add('right-panel-active');
-  }
-});
+// Get initial form from URL parameters
+function getInitialForm() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const formParam = urlParams.get('form');
+  return formParam === 'signup' ? 'signup' : 'signin';
+}
 
-if (gotoSignIn) gotoSignIn.addEventListener('click', (e) => {
-  e.preventDefault();
-  if (isMobile()) {
-    showMobileForm('signin');
-  } else {
-    containerEl.classList.remove('right-panel-active');
+// Fix for mobile form switching
+function setupFormSwitching() {
+  // Handle the "Don't have an account? Sign Up" link
+  if (gotoSignUp) {
+    gotoSignUp.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation(); // Prevent any parent handlers
+      
+      if (isMobile()) {
+        showMobileForm('signup');
+        // Scroll to top to ensure form is visible
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        containerEl.classList.add('right-panel-active');
+      }
+    });
   }
-});
+
+  // Handle the "Already have an account? Sign In" link
+  if (gotoSignIn) {
+    gotoSignIn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation(); // Prevent any parent handlers
+      
+      if (isMobile()) {
+        showMobileForm('signin');
+        // Scroll to top to ensure form is visible
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        containerEl.classList.remove('right-panel-active');
+      }
+    });
+  }
+}
 
 // Setup Initial View logic
 function setupInitialView() {
   if (isMobile()) {
-    showMobileForm('signin');
+    // On mobile, show the appropriate form based on URL
+    const initialForm = getInitialForm();
+    showMobileForm(initialForm);
+    
+    // Make sure body has proper scrolling
+    document.body.style.overflow = 'auto';
+    document.body.style.height = 'auto';
   } else {
-    // Desktop: ensure both form containers are present, overlay handles visibility
+    // Desktop: show both forms, overlay handles visibility
+    signinSection.style.display = 'flex';
+    signupSection.style.display = 'flex';
     signinSection.classList.remove('mobile-active');
     signupSection.classList.remove('mobile-active');
+    
+    // Set initial panel based on URL
+    const initialForm = getInitialForm();
+    if (initialForm === 'signup') {
+      containerEl.classList.add('right-panel-active');
+    } else {
+      containerEl.classList.remove('right-panel-active');
+    }
   }
 }
-window.addEventListener('load', setupInitialView);
-window.addEventListener('resize', setupInitialView);
+
+// Initialize when page loads
+window.addEventListener('load', () => {
+  setupInitialView();
+  setupFormSwitching();
+});
+
+// Handle resize events
+window.addEventListener('resize', () => {
+  // Use a debounce to prevent excessive calls
+  clearTimeout(window.resizeTimer);
+  window.resizeTimer = setTimeout(setupInitialView, 250);
+});
 
 // Toggle password visibility
 document.querySelectorAll('.toggle-password').forEach(icon => {
-  icon.addEventListener('click', () => {
+  icon.addEventListener('click', (e) => {
+    e.stopPropagation(); // Prevent event bubbling
     const selector = icon.getAttribute('toggle');
     const input = document.querySelector(selector);
     if (!input) return;
@@ -619,10 +711,6 @@ async function redirectToIndex() {
   
   console.log('Attempting to redirect...');
 
-  // Simple client-side check. We try the most likely path first.
-  // Note: We can't easily "check" file existence without making a HEAD request,
-  // but for simple navigation, we usually just assign href.
-  
   // Default fallback: Go to parent index
   window.location.href = 'index.html'; 
 }
@@ -731,6 +819,22 @@ signinForm.addEventListener('submit', async (e) => {
     btn.disabled = false;
   }
 });
+
+// Prevent form switching when clicking inside form fields
+document.querySelectorAll('input').forEach(input => {
+  input.addEventListener('click', (e) => {
+    e.stopPropagation();
+  });
+});
+
+// Add a small delay to ensure everything is loaded properly
+setTimeout(() => {
+  // Final check to ensure correct form is shown on mobile
+  if (isMobile()) {
+    const initialForm = getInitialForm();
+    showMobileForm(initialForm);
+  }
+}, 100);
 </script>
 </body>
 </html>
