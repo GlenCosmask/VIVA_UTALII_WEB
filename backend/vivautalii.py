@@ -185,7 +185,7 @@ def get_access_token():
 def daraja_timestamp():
     return datetime.now().strftime("%Y%m%d%H%M%S")
 
-# ------------------- MANUAL CORS HANDLING FOR CRITICAL ROUTES -------------------
+
 @app.before_request
 def handle_options():
     if request.method == 'OPTIONS':
